@@ -24,29 +24,16 @@ public class Tilespace : MonoBehaviour
 		grid = g;
 	}
 
-    public bool CanMoveTo(Direction direction, bool checkHasTile = true) {
-		if(checkHasTile) {
-			if (!HasTile) {
-				return true;
-			}
-			else {
-				// add to the list of tiles that need to move when selected tile moves
-				Tile.MoveDirection = direction;
-				LevelManager.Move += Tile.MoveEvent;
-			}
-		}
-	
-		Tilespace t = grid.GetTilespaceInDirection(Position, direction);
-		if(t != null){		
-			return t.CanMoveTo(direction);
-		}
-		else {
-			return false;	
-		}
-	}
-
 	public Tilespace GetNeighborInDirection(Direction d) {
 		return grid.GetTilespaceInDirection(this.Position, d);
+	}
+
+	public void SetChildTile(Tile t) {
+		t.Space = this;
+		t.transform.parent = this.transform;
+		//t.transform.localPosition = local;
+
+		this.Tile = t;
 	}
 
 	public void TryMoveTile(Direction direction) {

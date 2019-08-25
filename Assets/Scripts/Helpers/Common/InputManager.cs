@@ -11,15 +11,22 @@ public class InputManager : MonoBehaviour
 
 	private void Start() {
 		main = Camera.main;
-		last = new InputPackage();
 	}
 
 	private void Update() {
 		InputPackage p = new InputPackage();
-		p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
 
+		p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
 		p.LeftMouse = Input.GetButton("LeftMouse");
-		p.LeftMouseChange = p.LeftMouse ^ last.LeftMouse;
+		if(last != null) {
+			p.LeftMouseChange = p.LeftMouse ^ last.LeftMouse;
+			p.MousePositionWorldSpaceDelta = p.MousePositionWorldSpace - last.MousePositionWorldSpace;
+		}
+		else {
+			p.LeftMouseChange = false;
+			p.MousePositionWorldSpaceDelta = Vector3.zero;
+		}
+		
 
 		p.Horizontal = Input.GetAxis("Horizontal");
 		p.Vertical = Input.GetAxis("Vertical");
@@ -30,8 +37,8 @@ public class InputManager : MonoBehaviour
 }
 
 public class InputPackage {
-	public Vector3 MousePositionScreenSpace { get; set; }
 	public Vector3 MousePositionWorldSpace { get; set; }
+	public Vector3 MousePositionWorldSpaceDelta { get; set; }
 
 	public float MouseWheelDelta { get; set; }
 	public bool LeftMouse { get; set; }

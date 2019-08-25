@@ -25,24 +25,33 @@ public class LevelManager : ContextManager {
 				// clicked
 				SelectedTile = Physics2D.OverlapPoint(p.MousePositionWorldSpace, tileMask)?.GetComponent<Tile>();
 
-				if (SelectedTile != null) {
+				if (SelectedTile != null && SelectedTile.Movable) {
 					grabPoint = p.MousePositionWorldSpace;
-					SelectedTile.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0, 0);
+					SelectedTile.Select(true);
 				}
 			}
 			else if(SelectedTile != null) {
-				Vector2 moveAmount = (p.MousePositionWorldSpace - grabPoint) / SelectedTile.transform.lossyScale.x;
-				bool moved = SelectedTile.TryMove(moveAmount);
-				Move?.Invoke(this, moveAmount);
+				float scale = SelectedTile.transform.lossyScale.x;
+				Vector2 moveAmount = (p.MousePositionWorldSpace - grabPoint) / scale;
+
+				Tilespace tileBeforeMove = SelectedTile.Space;
+				bool moved = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
 
 				if(moved) {
-					grabPoint = p.MousePositionWorldSpace;
+					Vector3 move = (tileBeforeMove.transform.position - SelectedTile.Space.transform.position);
+					grabPoint -= move;
+					if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
+						grabPoint.x = p.MousePositionWorldSpace.x;
+					}
+					else {
+						grabPoint.y = p.MousePositionWorldSpace.y;
+					}
+					SelectedTile.Select(true);
 				}
 			}
 		}
 		else if(SelectedTile != null && !p.LeftMouse && p.LeftMouseChange) {
-			ClearMovingTiles();
-			SelectedTile.GetComponent<SpriteRenderer>().color = new Color(0.3f, 0, 0);
+			SelectedTile.Select(false);
 			SelectedTile = null;
 		}
 	}

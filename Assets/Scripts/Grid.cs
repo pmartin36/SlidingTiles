@@ -44,8 +44,8 @@ public class Grid : MonoBehaviour
 	public Tilespace GetTilespaceInDirection(TilePosition p, Direction d) {
 		int nx = p.x + Mathf.RoundToInt(d.Value.x);
 		int ny = p.y + Mathf.RoundToInt(d.Value.y);
-		if(nx >= 0 && nx < Tilespaces[ny].Count &&
-			ny >= 0 && ny < Tilespaces.Count) {
+		if(ny >= 0 && ny < Tilespaces.Count &&
+			nx >= 0 && nx < Tilespaces[ny].Count) {
 			return Tilespaces[ny][nx];
 		}
 		return null;
