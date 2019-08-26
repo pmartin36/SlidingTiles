@@ -73,7 +73,7 @@ public class Tile : MonoBehaviour
 	public void Select(bool select) {
 		Selected = select;
 		if (Selected) {
-			PositionWhenSelected = transform.localPosition;
+			PositionWhenSelected = transform.position;
 		}
 		else {
 			Threshold = BaseThreshold;
@@ -157,7 +157,7 @@ public class Tile : MonoBehaviour
 
 	public bool TryMove(Vector2 mouseMoveSinceSelection, Vector2 delta) {
 		if(Movable) {
-			Vector2 position = mouseMoveSinceSelection + this.PositionWhenSelected;
+			Vector2 position = (mouseMoveSinceSelection + this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x;
 			bool centered = Centered;
 
 			if(!centered) {
@@ -172,6 +172,8 @@ public class Tile : MonoBehaviour
 			else if(centered && position.magnitude < Threshold) {
 				return false;	
 			}
+
+			Debug.Log($"mouseMoveSinceSelection: {mouseMoveSinceSelection}, diff: {(Vector2)transform.position - this.PositionWhenSelected}, position: {position}");
 
 			// limit movement
 			Vector3 move = (position - (Vector2)transform.localPosition);

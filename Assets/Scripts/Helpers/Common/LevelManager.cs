@@ -32,21 +32,21 @@ public class LevelManager : ContextManager {
 			}
 			else if(SelectedTile != null) {
 				float scale = SelectedTile.transform.lossyScale.x;
-				Vector2 moveAmount = (p.MousePositionWorldSpace - grabPoint) / scale;
+				Vector2 moveAmount = (p.MousePositionWorldSpace - grabPoint);
 
 				Tilespace tileBeforeMove = SelectedTile.Space;
 				bool moved = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
 
 				if(moved) {
 					Vector3 move = (tileBeforeMove.transform.position - SelectedTile.Space.transform.position);
-					grabPoint -= move;
-					if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
-						grabPoint.x = p.MousePositionWorldSpace.x;
-					}
-					else {
-						grabPoint.y = p.MousePositionWorldSpace.y;
-					}
-					SelectedTile.Select(true);
+					//grabPoint -= move;
+					//if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
+					//	grabPoint.x = p.MousePositionWorldSpace.x;
+					//}
+					//else {
+					//	grabPoint.y = p.MousePositionWorldSpace.y;
+					//}
+					// SelectedTile.Select(true);
 				}
 			}
 		}
