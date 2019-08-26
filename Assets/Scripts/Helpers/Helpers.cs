@@ -55,6 +55,18 @@ public class Direction {
 	public static implicit operator bool(Direction d) {
 		return d.Value.sqrMagnitude > 0.1f;
 	}
+
+	public Direction GetOpposite() {
+		float absX = Mathf.Abs(Value.x);
+		float absY = Mathf.Abs(Value.y);
+
+		if(absX > absY) {
+			return Value.x > 0 ? Direction.Left : Direction.Right;
+		}
+		else {
+			return Value.y > 0 ? Direction.Down : Direction.Up;
+		}
+	}
 }
 
 public static class DirectionHelpers {

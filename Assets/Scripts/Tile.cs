@@ -34,6 +34,7 @@ public class Tile : MonoBehaviour
 	private SpriteRenderer spriteRenderer;
 
 	private PlatformController[] childPlatforms;
+	bool alreadyMoved = false;
 
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
@@ -46,13 +47,25 @@ public class Tile : MonoBehaviour
 	}
 
 	public void Update() {
-		if (!Centered && transform.localPosition.sqrMagnitude < thresholdSquared) {
+		if (Moved && !Centered && transform.localPosition.sqrMagnitude <= thresholdSquared) {
+			alreadyMoved = true;
 			float distToMove = Time.deltaTime * SpeedCap;
+			Vector2 position;
 			if (distToMove > transform.localPosition.magnitude) {
-				transform.localPosition = Vector2.zero;
+				position = Vector2.zero;
+				Moved = false;
+				Threshold = BaseThreshold;
 			}
 			else {
-				transform.localPosition -= transform.localPosition.normalized * distToMove;
+				position = transform.localPosition - transform.localPosition.normalized * distToMove;
+			}
+
+			var noDirection = Direction.None;
+			List<Tile> tilesToMove = new List<Tile>() { this };
+			if (CanMoveTo(position, tilesToMove, noDirection)) {
+				foreach (Tile t in tilesToMove) {
+					t.Move(position, noDirection, Threshold);
+				}
 			}
 		}
 	}
@@ -61,14 +74,9 @@ public class Tile : MonoBehaviour
 		Selected = select;
 		if (Selected) {
 			PositionWhenSelected = transform.localPosition;
-			if(PositionWhenSelected.magnitude > BaseThreshold * 2) {
-				Moved = true;
-				Threshold = BaseThreshold * 2f;
-			}
-		}		
+		}
 		else {
 			Threshold = BaseThreshold;
-			Moved = false;
 		}
 
 		if(Movable) {
@@ -81,7 +89,7 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public bool Move(Vector2 position, Direction d) {
+	public bool Move(Vector2 position, Direction d, float threshold) {
 		Vector2 diff = (position - (Vector2)transform.localPosition) * transform.lossyScale;
 
 		foreach(PlatformController c in childPlatforms) {
@@ -93,12 +101,12 @@ public class Tile : MonoBehaviour
 		}
 
 		float mag = position.magnitude;
-		if(mag > Threshold) {
-			if (!Moved && mag > Threshold * 2f) {
+		if(mag > threshold) {
+			if (Selected && !Moved && mag > threshold * 2f) {
 				Threshold = Threshold * 2f;
 				Moved = true;
 			}
-			if (mag > 1 - Threshold) {
+			if (mag > 1 - threshold) {
 				// snap to next spot
 				Tilespace next = Space.GetNeighborInDirection(d);		
 				if(Space.Tile == this) {
@@ -106,7 +114,7 @@ public class Tile : MonoBehaviour
 				}
 			
 				next.SetChildTile(this);
-				Debug.Log(next);
+				// Debug.Log(next);
 				return true;
 			}	
 		}
@@ -114,9 +122,9 @@ public class Tile : MonoBehaviour
 	}
 
 	public bool CanMoveTo(Vector3 localPosition, List<Tile> tilesToMove, Direction d) {
-		bool goingTowardCenter = Vector2.Dot(localPosition, transform.localPosition) < 0;
-		Tilespace t = Space.GetNeighborInDirection(d);
-		if(t != null || goingTowardCenter) {
+		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude && Vector2.Dot(localPosition, transform.localPosition) < 0;
+		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
+		if(validTilespace || goingTowardCenter) {
 			Vector3 dir = localPosition - transform.localPosition;
 			Vector2 size = Mathf.Abs(localPosition.x) > 0.0001f 
 				? new Vector2(dir.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
@@ -134,13 +142,10 @@ public class Tile : MonoBehaviour
 			}
 			else if (collisions.Length == 1) {
 				Debug.DrawRay(this.transform.position, transform.lossyScale * 0.5f + dir, Color.red);
-
+			
 				Tile collidedTile = collisions[0].GetComponent<Tile>();
-				if (!collidedTile.Movable 
-					|| (!collidedTile.Centered && Mathf.Abs(Vector2.Dot(d.Value, collidedTile.transform.localPosition.normalized)) < 0.1f)) {
-					return false;
-				}
-				else {		
+				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(dir.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
+				if (collidedTile.Movable && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
 					return collidedTile.CanMoveTo(localPosition, tilesToMove, d);
@@ -159,20 +164,13 @@ public class Tile : MonoBehaviour
 				position *= new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
 			}
 
-			float absX = Mathf.Abs(position.x);
-			float absY = Mathf.Abs(position.y);
-			Direction direction = Direction.None;
-			if (absX > absY) {
-				direction = Mathf.Sign(position.x) > 0 ? Direction.Right : Direction.Left;
-				position *= Vector2.right;
-			}
-			else {
-				direction = Mathf.Sign(position.y) > 0 ? Direction.Up : Direction.Down;
-				position *= Vector2.up;
-			}
+			Direction direction = GetDirectionFromPosition(ref position);
 			
-			if(centered && position.magnitude < Threshold) {
-				return false;
+			if(!centered && transform.localPosition.magnitude < Threshold) {
+				position = transform.localPosition.normalized * Mathf.Min(transform.localPosition.magnitude, Threshold - 0.001f);
+			}
+			else if(centered && position.magnitude < Threshold) {
+				return false;	
 			}
 
 			// limit movement
@@ -184,29 +182,42 @@ public class Tile : MonoBehaviour
 				position = transform.localPosition + move.normalized * SpeedCap * Time.deltaTime;
 			}
 
-			//if (move.magnitude > SpeedCap * Time.deltaTime) {
-			//	position = transform.localPosition + move * SpeedCap * Time.deltaTime;
-			//}
-
 			float mag = position.magnitude;
 			if(position.magnitude >= 1) {
 				position = position.normalized;
+			}
+			
+			if(position.x > transform.localPosition.x) {
+				Debug.Log("What");
+			}
+			if (alreadyMoved) {
+				Debug.Log($"position: {transform.localPosition.x}, moving to: {position.x}"); 
+				alreadyMoved = false;
 			}
 
 			bool moved = false;
 			List<Tile> tilesToMove = new List<Tile>();
 			if (CanMoveTo(position, tilesToMove, direction)) {
-				moved = this.Move(position, direction);
+				moved = this.Move(position, direction, Threshold);
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, direction);
+					t.Move(position, direction, Threshold);
 				}
-			}
-			if(moved) {
-				Debug.Log("----------------");
 			}
 			return moved;
 		}
-
 		return false;
+	}
+
+	public Direction GetDirectionFromPosition(ref Vector2 position) {
+		float absX = Mathf.Abs(position.x);
+		float absY = Mathf.Abs(position.y);
+		if (absX > absY) {		
+			position *= Vector2.right;
+			return Mathf.Sign(position.x) > 0 ? Direction.Right : Direction.Left;
+		}
+		else {
+			position *= Vector2.up;
+			return Mathf.Sign(position.y) > 0 ? Direction.Up : Direction.Down;
+		}
 	}
 }
