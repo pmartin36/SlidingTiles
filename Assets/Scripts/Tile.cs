@@ -5,25 +5,14 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-	public const float BaseThreshold = 0.1f;
-	private const float BaseThresholdSquared = 0.01f;
-
-	private float thresholdSquared;
-	private float _threshold;
-	public float Threshold {
-		get => _threshold;
-		set {
-			_threshold = value;
-			thresholdSquared = value * value;
-		}
-	}
+	public const float BaseThreshold = 0.15f;
+	private const float BaseThresholdSquared = 0.0225f;
 
 	private const float SpeedCap = 4f;
 
 	public Tilespace Space { get; set; }
 
 	public bool Movable;
-	public bool Moved { get; set; }
 
 	public bool Selected { get; set; }
 	public Vector2 PositionWhenSelected { get; set; }
@@ -43,18 +32,15 @@ public class Tile : MonoBehaviour
 			spriteRenderer.color = new Color(0.15f, 0, 0);
 		}
 		childPlatforms = GetComponentsInChildren<PlatformController>();
-		Threshold = BaseThreshold;
 	}
 
 	public void Update() {
-		if (Moved && !Centered && transform.localPosition.sqrMagnitude <= thresholdSquared) {
+		if (!Centered && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
 			alreadyMoved = true;
 			float distToMove = Time.deltaTime * SpeedCap;
 			Vector2 position;
 			if (distToMove > transform.localPosition.magnitude) {
 				position = Vector2.zero;
-				Moved = false;
-				Threshold = BaseThreshold;
 			}
 			else {
 				position = transform.localPosition - transform.localPosition.normalized * distToMove;
@@ -64,7 +50,7 @@ public class Tile : MonoBehaviour
 			List<Tile> tilesToMove = new List<Tile>() { this };
 			if (CanMoveTo(position, tilesToMove, noDirection)) {
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, noDirection, Threshold);
+					t.Move(position, noDirection);
 				}
 			}
 		}
@@ -73,10 +59,7 @@ public class Tile : MonoBehaviour
 	public void Select(bool select) {
 		Selected = select;
 		if (Selected) {
-			PositionWhenSelected = transform.localPosition;
-		}
-		else {
-			Threshold = BaseThreshold;
+			PositionWhenSelected = transform.position;
 		}
 
 		if(Movable) {
@@ -89,7 +72,7 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public bool Move(Vector2 position, Direction d, float threshold) {
+	public bool Move(Vector2 position, Direction d) {
 		Vector2 diff = (position - (Vector2)transform.localPosition) * transform.lossyScale;
 
 		foreach(PlatformController c in childPlatforms) {
@@ -101,12 +84,8 @@ public class Tile : MonoBehaviour
 		}
 
 		float mag = position.magnitude;
-		if(mag > threshold) {
-			if (Selected && !Moved && mag > threshold * 2f) {
-				Threshold = Threshold * 2f;
-				Moved = true;
-			}
-			if (mag > 1 - threshold) {
+		if(mag > BaseThreshold) {
+			if (mag > 1 - BaseThreshold) {
 				// snap to next spot
 				Tilespace next = Space.GetNeighborInDirection(d);		
 				if(Space.Tile == this) {
@@ -122,11 +101,11 @@ public class Tile : MonoBehaviour
 	}
 
 	public bool CanMoveTo(Vector3 localPosition, List<Tile> tilesToMove, Direction d) {
-		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude && Vector2.Dot(localPosition, transform.localPosition) < 0;
+		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
 		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
 		if(validTilespace || goingTowardCenter) {
 			Vector3 dir = localPosition - transform.localPosition;
-			Vector2 size = Mathf.Abs(localPosition.x) > 0.0001f 
+			Vector2 size = Mathf.Abs(dir.x) > 0.0001f 
 				? new Vector2(dir.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
 				: new Vector2(transform.lossyScale.x * 0.90f, dir.magnitude * 0.5f);
 			Collider2D[] collisions = 
@@ -150,6 +129,9 @@ public class Tile : MonoBehaviour
 					tilesToMove.Add(collidedTile);
 					return collidedTile.CanMoveTo(localPosition, tilesToMove, d);
 				}
+				else {
+
+				}
 			}
 		}
 		return false;
@@ -157,7 +139,7 @@ public class Tile : MonoBehaviour
 
 	public bool TryMove(Vector2 mouseMoveSinceSelection, Vector2 delta) {
 		if(Movable) {
-			Vector2 position = mouseMoveSinceSelection + this.PositionWhenSelected;
+			Vector2 position = mouseMoveSinceSelection + (this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x;
 			bool centered = Centered;
 
 			if(!centered) {
@@ -166,17 +148,19 @@ public class Tile : MonoBehaviour
 
 			Direction direction = GetDirectionFromPosition(ref position);
 			
-			if(!centered && transform.localPosition.magnitude < Threshold) {
-				position = transform.localPosition.normalized * Mathf.Min(transform.localPosition.magnitude, Threshold - 0.001f);
+			if(!centered && transform.localPosition.magnitude < BaseThreshold) {
+				position = transform.localPosition.normalized * Mathf.Min(transform.localPosition.magnitude, BaseThreshold - 0.001f);
 			}
-			else if(centered && position.magnitude < Threshold) {
+			else if(centered && position.magnitude < BaseThreshold) {
 				return false;	
 			}
 
+			Debug.Log($"position: {position}, pDiff: {(this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x}, mouseMove: {mouseMoveSinceSelection}");
+
 			// limit movement
 			Vector3 move = (position - (Vector2)transform.localPosition);
-			if (centered && position.magnitude > Threshold) {
-				position = (Threshold + 0.001f) * position.normalized;
+			if (centered && position.magnitude > BaseThreshold) {
+				position = (BaseThreshold + 0.001f) * position.normalized;
 			}
 			else if (move.magnitude > SpeedCap * Time.deltaTime) {
 				position = transform.localPosition + move.normalized * SpeedCap * Time.deltaTime;
@@ -198,9 +182,9 @@ public class Tile : MonoBehaviour
 			bool moved = false;
 			List<Tile> tilesToMove = new List<Tile>();
 			if (CanMoveTo(position, tilesToMove, direction)) {
-				moved = this.Move(position, direction, Threshold);
+				moved = this.Move(position, direction);
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, direction, Threshold);
+					t.Move(position, direction);
 				}
 			}
 			return moved;

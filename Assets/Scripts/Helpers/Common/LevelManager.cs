@@ -38,8 +38,8 @@ public class LevelManager : ContextManager {
 				bool moved = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
 
 				if(moved) {
-					Vector3 move = (tileBeforeMove.transform.position - SelectedTile.Space.transform.position);
-					grabPoint -= move;
+					Vector3 move = ((Vector2)SelectedTile.transform.position - SelectedTile.PositionWhenSelected);
+					grabPoint += move;
 					if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
 						grabPoint.x = p.MousePositionWorldSpace.x;
 					}
