@@ -23,7 +23,6 @@ public class Tile : MonoBehaviour
 	private SpriteRenderer spriteRenderer;
 
 	private PlatformController[] childPlatforms;
-	bool alreadyMoved = false;
 
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
@@ -36,7 +35,6 @@ public class Tile : MonoBehaviour
 
 	public void Update() {
 		if (!Centered && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
-			alreadyMoved = true;
 			float distToMove = Time.deltaTime * SpeedCap;
 			Vector2 position;
 			if (distToMove > transform.localPosition.magnitude) {
@@ -73,7 +71,7 @@ public class Tile : MonoBehaviour
 	}
 
 	public bool Move(Vector2 position, Direction d) {
-		Vector2 diff = (position - (Vector2)transform.localPosition) * transform.lossyScale;
+		Vector2 diff = (position - (Vector2)transform.localPosition) * transform.lossyScale.x;
 
 		foreach(PlatformController c in childPlatforms) {
 			c.Premove(ref diff);
@@ -155,8 +153,6 @@ public class Tile : MonoBehaviour
 				return false;	
 			}
 
-			Debug.Log($"position: {position}, pDiff: {(this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x}, mouseMove: {mouseMoveSinceSelection}");
-
 			// limit movement
 			Vector3 move = (position - (Vector2)transform.localPosition);
 			if (centered && position.magnitude > BaseThreshold) {
@@ -169,14 +165,6 @@ public class Tile : MonoBehaviour
 			float mag = position.magnitude;
 			if(position.magnitude >= 1) {
 				position = position.normalized;
-			}
-			
-			if(position.x > transform.localPosition.x) {
-				Debug.Log("What");
-			}
-			if (alreadyMoved) {
-				Debug.Log($"position: {transform.localPosition.x}, moving to: {position.x}"); 
-				alreadyMoved = false;
 			}
 
 			bool moved = false;
