@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-	public const float BaseThreshold = 0.15f;
-	private const float BaseThresholdSquared = 0.0225f;
+	public const float BaseThreshold = 0.10f;
+	private const float BaseThresholdSquared = BaseThreshold * BaseThreshold;
 
 	private const float SpeedCap = 4f;
 
