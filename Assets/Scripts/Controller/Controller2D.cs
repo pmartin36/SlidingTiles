@@ -20,7 +20,7 @@ public class Controller2D : RaycastController {
 		extraMove = diff;
 	}
 
-	public void Move(Vector2 moveAmount, bool standingOnPlatform = false, bool fromEvent = false) {
+	public Vector2 Move(Vector2 moveAmount, bool standingOnPlatform = false, bool fromEvent = false) {
 		moveAmount += extraMove;
 		extraMove = Vector2.zero;
 		UpdateRaycastOrigins ();
@@ -52,6 +52,8 @@ public class Controller2D : RaycastController {
 			Debug.Log($"Old: {collisions.moveAmountOld}, Actual: {moveAmount}"); 
 			collisions = old;
 		}
+
+		return moveAmount;
 	}
 
 	void HorizontalCollisions(ref Vector2 moveAmount) {

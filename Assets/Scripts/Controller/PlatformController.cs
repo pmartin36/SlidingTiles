@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PlatformController : RaycastController {
+public class PlatformController : RaycastController, IMoveableCollider {
 
 	public LayerMask passengerMask;
 
@@ -14,14 +14,13 @@ public class PlatformController : RaycastController {
 	}
 
 	void Update () {
-
+		
 	}
 
 	public void Premove(ref Vector2 velocity) {
 		UpdateRaycastOrigins();
 		CalculatePassengerMovement(velocity);
 		MovePassengers(true);
-		
 	}
 
 	public void Postmove(ref Vector2 velocity) {
@@ -38,6 +37,29 @@ public class PlatformController : RaycastController {
 				passengerDictionary[passenger.transform].Move(passenger.velocity, passenger.standingOnPlatform);
 			}
 		}
+	}
+
+	public Vector2 CalculateValidMoveAmount(Vector2 original) {
+		Vector2 amt = original;
+		RaycastHit2D[] hits = Physics2D.BoxCastAll(
+			transform.position,
+			collider.size * transform.lossyScale,
+			transform.eulerAngles.z,
+			original.normalized,
+			original.magnitude,
+			passengerMask
+		);
+
+		foreach(RaycastHit2D hit in hits) {
+			IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
+			Vector2 moveAmount = pass.CalculateValidMoveAmount(amt - original.normalized * hit.distance);
+			moveAmount += original.normalized * hit.distance;
+			if(moveAmount.sqrMagnitude < amt.sqrMagnitude) {
+				amt = moveAmount;
+			}
+		}
+
+		return amt;
 	}
 
 	void CalculatePassengerMovement(Vector3 velocity) {

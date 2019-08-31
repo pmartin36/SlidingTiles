@@ -2,7 +2,7 @@
 using System.Collections;
 
 [RequireComponent (typeof (Controller2D))]
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, IMoveableCollider {
 
 	public float maxJumpHeight = 4;
 	public float minJumpHeight = 1;
@@ -127,9 +127,49 @@ public class Player : MonoBehaviour {
 
 	}
 
+	public void SetVelocityFromBump(Vector2 bumpVelocity) {
+		float absBump = Mathf.Abs(bumpVelocity.x);
+		float absV = Mathf.Abs(velocity.x);
+		if( absBump > absV ) {
+			if(absV > absBump) {
+				velocity.x = Mathf.Sign(velocity.x) * (absBump + absV);
+			}
+			else {
+				velocity.x = Mathf.Sign(bumpVelocity.x) * (absBump + absV);
+			}		
+		}
+		velocity.x = bumpVelocity.x
+	}
+
 	void CalculateVelocity() {
 		float targetVelocityX = moveDirection * moveSpeed;
 		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
 		velocity.y += gravity * Time.deltaTime;
+	}
+
+	public Vector2 CalculateValidMoveAmount(Vector2 original) {
+		Vector2 amt = original;
+		RaycastHit2D[] hits = Physics2D.BoxCastAll(
+			transform.position,
+			controller.collider.size * transform.lossyScale,
+			transform.eulerAngles.z,
+			original.normalized,
+			original.magnitude,
+			controller.collisionMask
+		);
+
+		foreach (RaycastHit2D hit in hits) {
+			// TODO: May have more than just platforms in the future
+			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
+			if(collider != null) {
+				Vector2 moveAmount = collider.CalculateValidMoveAmount(amt - original.normalized * hit.distance);
+				moveAmount += original.normalized * hit.distance;
+				if (moveAmount.sqrMagnitude < amt.sqrMagnitude) {
+					amt = moveAmount;
+				}
+			}
+		}
+
+		return amt;
 	}
 }
