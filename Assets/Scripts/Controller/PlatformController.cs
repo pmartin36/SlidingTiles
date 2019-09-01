@@ -39,8 +39,12 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		}
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original) {
-		Vector2 amt = original;
+	public Vector2 CalculateValidMoveAmount(Vector2 original, HashSet<IMoveableCollider> checkedColliders) {
+        if (checkedColliders.Contains(this)) {
+            return original;
+        }
+        checkedColliders.Add(this);
+        Vector2 amt = original;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			transform.position,
 			collider.size * transform.lossyScale,
@@ -52,7 +56,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 		foreach(RaycastHit2D hit in hits) {
 			IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
-			Vector2 moveAmount = pass.CalculateValidMoveAmount(amt - original.normalized * hit.distance);
+			Vector2 moveAmount = pass.CalculateValidMoveAmount(amt - original.normalized * hit.distance, checkedColliders);
 			moveAmount += original.normalized * hit.distance;
 			if(moveAmount.sqrMagnitude < amt.sqrMagnitude) {
 				amt = moveAmount;

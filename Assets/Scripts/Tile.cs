@@ -98,7 +98,7 @@ public class Tile : MonoBehaviour
 		return false;
 	}
 
-	public bool CanMoveTo(Vector3 localPosition, List<Tile> tilesToMove, Direction d) {
+	public bool CanMoveTo(Vector3 localPosition, List<Tile> tilesToMove, Direction d, HashSet<IMoveableCollider> checkedColliders) {
 		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
 		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
 		if(validTilespace || goingTowardCenter) {
@@ -114,6 +114,15 @@ public class Tile : MonoBehaviour
 					tileMask)
 					.Where(r => r.gameObject != this.gameObject).ToArray();
 
+            Vector2 actualMoveAmount = dir * (Vector2)transform.lossyScale;
+            foreach(IMoveableCollider c in childPlatforms)
+            {
+                Vector2 childMoveAmount = c.CalculateValidMoveAmount(actualMoveAmount, checkedColliders);
+                if(childMoveAmount.sqrMagnitude < actualMoveAmount.sqrMagnitude) {
+                    actualMoveAmount = childMoveAmount;
+                }
+            }
+
 			if(collisions.Length == 0) {
 				return true;
 			}
@@ -125,7 +134,7 @@ public class Tile : MonoBehaviour
 				if (collidedTile.Movable && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
-					return collidedTile.CanMoveTo(localPosition, tilesToMove, d);
+					return collidedTile.CanMoveTo(localPosition, tilesToMove, d, checkedColliders);
 				}
 				else {
 
@@ -169,7 +178,7 @@ public class Tile : MonoBehaviour
 
 			bool moved = false;
 			List<Tile> tilesToMove = new List<Tile>();
-			if (CanMoveTo(position, tilesToMove, direction)) {
+			if (CanMoveTo(position, tilesToMove, direction, new HashSet<IMoveableCollider>())) {
 				moved = this.Move(position, direction);
 				foreach (Tile t in tilesToMove) {
 					t.Move(position, direction);

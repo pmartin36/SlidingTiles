@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, IMoveableCollider {
@@ -138,7 +139,7 @@ public class Player : MonoBehaviour, IMoveableCollider {
 				velocity.x = Mathf.Sign(bumpVelocity.x) * (absBump + absV);
 			}		
 		}
-		velocity.x = bumpVelocity.x
+        velocity.x = bumpVelocity.x;
 	}
 
 	void CalculateVelocity() {
@@ -147,7 +148,11 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		velocity.y += gravity * Time.deltaTime;
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original) {
+	public Vector2 CalculateValidMoveAmount(Vector2 original, HashSet<IMoveableCollider> checkedColliders) {
+        if(checkedColliders.Contains(this)) {
+            return original;
+        }
+        checkedColliders.Add(this);
 		Vector2 amt = original;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			transform.position,
@@ -162,7 +167,7 @@ public class Player : MonoBehaviour, IMoveableCollider {
 			// TODO: May have more than just platforms in the future
 			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
 			if(collider != null) {
-				Vector2 moveAmount = collider.CalculateValidMoveAmount(amt - original.normalized * hit.distance);
+				Vector2 moveAmount = collider.CalculateValidMoveAmount(amt - original.normalized * hit.distance, checkedColliders);
 				moveAmount += original.normalized * hit.distance;
 				if (moveAmount.sqrMagnitude < amt.sqrMagnitude) {
 					amt = moveAmount;
