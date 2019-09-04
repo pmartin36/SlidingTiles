@@ -5,12 +5,16 @@ using System.Collections.Generic;
 public class PlatformController : RaycastController, IMoveableCollider {
 
 	public LayerMask passengerMask;
+    public Tile Parent { get; private set; }
+    private LayerMask moveLayerMask;
 
 	List<PassengerMovement> passengerMovement;
 	Dictionary<Transform,Controller2D> passengerDictionary = new Dictionary<Transform, Controller2D>();
 	
 	public override void Start () {
 		base.Start ();
+        Parent = transform.parent.GetComponent<Tile>();
+        moveLayerMask = passengerMask | 1 << LayerMask.NameToLayer("Wall");
 	}
 
 	void Update () {
@@ -39,31 +43,47 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		}
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original, HashSet<IMoveableCollider> checkedColliders) {
-        if (checkedColliders.Contains(this)) {
+	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta) {
+        if (tileMoveDelta.ContainsKey(this.transform)) {
             return original;
         }
-        checkedColliders.Add(this);
-        Vector2 amt = original;
+        else if(tileMoveDelta.ContainsKey(this.Parent.transform)) {
+            currentDelta = tileMoveDelta[this.Parent.transform];
+        }
+        else {
+            tileMoveDelta.Add(this.Parent.transform, currentDelta);
+            tileMoveDelta.Add(this.transform, currentDelta);
+        }
+
+        Vector2 largestValidMoveAmount = original;
+        Vector2 norm = original.normalized;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
-			transform.position,
+			(Vector2)transform.position + norm * currentDelta,
 			collider.size * transform.lossyScale,
 			transform.eulerAngles.z,
 			original.normalized,
 			original.magnitude,
-			passengerMask
+			moveLayerMask
 		);
 
 		foreach(RaycastHit2D hit in hits) {
-			IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
-			Vector2 moveAmount = pass.CalculateValidMoveAmount(amt - original.normalized * hit.distance, checkedColliders);
-			moveAmount += original.normalized * hit.distance;
-			if(moveAmount.sqrMagnitude < amt.sqrMagnitude) {
-				amt = moveAmount;
-			}
+            float tempDelta = currentDelta;
+            IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
+            if (pass != null && (pass.Parent == null || pass.Parent.Movable)) {
+                Vector2 moveAmount = pass.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance), tileMoveDelta, currentDelta);
+                moveAmount += original.normalized * hit.distance;
+                if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
+                    largestValidMoveAmount = moveAmount;
+                }
+            }
+            else {
+                if (hit.distance * hit.distance < largestValidMoveAmount.sqrMagnitude) {
+                    largestValidMoveAmount = hit.distance * original.normalized;
+                }
+            }
 		}
 
-		return amt;
+		return largestValidMoveAmount;
 	}
 
 	void CalculatePassengerMovement(Vector3 velocity) {

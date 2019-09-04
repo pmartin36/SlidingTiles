@@ -5,7 +5,9 @@ using System.Collections.Generic;
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, IMoveableCollider {
 
-	public float maxJumpHeight = 4;
+    public Tile Parent { get; private set; } = null;
+
+    public float maxJumpHeight = 4;
 	public float minJumpHeight = 1;
 	public float timeToJumpApex = .4f;
 
@@ -148,14 +150,11 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		velocity.y += gravity * Time.deltaTime;
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original, HashSet<IMoveableCollider> checkedColliders) {
-        if(checkedColliders.Contains(this)) {
-            return original;
-        }
-        checkedColliders.Add(this);
-		Vector2 amt = original;
-		RaycastHit2D[] hits = Physics2D.BoxCastAll(
-			transform.position,
+	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta) {
+		Vector2 largestValidMoveAmount = original;
+        Vector2 norm = original.normalized;
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(
+            (Vector2)transform.position + norm * currentDelta,
 			controller.collider.size * transform.lossyScale,
 			transform.eulerAngles.z,
 			original.normalized,
@@ -163,18 +162,26 @@ public class Player : MonoBehaviour, IMoveableCollider {
 			controller.collisionMask
 		);
 
-		foreach (RaycastHit2D hit in hits) {
+        float size = (controller.collider.size * transform.lossyScale * original.normalized).magnitude;
+        currentDelta += size;
+
+        foreach (RaycastHit2D hit in hits) {
 			// TODO: May have more than just platforms in the future
 			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
-			if(collider != null) {
-				Vector2 moveAmount = collider.CalculateValidMoveAmount(amt - original.normalized * hit.distance, checkedColliders);
-				moveAmount += original.normalized * hit.distance;
-				if (moveAmount.sqrMagnitude < amt.sqrMagnitude) {
-					amt = moveAmount;
+			if(collider != null && (collider.Parent == null || collider.Parent.Movable)) {
+				Vector2 moveAmount = collider.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance), tileMoveDelta, currentDelta);
+				moveAmount += norm * (hit.distance);
+				if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
+					largestValidMoveAmount = moveAmount;
 				}
 			}
+            else {
+                if (hit.distance * hit.distance < largestValidMoveAmount.sqrMagnitude) {
+                    largestValidMoveAmount = hit.distance * original.normalized;
+                }
+            }
 		}
 
-		return amt;
+		return largestValidMoveAmount;
 	}
 }
