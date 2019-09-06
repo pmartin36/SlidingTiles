@@ -59,10 +59,10 @@ public class PlatformController : RaycastController, IMoveableCollider {
         Vector2 norm = original.normalized;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			(Vector2)transform.position + norm * currentDelta,
-			collider.size * transform.lossyScale,
+			(collider.size * transform.lossyScale) - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			original.normalized,
-			original.magnitude,
+			original.magnitude + skinWidth,
 			moveLayerMask
 		);
 
@@ -70,15 +70,15 @@ public class PlatformController : RaycastController, IMoveableCollider {
             float tempDelta = currentDelta;
             IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
             if (pass != null && (pass.Parent == null || pass.Parent.Movable)) {
-                Vector2 moveAmount = pass.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance), tileMoveDelta, currentDelta);
-                moveAmount += original.normalized * hit.distance;
+                Vector2 moveAmount = pass.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), tileMoveDelta, currentDelta);
+                moveAmount += original.normalized * (hit.distance - skinWidth);
                 if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
                     largestValidMoveAmount = moveAmount;
                 }
             }
             else {
                 if (hit.distance * hit.distance < largestValidMoveAmount.sqrMagnitude) {
-                    largestValidMoveAmount = hit.distance * original.normalized;
+                    largestValidMoveAmount = (hit.distance - skinWidth) * original.normalized;
                 }
             }
 		}

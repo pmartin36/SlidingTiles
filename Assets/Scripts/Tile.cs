@@ -47,7 +47,7 @@ public class Tile : MonoBehaviour
 			var noDirection = Direction.None;
 			List<Tile> tilesToMove = new List<Tile>() { this };
             Dictionary<Transform, float> tileMoveDelta = new Dictionary<Transform, float>();
-            if (CanMoveTo(position, tilesToMove, noDirection, tileMoveDelta)) {
+            if (CanMoveTo(ref position, tilesToMove, noDirection, tileMoveDelta)) {
 				foreach (Tile t in tilesToMove) {
 					t.Move(position, noDirection);
 				}
@@ -99,11 +99,11 @@ public class Tile : MonoBehaviour
 		return false;
 	}
 
-	public bool CanMoveTo(Vector3 localPosition, List<Tile> tilesToMove, Direction d, Dictionary<Transform, float> tileMoveDelta) {
+	public bool CanMoveTo(ref Vector2 localPosition, List<Tile> tilesToMove, Direction d, Dictionary<Transform, float> tileMoveDelta) {
 		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
 		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
 		if(validTilespace || goingTowardCenter) {
-			Vector3 dir = localPosition - transform.localPosition;
+			Vector3 dir = localPosition - (Vector2)transform.localPosition;
 			Vector2 size = Mathf.Abs(dir.x) > 0.0001f 
 				? new Vector2(dir.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
 				: new Vector2(transform.lossyScale.x * 0.90f, dir.magnitude * 0.5f);
@@ -123,6 +123,7 @@ public class Tile : MonoBehaviour
                     actualMoveAmount = childMoveAmount;
                 }
             }
+			localPosition = (Vector2)transform.localPosition + (actualMoveAmount / transform.lossyScale);
 
 			if(collisions.Length == 0) {
 				return true;
@@ -135,7 +136,7 @@ public class Tile : MonoBehaviour
 				if (collidedTile.Movable && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
-					return collidedTile.CanMoveTo(localPosition, tilesToMove, d, tileMoveDelta);
+					return collidedTile.CanMoveTo(ref localPosition, tilesToMove, d, tileMoveDelta);
 				}
 				else {
 
@@ -180,7 +181,7 @@ public class Tile : MonoBehaviour
 			bool moved = false;
 			List<Tile> tilesToMove = new List<Tile>();
             Dictionary<Transform, float> tileMoveDelta = new Dictionary<Transform, float>();
-			if (CanMoveTo(position, tilesToMove, direction, tileMoveDelta)) {
+			if (CanMoveTo(ref position, tilesToMove, direction, tileMoveDelta)) {
 				moved = this.Move(position, direction);
 				foreach (Tile t in tilesToMove) {
 					t.Move(position, direction);

@@ -148,17 +148,19 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		float targetVelocityX = moveDirection * moveSpeed;
 		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
 		velocity.y += gravity * Time.deltaTime;
+		velocity = Vector2.zero;
 	}
 
 	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta) {
 		Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
+		float skinWidth = 0.015f;
         RaycastHit2D[] hits = Physics2D.BoxCastAll(
             (Vector2)transform.position + norm * currentDelta,
-			controller.collider.size * transform.lossyScale,
+			controller.collider.size * transform.lossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			original.normalized,
-			original.magnitude,
+			original.magnitude + skinWidth,
 			controller.collisionMask
 		);
 
@@ -169,15 +171,15 @@ public class Player : MonoBehaviour, IMoveableCollider {
 			// TODO: May have more than just platforms in the future
 			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
 			if(collider != null && (collider.Parent == null || collider.Parent.Movable)) {
-				Vector2 moveAmount = collider.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance), tileMoveDelta, currentDelta);
-				moveAmount += norm * (hit.distance);
+				Vector2 moveAmount = collider.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), tileMoveDelta, currentDelta);
+				moveAmount += norm * (hit.distance - skinWidth);
 				if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
 					largestValidMoveAmount = moveAmount;
 				}
 			}
             else {
                 if (hit.distance * hit.distance < largestValidMoveAmount.sqrMagnitude) {
-                    largestValidMoveAmount = hit.distance * original.normalized;
+                    largestValidMoveAmount = (hit.distance - skinWidth) * original.normalized;
                 }
             }
 		}
