@@ -36,20 +36,20 @@ public class Tile : MonoBehaviour
 	public void Update() {
 		if (!Centered && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
 			float distToMove = Time.deltaTime * SpeedCap;
-			Vector2 position;
+			Vector3 moveAmount;
 			if (distToMove > transform.localPosition.magnitude) {
-				position = Vector2.zero;
+				moveAmount = -transform.localPosition;
 			}
 			else {
-				position = transform.localPosition - transform.localPosition.normalized * distToMove;
+				moveAmount = -transform.localPosition.normalized * distToMove;
 			}
 
 			var noDirection = Direction.None;
-			List<Tile> tilesToMove = new List<Tile>() { this };
+			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
             Dictionary<Transform, float> tileMoveDelta = new Dictionary<Transform, float>();
-            if (CanMoveTo(ref position, tilesToMove, noDirection, tileMoveDelta)) {
+            if (CanMoveTo(ref moveAmount, tilesToMove, noDirection, tileMoveDelta)) {
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, noDirection);
+					t.Move(moveAmount, noDirection);
 				}
 			}
 		}
@@ -71,18 +71,18 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public bool Move(Vector2 position, Direction d) {
-		Vector2 diff = (position - (Vector2)transform.localPosition) * transform.lossyScale.x;
+	public bool Move(Vector3 moveAmount, Direction d) {
+		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 
 		foreach(PlatformController c in childPlatforms) {
-			c.Premove(ref diff);
+			c.Premove(ref globalMoveAmount);
 		}
-		transform.localPosition = position;
+		transform.localPosition += moveAmount;
 		foreach (PlatformController c in childPlatforms) {
-			c.Postmove(ref diff);
+			c.Postmove(ref globalMoveAmount);
 		}
 
-		float mag = position.magnitude;
+		float mag = transform.localPosition.magnitude;
 		if(mag > BaseThreshold) {
 			if (mag > 1 - BaseThreshold) {
 				// snap to next spot
@@ -99,47 +99,56 @@ public class Tile : MonoBehaviour
 		return false;
 	}
 
-	public bool CanMoveTo(ref Vector2 localPosition, List<Tile> tilesToMove, Direction d, Dictionary<Transform, float> tileMoveDelta) {
-		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
+	public bool CanMoveTo(ref Vector3 moveAmount, HashSet<Tile> tilesToMove, Direction d, Dictionary<Transform, float> tileMoveDelta) {
+		bool goingTowardCenter = (transform.localPosition + moveAmount).sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
 		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
 		if(validTilespace || goingTowardCenter) {
-			Vector3 dir = localPosition - (Vector2)transform.localPosition;
-			Vector2 size = Mathf.Abs(dir.x) > 0.0001f 
-				? new Vector2(dir.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
-				: new Vector2(transform.lossyScale.x * 0.90f, dir.magnitude * 0.5f);
+			Vector3 DebugOriginalMoveAmount = new Vector2(moveAmount.x, moveAmount.y);
+			Vector2 size = Mathf.Abs(moveAmount.x) > 0.0001f 
+				? new Vector2(moveAmount.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
+				: new Vector2(transform.lossyScale.x * 0.90f, moveAmount.magnitude * 0.5f);
 			Collider2D[] collisions = 
 				Physics2D.OverlapBoxAll(
-					this.transform.position + dir.normalized * (transform.lossyScale.x + dir.magnitude + 0.001f) * 0.5f,
+					this.transform.position + moveAmount.normalized * (transform.lossyScale.x + moveAmount.magnitude + 0.001f) * 0.5f,
 					size, 
 					0,
 					tileMask)
 					.Where(r => r.gameObject != this.gameObject).ToArray();
 
-            Vector2 actualMoveAmount = dir * (Vector2)transform.lossyScale;
+            Vector2 actualMoveAmount = moveAmount * transform.lossyScale.x;
+			Tile extraTileToMove = this;
             foreach(IMoveableCollider c in childPlatforms)
             {
-                Vector2 childMoveAmount = c.CalculateValidMoveAmount(actualMoveAmount, tileMoveDelta, 0);
+                Vector2 childMoveAmount = c.CalculateValidMoveAmount(actualMoveAmount, tileMoveDelta, 0, ref extraTileToMove);
                 if(childMoveAmount.sqrMagnitude < actualMoveAmount.sqrMagnitude) {
-                    actualMoveAmount = childMoveAmount;
+                    actualMoveAmount = childMoveAmount;			
                 }
             }
-			localPosition = (Vector2)transform.localPosition + (actualMoveAmount / transform.lossyScale);
+			moveAmount = actualMoveAmount / transform.lossyScale.x;
 
-			if(collisions.Length == 0) {
+			if (collisions.Length == 0 && extraTileToMove == this) {
 				return true;
 			}
 			else if (collisions.Length == 1) {
-				Debug.DrawRay(this.transform.position, transform.lossyScale * 0.5f + dir, Color.red);
+				Debug.DrawRay(this.transform.position, transform.lossyScale * 0.5f + moveAmount, Color.red);
 			
 				Tile collidedTile = collisions[0].GetComponent<Tile>();
-				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(dir.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
+				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
 				if (collidedTile.Movable && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
-					return collidedTile.CanMoveTo(ref localPosition, tilesToMove, d, tileMoveDelta);
+					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d, tileMoveDelta);
 				}
 				else {
 
+				}
+			}
+			else if(extraTileToMove != this) {
+				bool canMoveInDirection = extraTileToMove.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, extraTileToMove.transform.localPosition.normalized)) > 0.1f;
+				if (extraTileToMove.Movable && canMoveInDirection) {
+					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
+					tilesToMove.Add(extraTileToMove);
+					return extraTileToMove.CanMoveTo(ref moveAmount, tilesToMove, d, tileMoveDelta);
 				}
 			}
 		}
@@ -179,12 +188,17 @@ public class Tile : MonoBehaviour
 			}
 
 			bool moved = false;
-			List<Tile> tilesToMove = new List<Tile>();
+			float scale = transform.lossyScale.x;
+			Vector3 moveAmount = position - (Vector2)transform.localPosition;
+
+			HashSet<Tile> tilesToMove = new HashSet<Tile>();
             Dictionary<Transform, float> tileMoveDelta = new Dictionary<Transform, float>();
-			if (CanMoveTo(ref position, tilesToMove, direction, tileMoveDelta)) {
-				moved = this.Move(position, direction);
+						
+			if (CanMoveTo(ref moveAmount, tilesToMove, direction, tileMoveDelta)) {
+				moved = this.Move(moveAmount, direction);
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, direction);
+					var tMoveAmount = moveAmount;
+					t.Move(tMoveAmount, direction);
 				}
 			}
 			return moved;

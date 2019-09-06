@@ -151,7 +151,7 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		velocity = Vector2.zero;
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta) {
+	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta, ref Tile extraTileToMove) {
 		Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
 		float skinWidth = 0.015f;
@@ -171,7 +171,7 @@ public class Player : MonoBehaviour, IMoveableCollider {
 			// TODO: May have more than just platforms in the future
 			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
 			if(collider != null && (collider.Parent == null || collider.Parent.Movable)) {
-				Vector2 moveAmount = collider.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), tileMoveDelta, currentDelta);
+				Vector2 moveAmount = collider.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), tileMoveDelta, currentDelta, ref extraTileToMove);
 				moveAmount += norm * (hit.distance - skinWidth);
 				if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
 					largestValidMoveAmount = moveAmount;

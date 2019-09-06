@@ -43,7 +43,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		}
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta) {
+	public Vector2 CalculateValidMoveAmount(Vector2 original, Dictionary<Transform, float> tileMoveDelta, float currentDelta, ref Tile extraTileToMove) {
         if (tileMoveDelta.ContainsKey(this.transform)) {
             return original;
         }
@@ -53,7 +53,10 @@ public class PlatformController : RaycastController, IMoveableCollider {
         else {
             tileMoveDelta.Add(this.Parent.transform, currentDelta);
             tileMoveDelta.Add(this.transform, currentDelta);
-        }
+			if(extraTileToMove != this.Parent) {
+				extraTileToMove = this.Parent;
+			}
+		}
 
         Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
@@ -70,7 +73,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
             float tempDelta = currentDelta;
             IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
             if (pass != null && (pass.Parent == null || pass.Parent.Movable)) {
-                Vector2 moveAmount = pass.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), tileMoveDelta, currentDelta);
+                Vector2 moveAmount = pass.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), tileMoveDelta, currentDelta, ref extraTileToMove);
                 moveAmount += original.normalized * (hit.distance - skinWidth);
                 if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
                     largestValidMoveAmount = moveAmount;
