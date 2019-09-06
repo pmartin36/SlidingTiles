@@ -138,7 +138,7 @@ public class Player : MonoBehaviour, IMoveableCollider {
 				velocity.x = Mathf.Sign(bumpVelocity.x) * (absBump + absV);
 			}		
 		}
-		velocity.x = bumpVelocity.x
+		velocity.x = bumpVelocity.x;
 	}
 
 	void CalculateVelocity() {
