@@ -46,10 +46,15 @@ public class Tile : MonoBehaviour
 
 			var noDirection = Direction.None;
 			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
-            Dictionary<Transform, float> tileMoveDelta = new Dictionary<Transform, float>();
-            if (CanMoveTo(ref moveAmount, tilesToMove, noDirection, tileMoveDelta)) {
+            if (CanMoveTo(ref moveAmount, tilesToMove, noDirection)) {
+				foreach (Tile t in tilesToMove) {
+					t.Premove(moveAmount);
+				}
 				foreach (Tile t in tilesToMove) {
 					t.Move(moveAmount, noDirection);
+				}
+				foreach (Tile t in tilesToMove) {
+					t.Postmove(moveAmount);
 				}
 			}
 		}
@@ -71,17 +76,23 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public bool Move(Vector3 moveAmount, Direction d) {
+	public void Premove(Vector3 moveAmount) {
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
-
-		foreach(PlatformController c in childPlatforms) {
+		foreach (PlatformController c in childPlatforms) {
 			c.Premove(ref globalMoveAmount);
 		}
-		transform.localPosition += moveAmount;
+	}
+
+	public void Postmove(Vector3 moveAmount) {
+		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 		foreach (PlatformController c in childPlatforms) {
 			c.Postmove(ref globalMoveAmount);
 		}
+	}
 
+	public bool Move(Vector3 moveAmount, Direction d) {
+		transform.localPosition += moveAmount;
+		
 		float mag = transform.localPosition.magnitude;
 		if(mag > BaseThreshold) {
 			if (mag > 1 - BaseThreshold) {
@@ -99,7 +110,7 @@ public class Tile : MonoBehaviour
 		return false;
 	}
 
-	public bool CanMoveTo(ref Vector3 moveAmount, HashSet<Tile> tilesToMove, Direction d, Dictionary<Transform, float> tileMoveDelta) {
+	public bool CanMoveTo(ref Vector3 moveAmount, HashSet<Tile> tilesToMove, Direction d) {
 		bool goingTowardCenter = (transform.localPosition + moveAmount).sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
 		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
 		if(validTilespace || goingTowardCenter) {
@@ -119,7 +130,7 @@ public class Tile : MonoBehaviour
 			Tile extraTileToMove = this;
             foreach(IMoveableCollider c in childPlatforms)
             {
-                Vector2 childMoveAmount = c.CalculateValidMoveAmount(actualMoveAmount, tileMoveDelta, 0, ref extraTileToMove);
+                Vector2 childMoveAmount = c.CalculateValidMoveAmount(actualMoveAmount, ref extraTileToMove);
                 if(childMoveAmount.sqrMagnitude < actualMoveAmount.sqrMagnitude) {
                     actualMoveAmount = childMoveAmount;			
                 }
@@ -137,7 +148,7 @@ public class Tile : MonoBehaviour
 				if (collidedTile.Movable && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
-					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d, tileMoveDelta);
+					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d);
 				}
 				else {
 
@@ -148,7 +159,7 @@ public class Tile : MonoBehaviour
 				if (extraTileToMove.Movable && canMoveInDirection) {
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(extraTileToMove);
-					return extraTileToMove.CanMoveTo(ref moveAmount, tilesToMove, d, tileMoveDelta);
+					return extraTileToMove.CanMoveTo(ref moveAmount, tilesToMove, d);
 				}
 			}
 		}
@@ -192,13 +203,29 @@ public class Tile : MonoBehaviour
 			Vector3 moveAmount = position - (Vector2)transform.localPosition;
 
 			HashSet<Tile> tilesToMove = new HashSet<Tile>();
-            Dictionary<Transform, float> tileMoveDelta = new Dictionary<Transform, float>();
 						
-			if (CanMoveTo(ref moveAmount, tilesToMove, direction, tileMoveDelta)) {
+			if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
+				// have to do it in three separate steps
+				// if a player is being pushed by a platform into another platform
+				// the platform positions all need to update, then the player can assess how far it can move
+
+				// premove
+				this.Premove(moveAmount);
+				foreach (Tile t in tilesToMove) {
+					t.Premove(moveAmount);
+				}
+
+				// move
 				moved = this.Move(moveAmount, direction);
 				foreach (Tile t in tilesToMove) {
 					var tMoveAmount = moveAmount;
 					t.Move(tMoveAmount, direction);
+				}
+
+				// post move
+				this.Postmove(moveAmount);
+				foreach (Tile t in tilesToMove) {
+					t.Postmove(moveAmount);
 				}
 			}
 			return moved;
