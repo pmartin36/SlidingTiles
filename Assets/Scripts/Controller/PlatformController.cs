@@ -5,12 +5,14 @@ using System.Collections.Generic;
 public class PlatformController : RaycastController, IMoveableCollider {
 
 	public LayerMask passengerMask;
+    public Tile Parent { get; private set; }
 
 	List<PassengerMovement> passengerMovement;
 	Dictionary<Transform,Controller2D> passengerDictionary = new Dictionary<Transform, Controller2D>();
 	
 	public override void Start () {
 		base.Start ();
+        Parent = transform.parent.GetComponent<Tile>();
 	}
 
 	void Update () {
@@ -29,6 +31,11 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 	void MovePassengers(bool beforeMovePlatform) {
 		foreach (PassengerMovement passenger in passengerMovement) {
+			LayerMask layer = this.gameObject.layer;
+			if(passenger.IgnoreSource) {
+				this.gameObject.layer = 0;
+			}
+
 			if (!passengerDictionary.ContainsKey(passenger.transform)) {
 				passengerDictionary.Add(passenger.transform,passenger.transform.GetComponent<Controller2D>());
 			}
@@ -36,30 +43,29 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			if (passenger.moveBeforePlatform == beforeMovePlatform) {
 				passengerDictionary[passenger.transform].Move(passenger.velocity, passenger.standingOnPlatform);
 			}
+
+			this.gameObject.layer = layer;
 		}
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original) {
-		Vector2 amt = original;
+	public void CheckAndRemoveSquishables(Vector2 original) {
+        Vector2 largestValidMoveAmount = original;
+        Vector2 norm = original.normalized;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			transform.position,
-			collider.size * transform.lossyScale,
+			(collider.size * transform.lossyScale) - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			original.normalized,
-			original.magnitude,
+			original.magnitude + skinWidth,
 			passengerMask
 		);
 
 		foreach(RaycastHit2D hit in hits) {
-			IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
-			Vector2 moveAmount = pass.CalculateValidMoveAmount(amt - original.normalized * hit.distance);
-			moveAmount += original.normalized * hit.distance;
-			if(moveAmount.sqrMagnitude < amt.sqrMagnitude) {
-				amt = moveAmount;
+            ISquishable pass = hit.collider.GetComponent<ISquishable>();
+            if (pass != null) {
+				pass.CheckSquishedAndResolve(original);
 			}
 		}
-
-		return amt;
 	}
 
 	void CalculatePassengerMovement(Vector3 velocity) {
@@ -84,7 +90,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 						float pushX = (directionY == 1)?velocity.x:0;
 						float pushY = velocity.y - (hit.distance - skinWidth) * directionY;
 
-						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), directionY == 1, true));
+						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), directionY == 1, false, true));
 					}
 				}
 			}
@@ -105,7 +111,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 						float pushX = velocity.x - (hit.distance - skinWidth) * directionX;
 						float pushY = -skinWidth;
 						
-						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), false, true));
+						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), false, false, true));
 					}
 				}
 			}
@@ -126,7 +132,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 						float pushX = velocity.x;
 						float pushY = velocity.y;
 						
-						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), true, false));
+						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), true, false, false));
 					}
 				}
 			}
@@ -138,12 +144,14 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		public Vector3 velocity;
 		public bool standingOnPlatform;
 		public bool moveBeforePlatform;
+		public bool IgnoreSource { get; set; }
 
-		public PassengerMovement(Transform _transform, Vector3 _velocity, bool _standingOnPlatform, bool _moveBeforePlatform) {
+		public PassengerMovement(Transform _transform, Vector3 _velocity, bool _standingOnPlatform, bool _moveBeforePlatform, bool ignoreSource) {
 			transform = _transform;
 			velocity = _velocity;
 			standingOnPlatform = _standingOnPlatform;
 			moveBeforePlatform = _moveBeforePlatform;
+			IgnoreSource = ignoreSource;
 		}
 	}
 }

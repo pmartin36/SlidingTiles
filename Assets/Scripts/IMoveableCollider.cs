@@ -1,6 +1,13 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
-interface IMoveableCollider {
-	Vector2 CalculateValidMoveAmount (Vector2 original);
+public interface IMoveableCollider {
+    Tile Parent { get; }
+    void CheckAndRemoveSquishables(Vector2 original);
+}
+
+public interface ISquishable {
+	bool WasSquishedThisFrame { get; set; }
+	bool CheckSquishedAndResolve(Vector2 original);
 }
 

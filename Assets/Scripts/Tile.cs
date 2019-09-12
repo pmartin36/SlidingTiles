@@ -24,6 +24,9 @@ public class Tile : MonoBehaviour
 
 	private PlatformController[] childPlatforms;
 
+	private Vector3 lastFrameVelocity;
+	private Vector3 lastFramePosition;
+
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -31,24 +34,26 @@ public class Tile : MonoBehaviour
 			spriteRenderer.color = new Color(0.15f, 0, 0);
 		}
 		childPlatforms = GetComponentsInChildren<PlatformController>();
+		lastFramePosition = transform.position;
+		lastFrameVelocity = Vector3.zero;
 	}
 
 	public void Update() {
 		if (!Centered && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
 			float distToMove = Time.deltaTime * SpeedCap;
-			Vector2 position;
+			Vector3 moveAmount;
 			if (distToMove > transform.localPosition.magnitude) {
-				position = Vector2.zero;
+				moveAmount = -transform.localPosition;
 			}
 			else {
-				position = transform.localPosition - transform.localPosition.normalized * distToMove;
+				moveAmount = -transform.localPosition.normalized * distToMove;
 			}
 
 			var noDirection = Direction.None;
-			List<Tile> tilesToMove = new List<Tile>() { this };
-			if (CanMoveTo(position, tilesToMove, noDirection)) {
+			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
+            if (CanMoveTo(ref moveAmount, tilesToMove, noDirection)) {
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, noDirection);
+					t.Move(moveAmount, noDirection);
 				}
 			}
 		}
@@ -70,18 +75,19 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public bool Move(Vector2 position, Direction d) {
-		Vector2 diff = (position - (Vector2)transform.localPosition) * transform.lossyScale.x;
+	public bool Move(Vector3 moveAmount, Direction d) {
+		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 
-		foreach(PlatformController c in childPlatforms) {
-			c.Premove(ref diff);
-		}
-		transform.localPosition = position;
 		foreach (PlatformController c in childPlatforms) {
-			c.Postmove(ref diff);
+			c.CheckAndRemoveSquishables(globalMoveAmount);
+			c.Premove(ref globalMoveAmount);
+		}
+		transform.localPosition += moveAmount;
+		foreach (PlatformController c in childPlatforms) {
+			c.Postmove(ref globalMoveAmount);
 		}
 
-		float mag = position.magnitude;
+		float mag = transform.localPosition.magnitude;
 		if(mag > BaseThreshold) {
 			if (mag > 1 - BaseThreshold) {
 				// snap to next spot
@@ -98,34 +104,34 @@ public class Tile : MonoBehaviour
 		return false;
 	}
 
-	public bool CanMoveTo(Vector3 localPosition, List<Tile> tilesToMove, Direction d) {
-		bool goingTowardCenter = localPosition.sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
+	public bool CanMoveTo(ref Vector3 moveAmount, HashSet<Tile> tilesToMove, Direction d) {
+		bool goingTowardCenter = (transform.localPosition + moveAmount).sqrMagnitude < transform.localPosition.sqrMagnitude;// && Vector2.Dot(localPosition, transform.localPosition) < 0;
 		bool validTilespace = d.Value.sqrMagnitude < 0.1f || Space.GetNeighborInDirection(d) != null;
 		if(validTilespace || goingTowardCenter) {
-			Vector3 dir = localPosition - transform.localPosition;
-			Vector2 size = Mathf.Abs(dir.x) > 0.0001f 
-				? new Vector2(dir.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
-				: new Vector2(transform.lossyScale.x * 0.90f, dir.magnitude * 0.5f);
+			Vector3 DebugOriginalMoveAmount = new Vector2(moveAmount.x, moveAmount.y);
+			Vector2 size = Mathf.Abs(moveAmount.x) > 0.0001f 
+				? new Vector2(moveAmount.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
+				: new Vector2(transform.lossyScale.x * 0.90f, moveAmount.magnitude * 0.5f);
 			Collider2D[] collisions = 
 				Physics2D.OverlapBoxAll(
-					this.transform.position + dir.normalized * (transform.lossyScale.x + dir.magnitude + 0.001f) * 0.5f,
+					this.transform.position + moveAmount.normalized * (transform.lossyScale.x + moveAmount.magnitude + 0.001f) * 0.5f,
 					size, 
 					0,
 					tileMask)
 					.Where(r => r.gameObject != this.gameObject).ToArray();
 
-			if(collisions.Length == 0) {
+			if (collisions.Length == 0) {
 				return true;
 			}
 			else if (collisions.Length == 1) {
-				Debug.DrawRay(this.transform.position, transform.lossyScale * 0.5f + dir, Color.red);
+				Debug.DrawRay(this.transform.position, transform.lossyScale * 0.5f + moveAmount, Color.red);
 			
 				Tile collidedTile = collisions[0].GetComponent<Tile>();
-				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(dir.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
+				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
 				if (collidedTile.Movable && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
-					return collidedTile.CanMoveTo(localPosition, tilesToMove, d);
+					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d);
 				}
 				else {
 
@@ -168,11 +174,16 @@ public class Tile : MonoBehaviour
 			}
 
 			bool moved = false;
-			List<Tile> tilesToMove = new List<Tile>();
-			if (CanMoveTo(position, tilesToMove, direction)) {
-				moved = this.Move(position, direction);
+			float scale = transform.lossyScale.x;
+			Vector3 moveAmount = position - (Vector2)transform.localPosition;
+
+			HashSet<Tile> tilesToMove = new HashSet<Tile>();
+						
+			if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
+				moved = this.Move(moveAmount, direction);
 				foreach (Tile t in tilesToMove) {
-					t.Move(position, direction);
+					var tMoveAmount = moveAmount;
+					t.Move(tMoveAmount, direction);
 				}
 			}
 			return moved;

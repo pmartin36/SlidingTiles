@@ -69,6 +69,16 @@ public class Direction {
 	}
 }
 
-public static class DirectionHelpers {
-	
+public static class VectorHelpers {
+	public static Vector2 SnapToAxis(this Vector2 v) {
+		float x = Mathf.Abs(v.x);
+		float y = Mathf.Abs(v.y);
+		if(x > y) {
+			v *= Vector2.right;
+		}
+		else {
+			v *= Vector2.up;
+		}
+		return v;
+	}
 }

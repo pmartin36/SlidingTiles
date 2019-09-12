@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof (Controller2D))]
-public class Player : MonoBehaviour, IMoveableCollider {
+public class Player : MonoBehaviour, ISquishable {
 
-	public float maxJumpHeight = 4;
+	public static event System.EventHandler<bool> aliveChanged;
+
+    public bool WasSquishedThisFrame { get; set; }
+	public Vector3 UnsquishedDimensions { get; set; }
+
+    public float maxJumpHeight = 4;
 	public float minJumpHeight = 1;
 	public float timeToJumpApex = .4f;
 
@@ -21,6 +27,8 @@ public class Player : MonoBehaviour, IMoveableCollider {
 	private Controller2D controller;
 
 	private float moveDirection;
+
+	private Vector3 initialPosition;
 
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
@@ -42,6 +50,9 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		minJumpVelocity = Mathf.Sqrt (2 * Mathf.Abs (gravity) * minJumpHeight);
 		moveDirection = 1f;
+
+		UnsquishedDimensions = transform.localScale;
+		initialPosition = transform.position;
 	}
 
 	void Update() {
@@ -63,6 +74,10 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		) {
 			moveDirection *= -1f;
 		}
+	}
+
+	void LateUpdate() {
+		
 	}
 
 	public void OnJumpInputDown() {
@@ -138,7 +153,8 @@ public class Player : MonoBehaviour, IMoveableCollider {
 				velocity.x = Mathf.Sign(bumpVelocity.x) * (absBump + absV);
 			}		
 		}
-		velocity.x = bumpVelocity.x;
+
+        velocity.x = bumpVelocity.x;
 	}
 
 	void CalculateVelocity() {
@@ -147,29 +163,56 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		velocity.y += gravity * Time.deltaTime;
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original) {
-		Vector2 amt = original;
-		RaycastHit2D[] hits = Physics2D.BoxCastAll(
+	public bool CheckSquishedAndResolve(Vector2 original) {
+		Vector2 largestValidMoveAmount = original;
+        Vector2 norm = original.normalized;
+		float skinWidth = 0.015f;
+        RaycastHit2D hit = Physics2D.BoxCast(
 			transform.position,
-			controller.collider.size * transform.lossyScale,
+			controller.collider.size * transform.lossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			original.normalized,
-			original.magnitude,
+			original.magnitude + skinWidth,
 			controller.collisionMask
 		);
 
-		foreach (RaycastHit2D hit in hits) {
-			// TODO: May have more than just platforms in the future
-			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
-			if(collider != null) {
-				Vector2 moveAmount = collider.CalculateValidMoveAmount(amt - original.normalized * hit.distance);
-				moveAmount += original.normalized * hit.distance;
-				if (moveAmount.sqrMagnitude < amt.sqrMagnitude) {
-					amt = moveAmount;
-				}
+        if(hit) {
+			float amountToShrink = (original.magnitude - (hit.distance - skinWidth));
+			if(Mathf.Min(transform.localScale.x, transform.localScale.y) - amountToShrink < 1f) {
+				Destroy(this.gameObject);
 			}
+			else {
+				Destroy(this.gameObject);
+
+				// replace with logic to squish player
+				//Vector2 localScale = transform.localScale;
+				//float mag = localScale.magnitude;
+				//transform.localScale = (localScale - norm * amountToShrink).normalized * mag;
+				//WasSquishedThisFrame = true;
+			}
+			return true;
 		}
 
-		return amt;
+		return false;
+	}
+
+	public void OnTriggerEnter2D(Collider2D collision) {
+		if(collision.CompareTag("Flag")) { 
+			collision.GetComponent<GoalFlag>().PlayerReached();
+		}
+		else if(collision.CompareTag("Star")) {
+			collision.GetComponent<Star>().Collected();
+		}
+		else if(collision.CompareTag("Reset")) {
+			SetAlive(false);
+		}
+	}
+
+	public void SetAlive(bool alive) {
+		this.gameObject.SetActive(alive);
+		transform.position = initialPosition;
+		moveDirection = 1f;
+		velocity = Vector2.zero;
+		aliveChanged?.Invoke(this, alive);
 	}
 }
