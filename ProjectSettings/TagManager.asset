@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Flag
+  - Star
+  - WinType
+  - Border
+  - Reset
   layers:
   - Default
   - TransparentFX
@@ -17,7 +22,7 @@ TagManager:
   - Level
   - Player
   - Wall
-  - 
+  - Flag
   - 
   - 
   - 
@@ -49,4 +54,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 3973730093
+    locked: 0
+  - name: Front
+    uniqueID: 2778676289
     locked: 0

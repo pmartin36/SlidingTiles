@@ -6,7 +6,6 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 	public LayerMask passengerMask;
     public Tile Parent { get; private set; }
-    private LayerMask moveLayerMask;
 
 	List<PassengerMovement> passengerMovement;
 	Dictionary<Transform,Controller2D> passengerDictionary = new Dictionary<Transform, Controller2D>();
@@ -14,7 +13,6 @@ public class PlatformController : RaycastController, IMoveableCollider {
 	public override void Start () {
 		base.Start ();
         Parent = transform.parent.GetComponent<Tile>();
-        moveLayerMask = passengerMask | 1 << LayerMask.NameToLayer("Wall");
 	}
 
 	void Update () {
@@ -50,11 +48,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		}
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original, ref Tile extraTileToMove) {
-		if(extraTileToMove != this.Parent) {
-			extraTileToMove = this.Parent;
-		}
-		
+	public void CheckAndRemoveSquishables(Vector2 original) {
         Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
@@ -63,26 +57,15 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			transform.eulerAngles.z,
 			original.normalized,
 			original.magnitude + skinWidth,
-			moveLayerMask
+			passengerMask
 		);
 
 		foreach(RaycastHit2D hit in hits) {
-            IMoveableCollider pass = hit.collider.GetComponent<IMoveableCollider>();
-            if (pass != null && (pass.Parent == null || pass.Parent.Movable)) {
-                Vector2 moveAmount = pass.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), ref extraTileToMove);
-                moveAmount += original.normalized * (hit.distance - skinWidth);
-                if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
-                    largestValidMoveAmount = moveAmount;
-                }
-            }
-            else {
-                if (hit.distance * hit.distance < largestValidMoveAmount.sqrMagnitude) {
-                    largestValidMoveAmount = (hit.distance - skinWidth) * original.normalized;
-                }
-            }
+            ISquishable pass = hit.collider.GetComponent<ISquishable>();
+            if (pass != null) {
+				pass.CheckSquishedAndResolve(original);
+			}
 		}
-
-		return largestValidMoveAmount;
 	}
 
 	void CalculatePassengerMovement(Vector3 velocity) {

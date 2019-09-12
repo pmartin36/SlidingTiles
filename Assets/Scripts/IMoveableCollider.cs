@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 public interface IMoveableCollider {
     Tile Parent { get; }
-    Vector2 CalculateValidMoveAmount(Vector2 original, ref Tile extraTileToMove);
+    void CheckAndRemoveSquishables(Vector2 original);
 }
 
-public interface IPushable {
-	bool Move(Vector2 amount, Direction d);
+public interface ISquishable {
+	bool WasSquishedThisFrame { get; set; }
+	bool CheckSquishedAndResolve(Vector2 original);
 }
 

@@ -24,6 +24,9 @@ public class Tile : MonoBehaviour
 
 	private PlatformController[] childPlatforms;
 
+	private Vector3 lastFrameVelocity;
+	private Vector3 lastFramePosition;
+
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -31,6 +34,8 @@ public class Tile : MonoBehaviour
 			spriteRenderer.color = new Color(0.15f, 0, 0);
 		}
 		childPlatforms = GetComponentsInChildren<PlatformController>();
+		lastFramePosition = transform.position;
+		lastFrameVelocity = Vector3.zero;
 	}
 
 	public void Update() {
@@ -48,13 +53,7 @@ public class Tile : MonoBehaviour
 			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
             if (CanMoveTo(ref moveAmount, tilesToMove, noDirection)) {
 				foreach (Tile t in tilesToMove) {
-					t.Premove(moveAmount);
-				}
-				foreach (Tile t in tilesToMove) {
 					t.Move(moveAmount, noDirection);
-				}
-				foreach (Tile t in tilesToMove) {
-					t.Postmove(moveAmount);
 				}
 			}
 		}
@@ -76,23 +75,18 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public void Premove(Vector3 moveAmount) {
+	public bool Move(Vector3 moveAmount, Direction d) {
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
+
 		foreach (PlatformController c in childPlatforms) {
+			c.CheckAndRemoveSquishables(globalMoveAmount);
 			c.Premove(ref globalMoveAmount);
 		}
-	}
-
-	public void Postmove(Vector3 moveAmount) {
-		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
+		transform.localPosition += moveAmount;
 		foreach (PlatformController c in childPlatforms) {
 			c.Postmove(ref globalMoveAmount);
 		}
-	}
 
-	public bool Move(Vector3 moveAmount, Direction d) {
-		transform.localPosition += moveAmount;
-		
 		float mag = transform.localPosition.magnitude;
 		if(mag > BaseThreshold) {
 			if (mag > 1 - BaseThreshold) {
@@ -126,18 +120,7 @@ public class Tile : MonoBehaviour
 					tileMask)
 					.Where(r => r.gameObject != this.gameObject).ToArray();
 
-            Vector2 actualMoveAmount = moveAmount * transform.lossyScale.x;
-			Tile extraTileToMove = this;
-            foreach(IMoveableCollider c in childPlatforms)
-            {
-                Vector2 childMoveAmount = c.CalculateValidMoveAmount(actualMoveAmount, ref extraTileToMove);
-                if(childMoveAmount.sqrMagnitude < actualMoveAmount.sqrMagnitude) {
-                    actualMoveAmount = childMoveAmount;			
-                }
-            }
-			moveAmount = actualMoveAmount / transform.lossyScale.x;
-
-			if (collisions.Length == 0 && extraTileToMove == this) {
+			if (collisions.Length == 0) {
 				return true;
 			}
 			else if (collisions.Length == 1) {
@@ -152,14 +135,6 @@ public class Tile : MonoBehaviour
 				}
 				else {
 
-				}
-			}
-			else if(extraTileToMove != this) {
-				bool canMoveInDirection = extraTileToMove.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, extraTileToMove.transform.localPosition.normalized)) > 0.1f;
-				if (extraTileToMove.Movable && canMoveInDirection) {
-					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
-					tilesToMove.Add(extraTileToMove);
-					return extraTileToMove.CanMoveTo(ref moveAmount, tilesToMove, d);
 				}
 			}
 		}
@@ -205,27 +180,10 @@ public class Tile : MonoBehaviour
 			HashSet<Tile> tilesToMove = new HashSet<Tile>();
 						
 			if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
-				// have to do it in three separate steps
-				// if a player is being pushed by a platform into another platform
-				// the platform positions all need to update, then the player can assess how far it can move
-
-				// premove
-				this.Premove(moveAmount);
-				foreach (Tile t in tilesToMove) {
-					t.Premove(moveAmount);
-				}
-
-				// move
 				moved = this.Move(moveAmount, direction);
 				foreach (Tile t in tilesToMove) {
 					var tMoveAmount = moveAmount;
 					t.Move(tMoveAmount, direction);
-				}
-
-				// post move
-				this.Postmove(moveAmount);
-				foreach (Tile t in tilesToMove) {
-					t.Postmove(moveAmount);
 				}
 			}
 			return moved;

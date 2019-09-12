@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent (typeof (Controller2D))]
-public class Player : MonoBehaviour, IMoveableCollider {
+public class Player : MonoBehaviour, ISquishable {
 
-    public Tile Parent { get; private set; } = null;
+	public static event System.EventHandler<bool> aliveChanged;
+
+    public bool WasSquishedThisFrame { get; set; }
+	public Vector3 UnsquishedDimensions { get; set; }
 
     public float maxJumpHeight = 4;
 	public float minJumpHeight = 1;
@@ -24,6 +27,8 @@ public class Player : MonoBehaviour, IMoveableCollider {
 	private Controller2D controller;
 
 	private float moveDirection;
+
+	private Vector3 initialPosition;
 
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
@@ -45,6 +50,9 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		minJumpVelocity = Mathf.Sqrt (2 * Mathf.Abs (gravity) * minJumpHeight);
 		moveDirection = 1f;
+
+		UnsquishedDimensions = transform.localScale;
+		initialPosition = transform.position;
 	}
 
 	void Update() {
@@ -66,6 +74,10 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		) {
 			moveDirection *= -1f;
 		}
+	}
+
+	void LateUpdate() {
+		
 	}
 
 	public void OnJumpInputDown() {
@@ -148,14 +160,13 @@ public class Player : MonoBehaviour, IMoveableCollider {
 		float targetVelocityX = moveDirection * moveSpeed;
 		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
 		velocity.y += gravity * Time.deltaTime;
-		velocity = Vector2.zero;
 	}
 
-	public Vector2 CalculateValidMoveAmount(Vector2 original, ref Tile extraTileToMove) {
+	public bool CheckSquishedAndResolve(Vector2 original) {
 		Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
 		float skinWidth = 0.015f;
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(
+        RaycastHit2D hit = Physics2D.BoxCast(
 			transform.position,
 			controller.collider.size * transform.lossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
@@ -164,23 +175,43 @@ public class Player : MonoBehaviour, IMoveableCollider {
 			controller.collisionMask
 		);
 
-        foreach (RaycastHit2D hit in hits) {
-			// TODO: May have more than just platforms in the future
-			IMoveableCollider collider = hit.collider.GetComponent<IMoveableCollider>();
-			if(collider != null && (collider.Parent == null || collider.Parent.Movable)) {
-				Vector2 moveAmount = collider.CalculateValidMoveAmount(largestValidMoveAmount - norm * (hit.distance - skinWidth), ref extraTileToMove);
-				moveAmount += norm * (hit.distance - skinWidth);
-				if (moveAmount.sqrMagnitude < largestValidMoveAmount.sqrMagnitude) {
-					largestValidMoveAmount = moveAmount;
-				}
+        if(hit) {
+			float amountToShrink = (original.magnitude - (hit.distance - skinWidth));
+			if(Mathf.Min(transform.localScale.x, transform.localScale.y) - amountToShrink < 1f) {
+				Destroy(this.gameObject);
 			}
-            else {
-                if (hit.distance * hit.distance < largestValidMoveAmount.sqrMagnitude) {
-                    largestValidMoveAmount = (hit.distance - skinWidth) * original.normalized;
-                }
-            }
+			else {
+				Destroy(this.gameObject);
+
+				// replace with logic to squish player
+				//Vector2 localScale = transform.localScale;
+				//float mag = localScale.magnitude;
+				//transform.localScale = (localScale - norm * amountToShrink).normalized * mag;
+				//WasSquishedThisFrame = true;
+			}
+			return true;
 		}
 
-		return largestValidMoveAmount;
+		return false;
+	}
+
+	public void OnTriggerEnter2D(Collider2D collision) {
+		if(collision.CompareTag("Flag")) { 
+			collision.GetComponent<GoalFlag>().PlayerReached();
+		}
+		else if(collision.CompareTag("Star")) {
+			collision.GetComponent<Star>().Collected();
+		}
+		else if(collision.CompareTag("Reset")) {
+			SetAlive(false);
+		}
+	}
+
+	public void SetAlive(bool alive) {
+		this.gameObject.SetActive(alive);
+		transform.position = initialPosition;
+		moveDirection = 1f;
+		velocity = Vector2.zero;
+		aliveChanged?.Invoke(this, alive);
 	}
 }
