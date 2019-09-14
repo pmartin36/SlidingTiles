@@ -12,11 +12,11 @@ public class Tilespace : MonoBehaviour
 	// visible in inspector
 	public TilePosition Position;
 
-    void Start() {
+    void Awake() {
 		transform.localPosition = new Vector2(Position.x, Position.y) * transform.localScale.x;
 		Tile = GetComponentInChildren<Tile>();
 		if(Tile != null) {
-			Tile.Space = this;
+			Tile.Init(this);
 		}
     }
 

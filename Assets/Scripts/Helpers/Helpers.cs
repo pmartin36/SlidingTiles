@@ -82,3 +82,9 @@ public static class VectorHelpers {
 		return v;
 	}
 }
+
+public static class GeneralHelpers {
+	public static void Destroy(this GameObject g, float time = 0) {
+		UnityEngine.Object.Destroy(g, time);
+	}
+}

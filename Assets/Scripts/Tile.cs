@@ -27,6 +27,8 @@ public class Tile : MonoBehaviour
 	private Vector3 lastFrameVelocity;
 	private Vector3 lastFramePosition;
 
+	private Tilespace initialTilespace;
+
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -35,7 +37,12 @@ public class Tile : MonoBehaviour
 		}
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;
-		lastFrameVelocity = Vector3.zero;
+		lastFrameVelocity = Vector3.zero;	
+	}
+
+	public void Init(Tilespace t) {
+		this.Space = t;
+		this.initialTilespace = t;
 	}
 
 	public void Update() {
@@ -202,5 +209,11 @@ public class Tile : MonoBehaviour
 			position *= Vector2.up;
 			return Mathf.Sign(position.y) > 0 ? Direction.Up : Direction.Down;
 		}
+	}
+
+	public void Reset() {
+		transform.parent = initialTilespace.transform;
+		this.Space = initialTilespace;
+		transform.localPosition = Vector2.zero;
 	}
 }

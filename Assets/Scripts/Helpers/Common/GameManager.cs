@@ -44,7 +44,7 @@ public class GameManager : Singleton<GameManager> {
 	public void Awake() {
 		// TODO: Load saved PlayerData
 		// PlayerData = new PlayerData(2f, 1.25f, 0.2f);
-		SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+		SceneManager.LoadSceneAsync(LoadSceneBuildIndex, LoadSceneMode.Additive);
 	}
 
 	public void HandleInput(InputPackage p) {
@@ -61,11 +61,22 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public int GetNextLevelBuildIndex() {
-		var currentScene = SceneManager.GetActiveScene();
-		return currentScene.buildIndex + 1;
+		return GetCurrentLevelBuildIndex() + 1;
 	}
 
-	public IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null) {
+	public int GetCurrentLevelBuildIndex() {
+		var buildIndex = 0;
+		for(int i = 0; i < SceneManager.sceneCount; i++) {
+			Scene s = SceneManager.GetSceneAt(i);
+			if (s.isLoaded && s.buildIndex != LoadSceneBuildIndex) {
+				buildIndex = s.buildIndex;
+				break;
+			}
+		}
+		return buildIndex;
+	}
+
+	private IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {
 		InProgressSceneSwitch = true;
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(buildIndex, LoadSceneMode.Additive);
 
@@ -77,19 +88,44 @@ public class GameManager : Singleton<GameManager> {
 		yield return new WaitUntil(() => asyncLoad.progress >= 0.9f); //when allowsceneactive is false, progress stops at .9f
 
 		if(cts != null && cts.IsCancellationRequested) {
+			ContextManager tContext = ContextManager;
+			asyncLoad.allowSceneActivation = true;
+			yield return new WaitUntil(() => asyncLoad.isDone);
 			SceneManager.UnloadSceneAsync(buildIndex);
+			ContextManager = tContext;
 		}
 		else {
 			Scene currentScene = SceneManager.GetActiveScene();
 			asyncLoad.allowSceneActivation = true;
 			onSceneSwitch?.Invoke();
-			SceneManager.UnloadSceneAsync(currentScene);		
+			if(shouldUnloadCurrentScene) {
+				SceneManager.UnloadSceneAsync(currentScene);
+			}
 		}
 	}
+
+	public void AsyncLoadScene(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {
+		StartCoroutine(
+			LoadSceneAsync(
+				buildIndex,
+				waitUntil,
+				cts,
+				onSceneSwitch,
+				shouldUnloadCurrentScene
+			)
+		);
+	}	
 
 	public void LoadScene(int buildIndex, Coroutine waitUntil) {
 		ShowLoadScreen(true);
 		StartCoroutine(LoadSceneAsync(buildIndex, waitUntil, null, () => ShowLoadScreen(false)));	
+	}
+
+	public void UnloadScene(int buildIndex, Action<AsyncOperation> callback = null) {
+		AsyncOperation unload = SceneManager.UnloadSceneAsync(buildIndex);
+		if(callback != null) {
+			unload.completed += callback;
+		}
 	}
 
 	public void ShowLoadScreen(bool show) {

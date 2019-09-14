@@ -24,6 +24,8 @@ public class Grid : MonoBehaviour
 
 		// transform.position = new Vector3(-max * 5, -(Tilespaces.Count - 1) * 5, 0);
 		Camera.main.transform.position = new Vector3(max * 5, (Tilespaces.Count - 1) * 5, -50);
+
+		GameManager.Instance.LevelManager.Grid = this;
 	}
 
     void Update() {
@@ -49,5 +51,13 @@ public class Grid : MonoBehaviour
 			return Tilespaces[ny][nx];
 		}
 		return null;
+	}
+
+	public void Reset() {
+		for(int i = 0; i < Tilespaces.Count; i++) {
+			for(int j = 0; j < Tilespaces[i].Count; j++) {
+				Tilespaces[i][j].Tile?.Reset();
+			}
+		}
 	}
 }

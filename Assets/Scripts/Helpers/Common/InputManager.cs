@@ -16,21 +16,24 @@ public class InputManager : MonoBehaviour
 	private void Update() {
 		InputPackage p = new InputPackage();
 
-		p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
-		p.LeftMouse = Input.GetButton("LeftMouse");
-		if(last != null) {
-			p.LeftMouseChange = p.LeftMouse ^ last.LeftMouse;
-			p.MousePositionWorldSpaceDelta = p.MousePositionWorldSpace - last.MousePositionWorldSpace;
-		}
-		else {
-			p.LeftMouseChange = false;
-			p.MousePositionWorldSpaceDelta = Vector3.zero;
-		}
+		if(ContextManager.AcceptingInputs) {
+			p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
+			p.LeftMouse = Input.GetButton("LeftMouse");
+			if(last != null) {
+				p.LeftMouseChange = p.LeftMouse ^ last.LeftMouse;
+				p.MousePositionWorldSpaceDelta = p.MousePositionWorldSpace - last.MousePositionWorldSpace;
+			}
+			else {
+				p.LeftMouseChange = false;
+				p.MousePositionWorldSpaceDelta = Vector3.zero;
+			}
 		
 
-		p.Horizontal = Input.GetAxis("Horizontal");
-		p.Vertical = Input.GetAxis("Vertical");
+			p.Horizontal = Input.GetAxis("Horizontal");
+			p.Vertical = Input.GetAxis("Vertical");		
+		}
 
+		// handle inputs must still be called
 		ContextManager.HandleInput(p);
 		last = p;
 	}

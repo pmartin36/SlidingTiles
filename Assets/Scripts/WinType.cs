@@ -20,7 +20,7 @@ public abstract class WinType : MonoBehaviour {
 
 	protected readonly float threshold = 90f * 90f;
 	protected Vector2 ActionThreshold { get; private set; }
-	protected bool TransitioningTowardAction { get; private set; }
+	public bool ActionSelected { get; private set; }
 
 	[SerializeField]
 	protected RectTransform frontPanel; 
@@ -74,7 +74,7 @@ public abstract class WinType : MonoBehaviour {
 	}
 
 	private WinTypeAction SetPosition(Vector2 targetPosition) {
-		if(TransitioningTowardAction) {
+		if(ActionSelected) {
 			float moveAmount = 2000 * Time.deltaTime;
 			Position += moveAmount * Position.normalized;
 		}
@@ -90,7 +90,7 @@ public abstract class WinType : MonoBehaviour {
 
 			if(!Centered && Position.sqrMagnitude > (ActionThreshold * Position.normalized).sqrMagnitude) {
 				// start transition
-				TransitioningTowardAction = true;
+				ActionSelected = true;
 				if(Position.x > 100) {
 					return WinTypeAction.Next;
 				}
@@ -116,7 +116,7 @@ public abstract class WinType : MonoBehaviour {
 		frontPanel.gameObject.SetActive(false);
 		Position = Vector2.zero;
 		IsAnimating = false;
-		TransitioningTowardAction = false;
+		ActionSelected = false;
 	}
 
 	public IEnumerator WhenTilesOffScreen(Action action = null) {

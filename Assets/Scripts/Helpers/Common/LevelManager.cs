@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(InputManager))]
 public class LevelManager : ContextManager {
 
-	public static event EventHandler<Vector2> Move;
+	public Grid Grid { get; set; }
 
 	private LayerMask tileMask;
 	private Tile SelectedTile;
@@ -17,24 +17,28 @@ public class LevelManager : ContextManager {
 
 	private WinType winType;
 	private int collectedStars;
+	private GoalFlag goalFlag;
 
 	private CancellationTokenSource cts;
-	private Coroutine waitLoadNextScene;
 
 	public RespawnManager RespawnManager { get; private set; }
 	public bool Won { get; set; }
+	public override bool AcceptingInputs => winType == null || !winType.ActionSelected;
 
 	public override void Awake() {
+		if(GameManager.Instance.LevelManager == null) {
+			// if we're not coming from another level, init now
+			// otherwise, we'll init when the other level is removed
+			Init();
+		}
 		base.Awake();
 		GetComponent<InputManager>().ContextManager = this;
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
-		RespawnManager = GetComponent<RespawnManager>();
 	}
 
-	public override void Start() {
-		base.Start();
+	public void Init() {
 		winType = FindObjectOfType<WinType>();
-		PlayerWin();
+		RespawnManager = new RespawnManager();
 	}
 
 	public override void HandleInput(InputPackage p) {
@@ -59,11 +63,11 @@ public class LevelManager : ContextManager {
 				}
 
 				if(w != WinTypeAction.None) {
+					int currentScene = GameManager.Instance.GetCurrentLevelBuildIndex();
 					// if we're not going to the next scene, cancel the load of the next scene
 					if(w != WinTypeAction.Next) {
 						cts.Cancel();
 					}
-					StopCoroutine(waitLoadNextScene);
 
 					switch (w) {
 						case WinTypeAction.Menu:
@@ -76,6 +80,14 @@ public class LevelManager : ContextManager {
 							GameManager.Instance.LoadScene(GameManager.LevelSelectBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
 							break;
 						case WinTypeAction.Next:
+							winType.Hide();
+							Destroy(Grid.gameObject);
+							RespawnManager.Destroy();
+							StartCoroutine(winType.WhenTilesOffScreen(() => {
+								GameManager.Instance.UnloadScene(currentScene, (a) => {
+									GameManager.Instance.LevelManager.Init(); // not this one
+								});
+							}));
 							break;
 					}				
 				}		
@@ -118,38 +130,36 @@ public class LevelManager : ContextManager {
 		}
 	}
 
-	public static void ClearMovingTiles() {
-		Move = null;
-	}
-
 	public void AddStar() {
 		collectedStars++;
 	}
 
 	private void Reset() {
 		winType.Hide();
+		goalFlag?.Reset();
+		Grid?.Reset();
 		StartCoroutine(winType.WhenTilesOffScreen(() => {
 			Won = false;
 			winType.Reset();
 		}));	
 	}
 
-	public void PlayerWin() {
+	public void PlayerWin(GoalFlag gf) {
+		goalFlag = gf;
 		Won = true;
 		if(SelectedTile != null) {
 			SelectedTile.Select(false);
 			SelectedTile = null;
 		}
 		grabPoint = new Vector2(1000,1000);
-		RespawnManager?.Player?.SetAlive(false);
+		RespawnManager.Player?.SetAlive(false);
 		winType.Run(collectedStars);
 
 		cts = new CancellationTokenSource();
-		waitLoadNextScene = StartCoroutine(WaitActionSelected());
-		GameManager.Instance.LoadSceneAsync(GameManager.Instance.GetNextLevelBuildIndex(), waitLoadNextScene, cts);
+		GameManager.Instance.AsyncLoadScene(GameManager.Instance.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
 	}
 
 	public IEnumerator WaitActionSelected() {
-		yield return new WaitUntil( () => false );
+		yield return new WaitUntil( () => winType.ActionSelected );
 	}
 }

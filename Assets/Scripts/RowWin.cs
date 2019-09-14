@@ -12,6 +12,5 @@ public class RowWin : WinType
 
 	public override void Reset() {
 		base.Reset();
-
 	}
 }

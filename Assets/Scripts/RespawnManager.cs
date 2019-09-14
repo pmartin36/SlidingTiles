@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RespawnManager : MonoBehaviour
+public class RespawnManager
 {
 	public Player Player;
 	public Star[] Stars;
 
 	public ActionButtons ActionButtons;
 
-    void Start() {
-		Player = FindObjectOfType<Player>();
-		Stars = FindObjectsOfType<Star>();
-		ActionButtons = FindObjectOfType<ActionButtons>();
+    public RespawnManager() {
+		Player = GameObject.FindObjectOfType<Player>();
+		Stars = GameObject.FindObjectsOfType<Star>();
+		ActionButtons = GameObject.FindObjectOfType<ActionButtons>();
 		Player.aliveChanged += PlayerAliveChange;
     }
 
@@ -29,5 +29,13 @@ public class RespawnManager : MonoBehaviour
 
 			ActionButtons.HighlightSpawn(true);
 		}
+	}
+
+	public void Destroy() {
+		Player.gameObject.Destroy();
+		Player.aliveChanged -= PlayerAliveChange;
+		foreach (Star s in Stars) {
+			s.gameObject.Destroy();
+		}	
 	}
 }

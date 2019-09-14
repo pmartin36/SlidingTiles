@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, ISquishable {
 
-	public static event System.EventHandler<bool> aliveChanged;
+	public event System.EventHandler<bool> aliveChanged;
 
     public bool WasSquishedThisFrame { get; set; }
 	public Vector3 UnsquishedDimensions { get; set; }
@@ -214,5 +214,9 @@ public class Player : MonoBehaviour, ISquishable {
 		moveDirection = 1f;
 		velocity = Vector2.zero;
 		aliveChanged?.Invoke(this, alive);
+	}
+
+	public void OnDestroy() {
+		aliveChanged = null;
 	}
 }
