@@ -17,7 +17,7 @@ public class Tile : MonoBehaviour
 	public bool Selected { get; set; }
 	public Vector2 PositionWhenSelected { get; set; }
 
-	public bool Centered { get => transform.localPosition.sqrMagnitude < 0.0001f; }
+	public bool Centered { get => transform.localPosition.sqrMagnitude < 0.000002f; } // (skinWidth / scale)^2 
 
 	private LayerMask tileMask;
 	private SpriteRenderer spriteRenderer;

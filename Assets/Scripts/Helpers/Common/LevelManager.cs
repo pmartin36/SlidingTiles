@@ -45,8 +45,8 @@ public class LevelManager : ContextManager {
 		if(Won) {
 			if(!winType.IsAnimating) {
 				WinTypeAction w = WinTypeAction.None;
-				if(p.LeftMouse) {
-					if(p.LeftMouseChange || grabPoint.sqrMagnitude > 1000f) {
+				if(p.Touchdown) {
+					if(p.TouchdownChange || grabPoint.sqrMagnitude > 1000f) {
 						grabPoint = p.MousePositionWorldSpace;
 						grabReleasePoint = Vector2.zero;
 					}
@@ -55,8 +55,8 @@ public class LevelManager : ContextManager {
 						w = winType.SetGrabPosition(p.MousePositionWorldSpace - grabPoint);
 					}
 				}
-				else if (!p.LeftMouse) {
-					if(p.LeftMouseChange) {
+				else if (!p.Touchdown) {
+					if(p.TouchdownChange) {
 						grabReleasePoint = p.MousePositionWorldSpace;
 					}
 					w = winType.SetPositionNoGrab(grabReleasePoint);
@@ -77,7 +77,11 @@ public class LevelManager : ContextManager {
 							Reset();
 							break;
 						case WinTypeAction.LevelSelect:
-							GameManager.Instance.LoadScene(GameManager.LevelSelectBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
+							GameManager.Instance.LoadScene(
+								GameManager.MenuBuildIndex, 
+								StartCoroutine(winType.WhenTilesOffScreen()), 
+								() => GameManager.Instance.MenuManager.OpenLevelSelect(false)
+							);
 							break;
 						case WinTypeAction.Next:
 							winType.Hide();
@@ -94,8 +98,8 @@ public class LevelManager : ContextManager {
 			}
 		}
 		else {
-			if(p.LeftMouse) { 
-				if(p.LeftMouseChange) {
+			if(p.Touchdown) { 
+				if(p.TouchdownChange) {
 					// clicked
 					SelectedTile = Physics2D.OverlapPoint(p.MousePositionWorldSpace, tileMask)?.GetComponent<Tile>();
 
@@ -123,7 +127,7 @@ public class LevelManager : ContextManager {
 					}
 				}
 			}
-			else if(SelectedTile != null && !p.LeftMouse && p.LeftMouseChange) {
+			else if(SelectedTile != null && !p.Touchdown && p.TouchdownChange) {
 				SelectedTile.Select(false);
 				SelectedTile = null;
 			}

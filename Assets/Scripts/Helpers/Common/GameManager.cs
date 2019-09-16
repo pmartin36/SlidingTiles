@@ -10,9 +10,7 @@ public class GameManager : Singleton<GameManager> {
 
 	private float _timeScale = 1f;
 	public float TimeScale {
-		get {
-			return _timeScale;
-		}
+		get => _timeScale;
 		set {
 			Time.timeScale = value;
 			_timeScale = value;
@@ -21,19 +19,16 @@ public class GameManager : Singleton<GameManager> {
 
 	public ContextManager ContextManager;
 	public LevelManager LevelManager {
-		get
-		{
-			return ContextManager as LevelManager;
-		}
-		set
-		{
-			ContextManager = value;
-		}
+		get => ContextManager as LevelManager;
+		set => ContextManager = value;
+	}
+	public MenuManager MenuManager {
+		get => ContextManager as MenuManager;
+		set => ContextManager = value;
 	}
 
 	public static readonly int MenuBuildIndex = 0;
-	public static readonly int LevelSelectBuildIndex = 1;
-	public static readonly int LoadSceneBuildIndex = 2;
+	public static readonly int LoadSceneBuildIndex = 1;
 
 	private LoadScreen loadScreen;
 	
@@ -116,9 +111,12 @@ public class GameManager : Singleton<GameManager> {
 		);
 	}	
 
-	public void LoadScene(int buildIndex, Coroutine waitUntil) {
+	public void LoadScene(int buildIndex, Coroutine waitUntil, Action onSceneSwitch = null) {
 		ShowLoadScreen(true);
-		StartCoroutine(LoadSceneAsync(buildIndex, waitUntil, null, () => ShowLoadScreen(false)));	
+		StartCoroutine(LoadSceneAsync(buildIndex, waitUntil, null, () => {
+			onSceneSwitch();
+			ShowLoadScreen(false);
+		}));	
 	}
 
 	public void UnloadScene(int buildIndex, Action<AsyncOperation> callback = null) {

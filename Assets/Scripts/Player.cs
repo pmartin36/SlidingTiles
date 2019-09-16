@@ -80,7 +80,7 @@ public class Player : MonoBehaviour, ISquishable {
 		
 	}
 
-	public void OnJumpInputDown() {
+	public void Spring(Vector3 direction) {
 		//if (wallSliding) {
 		//	if (wallDirX == moveDirection) {
 		//		velocity.x = -wallDirX * wallJumpClimb.x;
@@ -95,23 +95,17 @@ public class Player : MonoBehaviour, ISquishable {
 		//		velocity.y = wallLeap.y;
 		//	}
 		//}
-		if (controller.collisions.below) {
-			if (controller.collisions.slidingDownMaxSlope) {
-				if (moveDirection != -Mathf.Sign (controller.collisions.slopeNormal.x)) { // not jumping against max slope
-					velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
-					velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
-				}
-			} else {
-				velocity.y = maxJumpVelocity;
-			}
+		//if (controller.collisions.slidingDownMaxSlope) {
+		//	if (moveDirection != -Mathf.Sign (controller.collisions.slopeNormal.x)) { // not jumping against max slope
+		//		velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
+		//		velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
+		//	}
+		//} 
+		velocity = maxJumpVelocity * 1.8f * direction;
+		if(Mathf.Abs(direction.x) > 0.1f) {
+			moveDirection = Mathf.Sign(direction.x);
 		}
-	}
-
-	public void OnJumpInputUp() {
-		if (velocity.y > minJumpVelocity) {
-			velocity.y = minJumpVelocity;
-		}
-	}		
+	}	
 
 	void HandleWallSliding() {
 		//wallDirX = (controller.collisions.left) ? -1 : 1;
@@ -158,8 +152,8 @@ public class Player : MonoBehaviour, ISquishable {
 	}
 
 	void CalculateVelocity() {
-		float targetVelocityX = moveDirection * moveSpeed;
-		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
+		//float targetVelocityX = moveDirection * moveSpeed;
+		velocity.x = Mathf.SmoothDamp (Mathf.Abs(velocity.x), moveSpeed, ref velocityXSmoothing, 0.5f) * moveDirection;
 		velocity.y += gravity * Time.deltaTime;
 	}
 
@@ -205,6 +199,11 @@ public class Player : MonoBehaviour, ISquishable {
 		}
 		else if(collision.CompareTag("Reset")) {
 			SetAlive(false);
+		}
+		else if(collision.CompareTag("Spring")) {
+			Spring s = collision.GetComponent<Spring>();
+			Spring(s.GetSpringDirection());
+			s.Sprung();
 		}
 	}
 

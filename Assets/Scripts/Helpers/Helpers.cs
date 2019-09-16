@@ -81,6 +81,10 @@ public static class VectorHelpers {
 		}
 		return v;
 	}
+
+	public static Vector3 Rotate(this Vector3 v, float angle) {
+		return Quaternion.Euler(0,0,angle) * v;
+	}
 }
 
 public static class GeneralHelpers {

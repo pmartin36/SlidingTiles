@@ -6,36 +6,32 @@ public class InputManager : MonoBehaviour
 {
 	private Camera main;
 	private InputPackage last;
+	protected InputPackage p;
 
 	public ContextManager ContextManager { get; set; }
 
-	private void Start() {
+	protected void Start() {
 		main = Camera.main;
+		p = new InputPackage();
 	}
 
-	private void Update() {
-		InputPackage p = new InputPackage();
-
+	protected virtual void Update() {
 		if(ContextManager.AcceptingInputs) {
 			p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
-			p.LeftMouse = Input.GetButton("LeftMouse");
+			p.Touchdown = Input.GetButton("LeftMouse");
 			if(last != null) {
-				p.LeftMouseChange = p.LeftMouse ^ last.LeftMouse;
+				p.TouchdownChange = p.Touchdown ^ last.Touchdown;
 				p.MousePositionWorldSpaceDelta = p.MousePositionWorldSpace - last.MousePositionWorldSpace;
 			}
 			else {
-				p.LeftMouseChange = false;
+				p.TouchdownChange = false;
 				p.MousePositionWorldSpaceDelta = Vector3.zero;
-			}
-		
-
-			p.Horizontal = Input.GetAxis("Horizontal");
-			p.Vertical = Input.GetAxis("Vertical");		
+			}		
 		}
 
 		// handle inputs must still be called
 		ContextManager.HandleInput(p);
-		last = p;
+		last = new InputPackage(p);
 	}
 }
 
@@ -43,17 +39,15 @@ public class InputPackage {
 	public Vector3 MousePositionWorldSpace { get; set; }
 	public Vector3 MousePositionWorldSpaceDelta { get; set; }
 
-	public float MouseWheelDelta { get; set; }
-	public bool LeftMouse { get; set; }
-	public bool LeftMouseChange { get; set; }
-	public bool RightMouse { get; set; }
-	public bool Shift { get; set; }
+	public bool Touchdown { get; set; }
+	public bool TouchdownChange { get; set; }
 
-	public bool Enter { get; set; }
-	public float GasAmount { get; set; }
-	public bool Break { get; set; }
-	public bool Dash { get; set; }
-	public bool Jump { get; set; }
-	public float Horizontal { get; set; }
-	public float Vertical { get; set; }
+	public InputPackage() {}
+	public InputPackage(InputPackage p) {
+		MousePositionWorldSpace = p.MousePositionWorldSpace;
+		MousePositionWorldSpaceDelta = p.MousePositionWorldSpaceDelta;
+
+		Touchdown = p.Touchdown;
+		TouchdownChange = p.TouchdownChange;
+	}
 }

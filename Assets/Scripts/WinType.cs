@@ -25,6 +25,8 @@ public abstract class WinType : MonoBehaviour {
 	[SerializeField]
 	protected RectTransform frontPanel; 
 
+	public GameObject Arrows;
+
 	protected Vector2 Position {
 		get => frontPanel.anchoredPosition;
 		set => frontPanel.anchoredPosition = value;
