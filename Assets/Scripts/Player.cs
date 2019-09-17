@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent (typeof (Controller2D))]
-public class Player : MonoBehaviour, ISquishable {
+public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable {
 
 	public event System.EventHandler<bool> aliveChanged;
 
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour, ISquishable {
 		
 	}
 
-	public void Spring(Vector3 direction) {
+	public void Spring(Vector2 direction) {
 		//if (wallSliding) {
 		//	if (wallDirX == moveDirection) {
 		//		velocity.x = -wallDirX * wallJumpClimb.x;
@@ -192,6 +192,7 @@ public class Player : MonoBehaviour, ISquishable {
 
 	public void OnTriggerEnter2D(Collider2D collision) {
 		if(collision.CompareTag("Flag")) { 
+			moveDirection = 0f;
 			collision.GetComponent<GoalFlag>().PlayerReached();
 		}
 		else if(collision.CompareTag("Star")) {
@@ -199,11 +200,6 @@ public class Player : MonoBehaviour, ISquishable {
 		}
 		else if(collision.CompareTag("Reset")) {
 			SetAlive(false);
-		}
-		else if(collision.CompareTag("Spring")) {
-			Spring s = collision.GetComponent<Spring>();
-			Spring(s.GetSpringDirection());
-			s.Sprung();
 		}
 	}
 
@@ -217,5 +213,9 @@ public class Player : MonoBehaviour, ISquishable {
 
 	public void OnDestroy() {
 		aliveChanged = null;
+	}
+
+	public void ChangeGravity(float g) {
+		gravity = Mathf.Abs(gravity) * g;
 	}
 }

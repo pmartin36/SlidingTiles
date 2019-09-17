@@ -20,7 +20,7 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void Reset() {
-		
+		GameManager.Instance.LevelManager.Reset(false);
 	}
 
 	public void Menu() {

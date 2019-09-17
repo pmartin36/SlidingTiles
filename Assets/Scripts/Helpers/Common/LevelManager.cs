@@ -138,10 +138,13 @@ public class LevelManager : ContextManager {
 		collectedStars++;
 	}
 
-	private void Reset() {
-		winType.Hide();
+	public void Reset(bool shouldUnblack = true) {
+		if(shouldUnblack) {
+			winType.Hide();
+		}
 		goalFlag?.Reset();
 		Grid?.Reset();
+		RespawnManager.Player?.SetAlive(false);
 		StartCoroutine(winType.WhenTilesOffScreen(() => {
 			Won = false;
 			winType.Reset();
@@ -156,7 +159,6 @@ public class LevelManager : ContextManager {
 			SelectedTile = null;
 		}
 		grabPoint = new Vector2(1000,1000);
-		RespawnManager.Player?.SetAlive(false);
 		winType.Run(collectedStars);
 
 		cts = new CancellationTokenSource();
