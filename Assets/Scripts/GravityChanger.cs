@@ -13,6 +13,8 @@ public class GravityChanger : MonoBehaviour
 	private Dictionary<Transform, Vector3> stoppers = new Dictionary<Transform, Vector3>();
 	private bool shouldRecalculateMesh;
 
+	private Vector3 lastPosition;
+
 	void Start() {
 		meshMask = GetComponent<MeshFilter>();
 		poly = GetComponent<PolygonCollider2D>();
@@ -20,14 +22,23 @@ public class GravityChanger : MonoBehaviour
 		RecalculateMesh();
 
 		MeshRenderer mr = GetComponent<MeshRenderer>();
-		mr.sortingLayerName = "Front";
-		mr.sortingOrder = 2;
+		mr.sortingLayerName = "Platforms";
+		mr.sortingOrder = 1;
+
+		lastPosition = transform.position;
     }
 
     void Update() {
-		foreach(var d in stoppers) {
-			if((d.Key.transform.position - d.Value).sqrMagnitude > 0.1f) {
+		if(!shouldRecalculateMesh) {
+			foreach(var d in stoppers) {
+				if((d.Key.transform.position - d.Value).sqrMagnitude > 0.000002f) {
+					shouldRecalculateMesh = true;
+				}
+			}
+
+			if((transform.position - lastPosition).sqrMagnitude > 0.000002f) {
 				shouldRecalculateMesh = true;
+				lastPosition = transform.position;
 			}
 		}
 
@@ -40,7 +51,7 @@ public class GravityChanger : MonoBehaviour
 	public void OnTriggerEnter2D(Collider2D collision) {
 		IGravityChangable c = collision.GetComponent<IGravityChangable>();
 		if(c != null) {
-			c.ChangeGravity(Up ? 1f : -1f);
+			c.ChangeGravityDirection(Up ? 1f : -1f);
 		}
 		else if((1 << collision.gameObject.layer & collisionMask.value) > 0) {
 			if(!stoppers.ContainsKey(collision.transform)) {
@@ -85,12 +96,14 @@ public class GravityChanger : MonoBehaviour
 		
 		foreach(Transform t in transformsHit) {
 			// remove or update stoppers
-			if (stoppers.ContainsKey(t)) {
-				stoppers[t] = t.transform.position;
-			}
-			else {
-				stoppers.Remove(t);
-			}
+			
+				if (stoppers.ContainsKey(t)) {
+					stoppers[t] = t.transform.position;
+				}
+				else {
+					stoppers.Remove(t);
+				}
+			
 		}
 		
 		Vector3[] vertices = new Vector3[points.Count];

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable {
 
 	public event System.EventHandler<bool> aliveChanged;
+	public static event System.EventHandler<float> gravityDirectionChanged;
 
     public bool WasSquishedThisFrame { get; set; }
 	public Vector3 UnsquishedDimensions { get; set; }
@@ -207,6 +208,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		this.gameObject.SetActive(alive);
 		transform.position = initialPosition;
 		moveDirection = 1f;
+		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;
 		aliveChanged?.Invoke(this, alive);
 	}
@@ -215,7 +217,10 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		aliveChanged = null;
 	}
 
-	public void ChangeGravity(float g) {
-		gravity = Mathf.Abs(gravity) * g;
+	public void ChangeGravityDirection(float g) {
+		if(Mathf.Sign(gravity) * Mathf.Sign(g) < 0.0001f) {
+			gravity = Mathf.Abs(gravity) * g;
+			gravityDirectionChanged?.Invoke(this, g);
+		}
 	}
 }
