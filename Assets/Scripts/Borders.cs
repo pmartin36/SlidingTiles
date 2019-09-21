@@ -16,8 +16,8 @@ public class Borders : MonoBehaviour
     public void GravityDirectionChanged(object sender, float newGravity) {
 		if(newGravity * GravityDirection < 0.0001f) {
 			float dir = Mathf.Sign(newGravity);
-			TopBorder.transform.position += Vector3.up * dir * 2;
-			BottomBorder.transform.position += Vector3.up * dir * 2;
+			TopBorder.offset += Vector2.up * dir * 0.4f;
+			BottomBorder.offset += Vector2.up * dir * 0.4f;
 
 			if(dir > 0.0001f) {
 				TopBorder.isTrigger = true;

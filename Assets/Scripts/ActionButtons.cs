@@ -12,7 +12,7 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void Spawn() {
-		GameManager.Instance.LevelManager.RespawnManager.RespawnPlayer();
+		GameManager.Instance.LevelManager.Respawn();
 	}
 
 	public void HighlightSpawn(bool highlight) {
@@ -20,7 +20,7 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void Reset() {
-		GameManager.Instance.LevelManager.Reset(false);
+		GameManager.Instance.LevelManager.Reset(true);
 	}
 
 	public void Menu() {

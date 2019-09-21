@@ -36,7 +36,7 @@ public class LevelManager : ContextManager {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 	}
 
-	public void Init() {
+	public virtual void Init() {
 		winType = FindObjectOfType<WinType>();
 		RespawnManager = new RespawnManager();
 	}
@@ -74,7 +74,7 @@ public class LevelManager : ContextManager {
 							GameManager.Instance.LoadScene(GameManager.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
 							break;
 						case WinTypeAction.Reset:
-							Reset();
+							Reset(false);
 							break;
 						case WinTypeAction.LevelSelect:
 							GameManager.Instance.LoadScene(
@@ -138,10 +138,15 @@ public class LevelManager : ContextManager {
 		collectedStars++;
 	}
 
-	public void Reset(bool shouldUnblack = true) {
-		if(shouldUnblack) {
+	public virtual void Respawn() {
+		RespawnManager.RespawnPlayer();
+	}
+
+	public virtual void Reset(bool fromButton) {
+		if(!fromButton) {
 			winType.Hide();
 		}
+		collectedStars = 0;
 		goalFlag?.Reset();
 		Grid?.Reset();
 		RespawnManager.Player?.SetAlive(false);

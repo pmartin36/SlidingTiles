@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class RowWin : WinType
 {
-	public override void Run(int stars) {	
+	public override void Run(int stars, int availableStars = 3) {	
 		GetComponent<Animator>().Play("rowwin");
-		base.Run(stars);
+		base.Run(stars, availableStars);
 	}
 
 	public override void Reset() {

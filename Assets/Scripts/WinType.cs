@@ -40,7 +40,7 @@ public abstract class WinType : MonoBehaviour {
 		ActionThreshold = new Vector2(800, 450);
 	}
 
-	public virtual void Run(int stars) {
+	public virtual void Run(int stars, int availableStars = 3) {
 		frontPanel.gameObject.SetActive(true);
 		IsAnimating = true;
 		for (int i = 0; i < stars; i++) {

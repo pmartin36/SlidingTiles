@@ -15,6 +15,8 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	public float minJumpHeight = 1;
 	public float timeToJumpApex = .4f;
 
+	public bool Ghost;
+
 	private float accelerationTimeAirborne = .2f;
 	private float accelerationTimeGrounded = .1f;
 	private float moveSpeed = 6;
@@ -28,8 +30,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	private Controller2D controller;
 
 	private float moveDirection;
-
-	private Vector3 initialPosition;
+	private Vector3 spawnPosition;
 
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
@@ -45,15 +46,17 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	//int wallDirX;
 
 	void Start() {
-		controller = GetComponent<Controller2D> ();
-
-		gravity = -(2 * maxJumpHeight) / Mathf.Pow (timeToJumpApex, 2);
+		gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
-		minJumpVelocity = Mathf.Sqrt (2 * Mathf.Abs (gravity) * minJumpHeight);
+		minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
 		moveDirection = 1f;
 
 		UnsquishedDimensions = transform.localScale;
-		initialPosition = transform.position;
+		controller = GetComponent<Controller2D> ();
+
+		// player is set inactive in the respawn manager,
+		// when switching to next level, we don't initialize LevelManager/RespawnManager 
+		// until after the current scene is unloaded (see case WinTypeAction.Next)
 	}
 
 	void Update() {
@@ -192,21 +195,23 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	}
 
 	public void OnTriggerEnter2D(Collider2D collision) {
-		if(collision.CompareTag("Flag")) { 
-			moveDirection = 0f;
-			collision.GetComponent<GoalFlag>().PlayerReached();
-		}
-		else if(collision.CompareTag("Star")) {
-			collision.GetComponent<Star>().Collected();
-		}
-		else if(collision.CompareTag("Reset")) {
+		if (collision.CompareTag("Reset")) {
 			SetAlive(false);
+		}
+		else if(!Ghost) {
+			if (collision.CompareTag("Flag")) { 
+				moveDirection = 0f;
+				collision.GetComponent<GoalFlag>().PlayerReached();
+			}
+			else if(collision.CompareTag("Star")) {
+				collision.GetComponent<Star>().Collected();
+			}
 		}
 	}
 
-	public void SetAlive(bool alive) {
+	public void SetAlive(bool alive, Vector3? position = null) {
 		this.gameObject.SetActive(alive);
-		transform.position = initialPosition;
+		transform.position = position.HasValue ? position.Value : transform.position;
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;

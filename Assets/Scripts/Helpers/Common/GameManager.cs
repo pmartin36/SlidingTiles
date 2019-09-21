@@ -29,6 +29,7 @@ public class GameManager : Singleton<GameManager> {
 
 	public static readonly int MenuBuildIndex = 0;
 	public static readonly int LoadSceneBuildIndex = 1;
+	public static readonly int TutorialLevelStart = 2;
 
 	private LoadScreen loadScreen;
 	
@@ -64,11 +65,20 @@ public class GameManager : Singleton<GameManager> {
 		for(int i = 0; i < SceneManager.sceneCount; i++) {
 			Scene s = SceneManager.GetSceneAt(i);
 			if (s.isLoaded && s.buildIndex != LoadSceneBuildIndex) {
-				buildIndex = s.buildIndex;
-				break;
+				return s.buildIndex;
 			}
 		}
 		return buildIndex;
+	}
+
+	public string GetSceneName() {
+		for (int i = 0; i < SceneManager.sceneCount; i++) {
+			Scene s = SceneManager.GetSceneAt(i);
+			if (s.buildIndex != LoadSceneBuildIndex) {
+				return s.name;
+			}
+		}
+		return "";
 	}
 
 	private IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {

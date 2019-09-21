@@ -10,13 +10,20 @@ public class MenuManager : ContextManager {
 	[SerializeField]
 	private GameObject LevelSelectScreen;
 
+	bool temp_hasUserData = false;
+
 	public void Start() {
 		GetComponent<InputManager>().ContextManager = this;
 	}
 
 	public override void HandleInput(InputPackage p) {
 		if(!LevelSelectOpen && p.Touchdown)  {
-			OpenLevelSelect(true);
+			if(temp_hasUserData) {
+				OpenLevelSelect(true);
+			}
+			else {
+				GameManager.Instance.LoadScene(GameManager.TutorialLevelStart, null);
+			}
 		}
 	}
 
