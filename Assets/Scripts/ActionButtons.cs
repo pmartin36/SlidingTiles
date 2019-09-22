@@ -6,9 +6,8 @@ public class ActionButtons : MonoBehaviour
 {
 	private Animator animator;
 
-	public void Start() {
+	public void Awake() {
 		animator = GetComponent<Animator>();
-		animator.SetBool("highlight", true);
 	}
 
 	public void Spawn() {

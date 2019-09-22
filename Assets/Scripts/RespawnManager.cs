@@ -12,13 +12,15 @@ public class RespawnManager
 
 	public ActionButtons ActionButtons;
 
-    public RespawnManager() {
+    public RespawnManager(bool highlight = true) {
 		Player = GameObject.FindObjectOfType<Player>();
 		PlayerSpawnPosition = Player.transform.position;
-		Player.gameObject.SetActive(false);
+		Player.gameObject.SetActive(false);	
 
 		Stars = GameObject.FindObjectsOfType<Star>();
 		ActionButtons = GameObject.FindObjectOfType<ActionButtons>();
+		ActionButtons.HighlightSpawn(highlight);
+
 		Player.aliveChanged += PlayerAliveChange;
     }
 

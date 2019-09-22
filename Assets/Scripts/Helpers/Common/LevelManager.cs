@@ -10,18 +10,18 @@ public class LevelManager : ContextManager {
 
 	public Grid Grid { get; set; }
 
-	private LayerMask tileMask;
-	private Tile SelectedTile;
-	private Vector3 grabPoint;
-	private Vector3 grabReleasePoint;
+	protected LayerMask tileMask;
+	protected Tile SelectedTile;
+	protected Vector3 grabPoint;
+	protected Vector3 grabReleasePoint;
 
-	private WinType winType;
-	private int collectedStars;
-	private GoalFlag goalFlag;
+	protected WinType winType;
+	protected int collectedStars;
+	protected GoalFlag goalFlag;
 
-	private CancellationTokenSource cts;
+	protected CancellationTokenSource cts;
 
-	public RespawnManager RespawnManager { get; private set; }
+	public RespawnManager RespawnManager { get; protected set; }
 	public bool Won { get; set; }
 	public override bool AcceptingInputs => winType == null || !winType.ActionSelected;
 
@@ -38,6 +38,10 @@ public class LevelManager : ContextManager {
 
 	public virtual void Init() {
 		winType = FindObjectOfType<WinType>();
+		CreateRespawnManager();
+	}
+
+	public virtual void CreateRespawnManager() {
 		RespawnManager = new RespawnManager();
 	}
 

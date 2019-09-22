@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class TutorialManager : LevelManager
 {
-	public GameObject Arrow;
+	public SpriteRenderer Finger;
 	public GameObject Ghost;
 
-	public GameObject TutorialTile;
-	public GameObject ActualTile;
+	public GameObject[] TutorialTiles;
+	public GameObject[] ActualTiles;
 
 	private Animator anim;
-	private Vector3 TutorialTileLastPosition;
+	private Vector3[] TutorialTileLastPositions;
 
     public override void Start() {
 		base.Start();
-		ActualTile.SetActive(false);
+		foreach(GameObject o in ActualTiles) {
+			o.SetActive(false);
+		}
+		TutorialTileLastPositions = new Vector3[TutorialTiles.Length];
 	}
 
 	public override void Init() {
@@ -24,16 +27,24 @@ public class TutorialManager : LevelManager
 		PlayAnimation();
 	}
 
-	public override void Reset(bool fromButton) {
-		// Arrow.SetActive(true);
+	public override void CreateRespawnManager() {
+		RespawnManager = new RespawnManager(false);
+	}
 
+	public override void Reset(bool fromButton) {
 		Ghost.transform.position = RespawnManager.PlayerSpawnPosition;
 		Ghost.SetActive(true);
 
-		ActualTile.SetActive(false);
-		TutorialTile.transform.position = ActualTile.transform.position;
-		TutorialTileLastPosition = ActualTile.transform.position;
-		TutorialTile.SetActive(true);
+		for(int i = 0; i < TutorialTiles.Length; i++) {
+			GameObject TutorialTile = TutorialTiles[i];
+			GameObject ActualTile = ActualTiles[i];
+			ActualTile.SetActive(false);
+			TutorialTile.transform.position = ActualTile.transform.position;
+			TutorialTileLastPositions[i] = ActualTile.transform.position;
+			TutorialTile.SetActive(true);
+		}	
+
+		Finger.gameObject.SetActive(true);
 
 		PlayAnimation();
 		base.Reset(fromButton);
@@ -41,17 +52,28 @@ public class TutorialManager : LevelManager
 
 	public override void Respawn() {
 		Ghost.SetActive(false);
-		// Arrow.SetActive(false);
+		Finger.gameObject.SetActive(false);
 
-		ActualTile.SetActive(true);
-		TutorialTile.SetActive(false);
+		for (int i = 0; i < TutorialTiles.Length; i++) {
+			ActualTiles[i].SetActive(true);
+			TutorialTiles[i].SetActive(false);
+		}	
 
 		anim.enabled = false;
 		base.Respawn();
 	}
 
 	public void EndAnimation() {
-		Reset(true);
+		Ghost.SetActive(false);
+		Finger.gameObject.SetActive(false);
+
+		for (int i = 0; i < TutorialTiles.Length; i++) {
+			ActualTiles[i].SetActive(true);
+			TutorialTiles[i].SetActive(false);
+		}
+		
+		RespawnManager.ActionButtons.HighlightSpawn(true);
+		anim.enabled = false;
 	}
 
 	public void PlayAnimation() {

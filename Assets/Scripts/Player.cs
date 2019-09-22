@@ -32,6 +32,8 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	private float moveDirection;
 	private Vector3 spawnPosition;
 
+	private SpriteRenderer spriteRenderer;
+
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
 	//public float wallStickTime = .25f;
@@ -44,6 +46,11 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	//public Vector2 wallLeap;
 	//bool wallSliding;
 	//int wallDirX;
+
+	void Awake() {
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer.enabled = false; //disable so sprite doesn't show while level loading
+	}
 
 	void Start() {
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
@@ -211,6 +218,10 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 
 	public void SetAlive(bool alive, Vector3? position = null) {
 		this.gameObject.SetActive(alive);
+
+		spriteRenderer = spriteRenderer ?? GetComponent<SpriteRenderer>();
+		spriteRenderer.enabled = alive;
+
 		transform.position = position.HasValue ? position.Value : transform.position;
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
