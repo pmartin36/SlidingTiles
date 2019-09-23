@@ -35,13 +35,14 @@ public class GameManager : Singleton<GameManager> {
 	
 	// public PlayerData PlayerData { get; set; }
 
-	private bool InProgressSceneSwitch = false;
+	public StoreCommunicator StoreCommunicator;
 
 	public void Awake() {
 		// TODO: Load saved PlayerData
 		// PlayerData = new PlayerData(2f, 1.25f, 0.2f);
 		ContextManager = GameObject.FindObjectOfType<ContextManager>();
 		SceneManager.LoadSceneAsync(LoadSceneBuildIndex, LoadSceneMode.Additive);
+		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 	}
 
 	public void HandleInput(InputPackage p) {
