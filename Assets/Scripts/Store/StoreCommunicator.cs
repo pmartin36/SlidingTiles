@@ -4,11 +4,12 @@ public abstract class StoreCommunicator {
 	public static StoreCommunicator StoreCommunicatorFactory() {
 		switch (Application.platform) {
 			case RuntimePlatform.OSXEditor:
-			case RuntimePlatform.OSXPlayer:
-			case RuntimePlatform.WindowsPlayer:
 			case RuntimePlatform.WindowsEditor:
-			case RuntimePlatform.LinuxPlayer:
 			case RuntimePlatform.LinuxEditor:
+				return new TestCommunicator();
+			case RuntimePlatform.OSXPlayer:
+			case RuntimePlatform.WindowsPlayer:	
+			case RuntimePlatform.LinuxPlayer:		
 				return new SteamCommunicator();
 			case RuntimePlatform.IPhonePlayer:
 				return new AppleCommunicator();
