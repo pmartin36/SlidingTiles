@@ -9,6 +9,10 @@ public class MenuInputManager : InputManager
 
 	protected override void Update() {
 		p.Touchdown = Input.GetButton("LeftMouse") && !EventSystem.IsPointerOverGameObject(-1);
+		if (last != null) {
+			p.TouchdownChange = p.Touchdown ^ last.Touchdown;
+		}
 		ContextManager.HandleInput(p);
+		last = new InputPackage(p);
 	}
 }

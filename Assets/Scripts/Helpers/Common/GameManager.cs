@@ -40,6 +40,7 @@ public class GameManager : Singleton<GameManager> {
 	public void Awake() {
 		// TODO: Load saved PlayerData
 		// PlayerData = new PlayerData(2f, 1.25f, 0.2f);
+		ContextManager = GameObject.FindObjectOfType<ContextManager>();
 		SceneManager.LoadSceneAsync(LoadSceneBuildIndex, LoadSceneMode.Additive);
 	}
 
@@ -93,17 +94,20 @@ public class GameManager : Singleton<GameManager> {
 		yield return new WaitUntil(() => asyncLoad.progress >= 0.9f); //when allowsceneactive is false, progress stops at .9f
 
 		if(cts != null && cts.IsCancellationRequested) {
-			ContextManager tContext = ContextManager;
 			asyncLoad.allowSceneActivation = true;
 			yield return new WaitUntil(() => asyncLoad.isDone);
 			SceneManager.UnloadSceneAsync(buildIndex);
-			ContextManager = tContext;
 		}
 		else {
-			Scene currentScene = SceneManager.GetActiveScene();
+			int currentScene = GetCurrentLevelBuildIndex();
+
 			asyncLoad.allowSceneActivation = true;
+			yield return new WaitUntil(() => asyncLoad.isDone);
+
+			ContextManager = GameObject.FindObjectsOfType<ContextManager>().First(g => g.gameObject.scene.buildIndex == buildIndex);
 			onSceneSwitch?.Invoke();
-			if(shouldUnloadCurrentScene) {
+
+			if (shouldUnloadCurrentScene) {
 				SceneManager.UnloadSceneAsync(currentScene);
 			}
 		}
@@ -124,7 +128,7 @@ public class GameManager : Singleton<GameManager> {
 	public void LoadScene(int buildIndex, Coroutine waitUntil, Action onSceneSwitch = null) {
 		ShowLoadScreen(true);
 		StartCoroutine(LoadSceneAsync(buildIndex, waitUntil, null, () => {
-			onSceneSwitch();
+			onSceneSwitch?.Invoke();		
 			ShowLoadScreen(false);
 		}));	
 	}

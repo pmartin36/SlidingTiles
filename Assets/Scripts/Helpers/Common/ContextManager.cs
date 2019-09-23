@@ -4,10 +4,10 @@ using UnityEngine;
 
 public abstract class ContextManager : MonoBehaviour
 {
-	public virtual bool AcceptingInputs => true;
+	public bool AcceptingInputs { get; set; } = true;
 
 	public virtual void Awake() {
-		GameManager.Instance.ContextManager = this;
+		// GameManager.Instance.ContextManager = this;
 	}
 
 	public virtual void Start() {

@@ -19,19 +19,16 @@ public class TutorialManager : LevelManager
 			o.SetActive(false);
 		}
 		TutorialTileLastPositions = new Vector3[TutorialTiles.Length];
-	}
-
-	public override void Init() {
-		base.Init();
 		anim = GetComponent<Animator>();
 		PlayAnimation();
 	}
 
 	public override void CreateRespawnManager() {
-		RespawnManager = new RespawnManager(false);
+		RespawnManager = new RespawnManager(gameObject.scene, false);
 	}
 
 	public override void Reset(bool fromButton) {
+		base.Reset(fromButton);
 		Ghost.transform.position = RespawnManager.PlayerSpawnPosition;
 		Ghost.SetActive(true);
 
@@ -45,9 +42,9 @@ public class TutorialManager : LevelManager
 		}	
 
 		Finger.gameObject.SetActive(true);
+		RespawnManager.ActionButtons.HighlightSpawn(false);
 
-		PlayAnimation();
-		base.Reset(fromButton);
+		PlayAnimation();	
     }
 
 	public override void Respawn() {
@@ -78,6 +75,6 @@ public class TutorialManager : LevelManager
 
 	public void PlayAnimation() {
 		anim.enabled = true;
-		anim.Play("Tutorial_" + GameManager.Instance.GetSceneName(), -1, 0);
+		anim.Play("Tutorial_" + gameObject.scene.name, -1, 0);
 	}
 }

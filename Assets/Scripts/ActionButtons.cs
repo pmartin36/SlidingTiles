@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class ActionButtons : MonoBehaviour
 {
-	private Animator animator;
-
-	public void Awake() {
-		animator = GetComponent<Animator>();
+	private Animator _animator;
+	private Animator Animator {
+		get {
+			_animator = _animator ?? GetComponent<Animator>();
+			return _animator;
+		}
 	}
 
 	public void Spawn() {
@@ -15,7 +17,7 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void HighlightSpawn(bool highlight) {
-		animator.SetBool("highlight", highlight);
+		Animator.SetBool("highlight", highlight);
 	}
 
 	public void Reset() {

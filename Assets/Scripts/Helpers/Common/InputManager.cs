@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
 	private Camera main;
-	private InputPackage last;
+	protected InputPackage last;
 	protected InputPackage p;
 
 	public ContextManager ContextManager { get; set; }

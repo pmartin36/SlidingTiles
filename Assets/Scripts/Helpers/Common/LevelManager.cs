@@ -23,26 +23,26 @@ public class LevelManager : ContextManager {
 
 	public RespawnManager RespawnManager { get; protected set; }
 	public bool Won { get; set; }
-	public override bool AcceptingInputs => winType == null || !winType.ActionSelected;
 
 	public override void Awake() {
-		if(GameManager.Instance.LevelManager == null) {
-			// if we're not coming from another level, init now
-			// otherwise, we'll init when the other level is removed
-			Init();
-		}
-		base.Awake();
-		GetComponent<InputManager>().ContextManager = this;
+		base.Awake();	
+		GetComponent<InputManager>().ContextManager = this;	
+	}
+
+	public override void Start() {
+		base.Start();
+		Init();
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 	}
 
 	public virtual void Init() {
-		winType = FindObjectOfType<WinType>();
+		Grid = FindObjectsOfType<Grid>().First(g => g.gameObject.scene == this.gameObject.scene);
+		winType = FindObjectsOfType<WinType>().First(g => g.gameObject.scene == this.gameObject.scene);
 		CreateRespawnManager();
 	}
 
 	public virtual void CreateRespawnManager() {
-		RespawnManager = new RespawnManager();
+		RespawnManager = new RespawnManager(gameObject.scene);
 	}
 
 	public override void HandleInput(InputPackage p) {
@@ -50,7 +50,7 @@ public class LevelManager : ContextManager {
 			if(!winType.IsAnimating) {
 				WinTypeAction w = WinTypeAction.None;
 				if(p.Touchdown) {
-					if(p.TouchdownChange || grabPoint.sqrMagnitude > 1000f) {
+					if(p.TouchdownChange || grabPoint.sqrMagnitude > 100000f) {
 						grabPoint = p.MousePositionWorldSpace;
 						grabReleasePoint = Vector2.zero;
 					}
@@ -63,10 +63,12 @@ public class LevelManager : ContextManager {
 					if(p.TouchdownChange) {
 						grabReleasePoint = p.MousePositionWorldSpace;
 					}
-					w = winType.SetPositionNoGrab(grabReleasePoint);
+					w = winType.SetPositionNoGrab(grabReleasePoint - grabPoint);
 				}
 
 				if(w != WinTypeAction.None) {
+					AcceptingInputs = false;
+
 					int currentScene = GameManager.Instance.GetCurrentLevelBuildIndex();
 					// if we're not going to the next scene, cancel the load of the next scene
 					if(w != WinTypeAction.Next) {
@@ -88,13 +90,14 @@ public class LevelManager : ContextManager {
 							);
 							break;
 						case WinTypeAction.Next:
+							// Destroy Objects in back so during unblack they are not present (also speeds up unloading)
 							winType.Hide();
 							Destroy(Grid.gameObject);
 							RespawnManager.Destroy();
+
+							// once the tiles are offscreen, we can finally unload the level
 							StartCoroutine(winType.WhenTilesOffScreen(() => {
-								GameManager.Instance.UnloadScene(currentScene, (a) => {
-									GameManager.Instance.LevelManager.Init(); // not this one
-								});
+								GameManager.Instance.UnloadScene(currentScene, null);
 							}));
 							break;
 					}				
@@ -150,6 +153,7 @@ public class LevelManager : ContextManager {
 		if(!fromButton) {
 			winType.Hide();
 		}
+		AcceptingInputs = true;
 		collectedStars = 0;
 		goalFlag?.Reset();
 		Grid?.Reset();

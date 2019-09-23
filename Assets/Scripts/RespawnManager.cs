@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RespawnManager
 {
@@ -12,13 +11,13 @@ public class RespawnManager
 
 	public ActionButtons ActionButtons;
 
-    public RespawnManager(bool highlight = true) {
-		Player = GameObject.FindObjectOfType<Player>();
+    public RespawnManager(Scene scene, bool highlight = true) {
+		Player = GameObject.FindObjectsOfType<Player>().First(g => g.gameObject.scene == scene);
 		PlayerSpawnPosition = Player.transform.position;
 		Player.gameObject.SetActive(false);	
 
-		Stars = GameObject.FindObjectsOfType<Star>();
-		ActionButtons = GameObject.FindObjectOfType<ActionButtons>();
+		Stars = GameObject.FindObjectsOfType<Star>().Where(g => g.gameObject.scene == scene).ToArray();
+		ActionButtons = GameObject.FindObjectsOfType<ActionButtons>().First(g => g.gameObject.scene == scene);
 		ActionButtons.HighlightSpawn(highlight);
 
 		Player.aliveChanged += PlayerAliveChange;
