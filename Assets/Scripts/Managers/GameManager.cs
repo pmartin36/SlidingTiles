@@ -32,16 +32,16 @@ public class GameManager : Singleton<GameManager> {
 	public static readonly int TutorialLevelStart = 2;
 
 	private LoadScreen loadScreen;
-	
-	// public PlayerData PlayerData { get; set; }
+	public StoreCommunicator StoreCommunicator { get; set; }
 
-	private bool InProgressSceneSwitch = false;
+	// public PlayerData PlayerData { get; set; }
 
 	public void Awake() {
 		// TODO: Load saved PlayerData
 		// PlayerData = new PlayerData(2f, 1.25f, 0.2f);
 		ContextManager = GameObject.FindObjectOfType<ContextManager>();
 		SceneManager.LoadSceneAsync(LoadSceneBuildIndex, LoadSceneMode.Additive);
+		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 	}
 
 	public void HandleInput(InputPackage p) {
@@ -83,7 +83,6 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	private IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {
-		InProgressSceneSwitch = true;
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(buildIndex, LoadSceneMode.Additive);
 
 		asyncLoad.allowSceneActivation = false;
