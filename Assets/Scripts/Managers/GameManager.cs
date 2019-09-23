@@ -35,6 +35,7 @@ public class GameManager : Singleton<GameManager> {
 	public StoreCommunicator StoreCommunicator { get; set; }
 
 	// public PlayerData PlayerData { get; set; }
+	public StoreCommunicator StoreCommunicator;
 
 	public void Awake() {
 		// TODO: Load saved PlayerData

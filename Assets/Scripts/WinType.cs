@@ -44,10 +44,10 @@ public abstract class WinType : MonoBehaviour {
 		frontPanel.gameObject.SetActive(true);
 		IsAnimating = true;
 		for (int i = 0; i < Stars.Length; i++) {
-			if (i >= availableStars) {
+			if(i >= availableStars) {
 				Stars[i].color = Color.clear;
 			}
-			else if (stars > i) {
+			else if(stars > i) {
 				Stars[i].color = Color.white;
 			}
 		}
