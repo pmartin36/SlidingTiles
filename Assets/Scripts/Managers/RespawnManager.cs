@@ -14,7 +14,8 @@ public class RespawnManager
     public RespawnManager(Scene scene, bool highlight = true) {
 		Player = GameObject.FindObjectsOfType<Player>().First(g => g.gameObject.scene == scene);
 		PlayerSpawnPosition = Player.transform.position;
-		Player.gameObject.SetActive(false);	
+		Player.SetRespawnManager(this);
+		Player.SetAlive(false);	
 
 		Stars = GameObject.FindObjectsOfType<Star>().Where(g => g.gameObject.scene == scene).ToArray();
 		ActionButtons = GameObject.FindObjectsOfType<ActionButtons>().First(g => g.gameObject.scene == scene);
@@ -24,7 +25,7 @@ public class RespawnManager
     }
 
 	public void RespawnPlayer() {	
-		Player.SetAlive(true, PlayerSpawnPosition);
+		Player.SetAlive(true);
 		ActionButtons.HighlightSpawn(false);
 	}
 

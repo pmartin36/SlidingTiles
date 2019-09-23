@@ -32,7 +32,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	private float moveDirection;
 	private Vector3 spawnPosition;
 
-	private SpriteRenderer spriteRenderer;
+	private RespawnManager RespawnManager;
 
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
@@ -47,11 +47,6 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	//bool wallSliding;
 	//int wallDirX;
 
-	void Awake() {
-		spriteRenderer = GetComponent<SpriteRenderer>();
-		spriteRenderer.enabled = false; //disable so sprite doesn't show while level loading
-	}
-
 	void Start() {
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
@@ -64,6 +59,11 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		// player is set inactive in the respawn manager,
 		// when switching to next level, we don't initialize LevelManager/RespawnManager 
 		// until after the current scene is unloaded (see case WinTypeAction.Next)
+	}
+
+	public void SetRespawnManager(RespawnManager m) {
+		RespawnManager = m;
+		SetAlive(false);
 	}
 
 	void Update() {
@@ -216,13 +216,12 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		}
 	}
 
-	public void SetAlive(bool alive, Vector3? position = null) {
-		this.gameObject.SetActive(alive);
+	public void SetAlive(bool alive) {
+		this.controller.collider.enabled = alive;
+		this.enabled = alive;
 
-		spriteRenderer = spriteRenderer ?? GetComponent<SpriteRenderer>();
-		spriteRenderer.enabled = alive;
+		transform.position = RespawnManager.PlayerSpawnPosition;
 
-		transform.position = position.HasValue ? position.Value : transform.position;
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;

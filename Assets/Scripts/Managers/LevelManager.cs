@@ -172,7 +172,7 @@ public class LevelManager : ContextManager {
 			SelectedTile = null;
 		}
 		grabPoint = new Vector2(1000,1000);
-		winType.Run(collectedStars);
+		winType.Run(collectedStars, RespawnManager.Stars.Length);
 
 		cts = new CancellationTokenSource();
 		GameManager.Instance.AsyncLoadScene(GameManager.Instance.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
