@@ -33,6 +33,7 @@ public class GameManager : Singleton<GameManager> {
 
 	private LoadScreen loadScreen;
 	public StoreCommunicator StoreCommunicator { get; set; }
+	public bool IsMobilePlatform { get; set; }
 
 	// public PlayerData PlayerData { get; set; }
 
@@ -41,7 +42,9 @@ public class GameManager : Singleton<GameManager> {
 		// PlayerData = new PlayerData(2f, 1.25f, 0.2f);
 		ContextManager = GameObject.FindObjectOfType<ContextManager>();
 		SceneManager.LoadSceneAsync(LoadSceneBuildIndex, LoadSceneMode.Additive);
+
 		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
+		IsMobilePlatform = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
 	}
 
 	public void HandleInput(InputPackage p) {
