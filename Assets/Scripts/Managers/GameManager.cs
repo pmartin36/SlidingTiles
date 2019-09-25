@@ -85,6 +85,14 @@ public class GameManager : Singleton<GameManager> {
 		return "";
 	}
 
+	public int GetBuildIndexFromLevel(int world, int level) {
+		return 
+			TutorialLevelStart + 
+			2 + // two tutorial levels
+			world * 10 + // each world has 10 levels
+			level - 1; // 0 indexed levels
+	}
+
 	private IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(buildIndex, LoadSceneMode.Additive);
 
