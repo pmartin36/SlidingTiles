@@ -18,6 +18,11 @@ public class TouchController : InputController {
 			Touch t = Input.GetTouch(0);
 			package.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(t.position);
 		}
+		else {
+			package.Touchdown = false;
+			package.PointerOverGameObject = lastFramePackage?.PointerOverGameObject ?? false;
+			package.MousePositionWorldSpace = lastFramePackage?.MousePositionWorldSpace ?? Vector2.zero;
+		}
 
 		if (lastFramePackage != null) {
 			package.TouchdownChange = package.Touchdown ^ lastFramePackage.Touchdown;

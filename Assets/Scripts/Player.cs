@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent (typeof (Controller2D))]
-public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable {
+public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable, ISpeedChangable {
 
 	public event System.EventHandler<bool> aliveChanged;
 	public static event System.EventHandler<float> gravityDirectionChanged;
@@ -17,9 +17,16 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 
 	public bool Ghost;
 
+	public float Vx {
+		get {
+			return moveSpeed * moveDirection;
+		}
+	}
 	private float accelerationTimeAirborne = .2f;
 	private float accelerationTimeGrounded = .1f;
 	private float moveSpeed = 6;
+	private float? temporarySpeed;
+	private float temporarySpeedTimer;
 
 	private float gravity;
 	private float maxJumpVelocity;
@@ -109,10 +116,12 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		//		velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
 		//	}
 		//} 
+		float vx = Mathf.Abs(velocity.x);
 		velocity = maxJumpVelocity * 1.8f * direction;
 		if(Mathf.Abs(direction.x) > 0.1f) {
 			moveDirection = Mathf.Sign(direction.x);
 		}
+		velocity += Vector3.right * moveDirection * vx;
 	}	
 
 	void HandleWallSliding() {
@@ -160,8 +169,18 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	}
 
 	void CalculateVelocity() {
-		//float targetVelocityX = moveDirection * moveSpeed;
-		velocity.x = Mathf.SmoothDamp (Mathf.Abs(velocity.x), moveSpeed, ref velocityXSmoothing, 0.5f) * moveDirection;
+		float targetVelocity = moveSpeed;
+		float smooth = 0.5f;
+		if(temporarySpeed.HasValue) {
+			targetVelocity = temporarySpeed.Value;
+			smooth = 0.25f;
+			temporarySpeedTimer -= Time.deltaTime;
+			if(temporarySpeedTimer <= 0) {
+				temporarySpeed = null;
+			}
+		}
+
+		velocity.x = Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection;
 		velocity.y += gravity * Time.deltaTime;
 	}
 
@@ -233,5 +252,10 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 			gravity = Mathf.Abs(gravity) * g;
 			gravityDirectionChanged?.Invoke(this, g);
 		}
+	}
+
+	public void SetTemporarySpeed(float speed) {
+		temporarySpeed = Mathf.Abs(speed);
+		temporarySpeedTimer = 1f;
 	}
 }

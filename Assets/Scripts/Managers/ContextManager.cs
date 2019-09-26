@@ -8,11 +8,11 @@ public abstract class ContextManager : MonoBehaviour
 	protected InputController InputController;
 
 	public virtual void Awake() {
-		InputController = InputController.CreateInputController();
+		
 	}
 
 	public virtual void Start() {
-
+		InputController = InputController.CreateInputController();
 	}
 
 	public virtual void Update() {
