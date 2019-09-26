@@ -7,26 +7,27 @@ public class InputManager : MonoBehaviour
 	private Camera main;
 	protected InputPackage last;
 	protected InputPackage p;
+	protected IInputController InputController;
 
 	public ContextManager ContextManager { get; set; }
 
 	protected void Start() {
 		main = Camera.main;
 		p = new InputPackage();
+		if(Application.isMobilePlatform) {
+			InputController = new TouchController();
+		}
+		else if(Application.isConsolePlatform) {
+			InputController = new MouseController(); // obv need to change
+		}
+		else {
+			InputController = new MouseController();
+		}
 	}
 
 	protected virtual void Update() {
 		if(ContextManager.AcceptingInputs) {
-			p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
-			p.Touchdown = Input.GetButton("LeftMouse");
-			if(last != null) {
-				p.TouchdownChange = p.Touchdown ^ last.Touchdown;
-				p.MousePositionWorldSpaceDelta = p.MousePositionWorldSpace - last.MousePositionWorldSpace;
-			}
-			else {
-				p.TouchdownChange = false;
-				p.MousePositionWorldSpaceDelta = Vector3.zero;
-			}		
+			InputController.GetInput(p, last, main);		
 		}
 
 		// handle inputs must still be called

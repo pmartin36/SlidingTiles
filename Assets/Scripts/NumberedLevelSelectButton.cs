@@ -5,6 +5,7 @@ using UnityEngine;
 public class NumberedLevelSelectButton : LevelSelectButton
 {
 	public int Number { get; set; }
+	public int? TempNumber { get; set; }
 
 	public void Init(int num) {
 		base.Init();
@@ -13,9 +14,12 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		text.text = num.ToString();
 	}
 
-	public void SetPositionAndNumber(Vector2 position, int tempNumber) {
-		text.text = tempNumber.ToString();
+	public void SetPositionAndNumber(Vector2 position, int num) {
+		text.text = num.ToString();
 		SetPosition(position);
+		if(num != Number) {
+			TempNumber = num;
+		}
 	}
 
 	public void SetSlidePosition(Vector2 position, bool interactableAtEnd) {

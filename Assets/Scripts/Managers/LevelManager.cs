@@ -45,6 +45,10 @@ public class LevelManager : ContextManager {
 		RespawnManager = new RespawnManager(gameObject.scene);
 	}
 
+	public virtual void Update() {
+
+	}
+
 	public override void HandleInput(InputPackage p) {
 		if(Won) {
 			if(!winType.IsAnimating) {

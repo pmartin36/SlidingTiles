@@ -88,7 +88,7 @@ public class LevelSelect : MonoBehaviour
 
 	public void ButtonSelected(NumberedLevelSelectButton button) {
 		if(LevelSelectOpen) {
-			int buildIndex = GameManager.Instance.GetBuildIndexFromLevel(WorldSelected, button.Number);
+			int buildIndex = GameManager.Instance.GetBuildIndexFromLevel(WorldSelected, button.TempNumber.HasValue ? button.TempNumber.Value : button.Number);
 			GameManager.Instance.LoadScene(buildIndex, null);
 		}
 		else {
@@ -118,6 +118,7 @@ public class LevelSelect : MonoBehaviour
 		Back.SetHidden(true, null);
 
 		foreach (NumberedLevelSelectButton b in NumberedLevelButtons) {
+			b.TempNumber = null;
 			if(prevSelected == b.Number) {
 				// move button back to original position
 				b.SetSlidePosition(WorldSelectPosition(b.Number), true);
