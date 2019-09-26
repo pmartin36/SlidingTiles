@@ -19,12 +19,8 @@ public class MenuManager : ContextManager {
 
 	bool temp_hasUserData = true;
 
-	public override void Start() {
-		GetComponent<InputManager>().ContextManager = this;
-	}
-
 	public override void HandleInput(InputPackage p) {
-		if (p.Touchdown && p.TouchdownChange) {
+		if (p.Touchdown && !p.PointerOverGameObject && p.TouchdownChange) {
 			if(!(SettingsOpen || LevelSelectOpen)) {
 				if (temp_hasUserData) {
 					OpenLevelSelect(true);

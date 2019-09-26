@@ -1,17 +1,24 @@
 ﻿using UnityEngine;
 
-public class MouseController : IInputController {
-	public void GetInput(InputPackage p, in InputPackage last, in Camera main) {
-		p.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
-		p.Touchdown = Input.GetButton("LeftMouse");
-		if (last != null) {
-			p.TouchdownChange = p.Touchdown ^ last.Touchdown;
-			p.MousePositionWorldSpaceDelta = p.MousePositionWorldSpace - last.MousePositionWorldSpace;
+public class MouseController : InputController {
+	public MouseController() {
+		InputType = InputType.Mouse;
+	}
+
+	public override InputPackage GetInput() {
+		package.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
+		package.Touchdown = Input.GetButton("LeftMouse");
+		package.PointerOverGameObject = EventSystem?.IsPointerOverGameObject(-1) ?? false;
+		if (lastFramePackage != null) {
+			package.TouchdownChange = package.Touchdown ^ lastFramePackage.Touchdown;
+			package.MousePositionWorldSpaceDelta = package.MousePositionWorldSpace - lastFramePackage.MousePositionWorldSpace;
 		}
 		else {
-			p.TouchdownChange = false;
-			p.MousePositionWorldSpaceDelta = Vector3.zero;
+			package.TouchdownChange = false;
+			package.MousePositionWorldSpaceDelta = Vector3.zero;
 		}
+		lastFramePackage = new InputPackage(package);
+		return package;
 	}
 }
 

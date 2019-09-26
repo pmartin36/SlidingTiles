@@ -1141,7 +1141,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 579621160}
-  - component: {fileID: 579621159}
   - component: {fileID: 579621158}
   - component: {fileID: 579621157}
   m_Layer: 0
@@ -1190,18 +1189,6 @@ MonoBehaviour:
   ActualTiles:
   - {fileID: 811920966}
   - {fileID: 148315199}
---- !u!114 &579621159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579621156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2f22100bf3530e4d8deb6ff3114b15c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &579621160
 Transform:
   m_ObjectHideFlags: 0
@@ -3545,6 +3532,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6773030155638566231, guid: 121329098559c2c43b8cf5a8fc0ff6e8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -180.00005
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 121329098559c2c43b8cf5a8fc0ff6e8, type: 3}

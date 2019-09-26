@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-[RequireComponent(typeof(InputManager))]
 public class LevelManager : ContextManager {
 
 	public Grid Grid { get; set; }
@@ -24,11 +23,6 @@ public class LevelManager : ContextManager {
 	public RespawnManager RespawnManager { get; protected set; }
 	public bool Won { get; set; }
 
-	public override void Awake() {
-		base.Awake();	
-		GetComponent<InputManager>().ContextManager = this;	
-	}
-
 	public override void Start() {
 		base.Start();
 		Init();
@@ -45,10 +39,7 @@ public class LevelManager : ContextManager {
 		RespawnManager = new RespawnManager(gameObject.scene);
 	}
 
-	public virtual void Update() {
-
-	}
-
+	// called every frame from context manager
 	public override void HandleInput(InputPackage p) {
 		if(Won) {
 			if(!winType.IsAnimating) {

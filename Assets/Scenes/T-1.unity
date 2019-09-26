@@ -2248,7 +2248,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1693928946}
-  - component: {fileID: 1693928945}
   - component: {fileID: 1693928944}
   - component: {fileID: 1693928947}
   m_Layer: 0
@@ -2276,18 +2275,6 @@ MonoBehaviour:
   - {fileID: 6300114289658283880}
   ActualTiles:
   - {fileID: 738230969}
---- !u!114 &1693928945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1693928943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2f22100bf3530e4d8deb6ff3114b15c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1693928946
 Transform:
   m_ObjectHideFlags: 0
@@ -3345,7 +3332,7 @@ PrefabInstance:
     - target: {fileID: 6773030155638566231, guid: 121329098559c2c43b8cf5a8fc0ff6e8,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -180
+      value: -179.99998
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 121329098559c2c43b8cf5a8fc0ff6e8, type: 3}
