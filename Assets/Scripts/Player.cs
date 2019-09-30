@@ -200,10 +200,10 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
         if(hit) {
 			float amountToShrink = (original.magnitude - (hit.distance - skinWidth));
 			if(Mathf.Min(transform.localScale.x, transform.localScale.y) - amountToShrink < 1f) {
-				Destroy(this.gameObject);
+				SetAlive(false);
 			}
 			else {
-				Destroy(this.gameObject);
+				SetAlive(false);
 
 				// replace with logic to squish player
 				//Vector2 localScale = transform.localScale;

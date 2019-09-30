@@ -20,6 +20,7 @@ Shader "SlidingTiles/Platform"
         Pass
         {
 			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite Off
 
             CGPROGRAM	
             #pragma vertex vert
@@ -53,6 +54,12 @@ Shader "SlidingTiles/Platform"
 			float4 _Color;
 			float _Rotation;
 
+			float2 rotate(float2 o, float r) {
+				float c = cos(r);
+				float s = sin(r);
+				return float2(o.x * c - o.y * s, o.x * s + o.y * c);
+			}
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -60,9 +67,7 @@ Shader "SlidingTiles/Platform"
 				o.world = mul(unity_ObjectToWorld, v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				
-				float c = cos(_Rotation);
-				float s = sin(_Rotation);
-				o.bUv = float2(v.uv.x * c - v.uv.y * s, v.uv.x * s + v.uv.y * c);
+				o.bUv = rotate(v.uv, _Rotation);
 
 				o.color = v.color * _Color;
                 return o;

@@ -13,6 +13,9 @@ public class Tile : MonoBehaviour
 	public Tilespace Space { get; set; }
 
 	public bool Movable;
+	[SerializeField]
+	private Material SelectedMaterial;
+	private Material UnselectedMaterial;
 
 	public bool Selected { get; set; }
 	public Vector2 PositionWhenSelected { get; set; }
@@ -38,6 +41,8 @@ public class Tile : MonoBehaviour
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;
 		lastFrameVelocity = Vector3.zero;	
+
+		UnselectedMaterial = spriteRenderer.sharedMaterial;
 	}
 
 	public void Init(Tilespace t) {
@@ -71,10 +76,7 @@ public class Tile : MonoBehaviour
 		if (Selected) {
 			PositionWhenSelected = transform.position;
 		}
-
-		if(Movable) {
-			spriteRenderer.color = Selected ? new Color(0.5f, 0, 0) : new Color(0.3f, 0, 0);
-		}
+		spriteRenderer.sharedMaterial = Selected ? SelectedMaterial : UnselectedMaterial;
 	}
 
 	public void CompleteMove(Tilespace space) {

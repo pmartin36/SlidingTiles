@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c222581505defc148a2b569fab899a40, type: 3}
-  m_Color: {r: 0.661771, g: 0.56181026, b: 0.9528302, a: 1}
+  m_Color: {r: 0, g: 0.5188679, b: 0.16293275, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -145,6 +145,7 @@ MonoBehaviour:
   maxJumpHeight: 4
   minJumpHeight: 1
   timeToJumpApex: 0.4
+  Ghost: 0
 --- !u!50 &2300834580857512369
 Rigidbody2D:
   serializedVersion: 4

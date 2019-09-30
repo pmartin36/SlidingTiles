@@ -3,8 +3,9 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-		_Color("Color", Color) = (1,1,1,1)
-		[HideInInspector] _Rotation("Rotation", float) = 0
+		_Noise("Noise", 2D) = "white" {}
+		_Color("Color", Color) = (1,1,1,1)	
+		_SelectionColor("Selection Color", Color) = (0.5,0,0,1)
     }
     SubShader
     {
@@ -16,6 +17,7 @@
         Pass
         {
 			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite Off
 
             CGPROGRAM	
             #pragma vertex vert
@@ -25,6 +27,12 @@
 
 			float inverseLerp(float a, float b, float v) {
 				return (v - a) / (b - a);
+			}
+
+			float2 rotate(float2 o, float r) {
+				float c = cos(r);
+				float s = sin(r);
+				return float2(o.x * c - o.y * s, o.x * s + o.y * c);
 			}
 
             struct appdata
@@ -39,27 +47,19 @@
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
 				fixed4 color : COLOR;
-				float4 world: TEXCOORD1;
-				float2 bUv: TEXCOORD2;
             };
 
             sampler2D _MainTex;
+			sampler2D _Noise;
             float4 _MainTex_ST;
-			float _Target;
 			float4 _Color;
-			float _Rotation;
+			float4 _SelectionColor;		
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-				o.world = mul(unity_ObjectToWorld, v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				
-				float c = cos(_Rotation);
-				float s = sin(_Rotation);
-				o.bUv = float2(v.uv.x * c - v.uv.y * s, v.uv.x * s + v.uv.y * c);
-
 				o.color = v.color * _Color;
                 return o;
             }
@@ -69,10 +69,18 @@
 				
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-				float uvOffset = i.bUv.x * 2 - 1; // -1 -> 1
-				float offsetCenter = -(i.world.x - 15) / 12; // 15 is center of grid (-1 -> 1)
-				float bright = 0.2 * ((1 - pow(abs(uvOffset - offsetCenter + i.bUv.y * 0.4 * offsetCenter), 0.8)));
-				return col * i.color + float4(bright.xxx, 0);
+				float len = length((i.uv) * 2 - 1);
+				fixed4 noise = (tex2D(_Noise, i.uv) * 2 - 1) ;
+				col.rgb = lerp(
+					col.rgb, 
+					max(_SelectionColor.rgb, col.rgb),
+					smoothstep(
+						0.9, 
+						1.4, 
+						len + sin(_Time.y * 2) * 0.2 + noise * 0.2
+					)
+				);
+				return col;
             }
             ENDCG
         }

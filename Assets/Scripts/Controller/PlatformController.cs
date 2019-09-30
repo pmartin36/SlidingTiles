@@ -9,11 +9,16 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 	List<PassengerMovement> passengerMovement;
 	Dictionary<Transform,Controller2D> passengerDictionary = new Dictionary<Transform, Controller2D>();
+
+	private Vector2 size;
 	
 	public override void Start () {
 		base.Start ();
         Parent = transform.parent.GetComponent<Tile>();
-		GetComponent<SpriteRenderer>().material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
+
+		SpriteRenderer sr = GetComponent<SpriteRenderer>();
+		sr.material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
+		size = sr.size * transform.lossyScale;
 	}
 
 	void Update () {
@@ -54,7 +59,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
         Vector2 norm = original.normalized;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			transform.position,
-			(collider.size * transform.lossyScale) - Vector2.one * 2 * skinWidth,
+			size - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			original.normalized,
 			original.magnitude + skinWidth,
