@@ -1,10 +1,10 @@
-﻿Shader "SlidingTiles/TutorialArrow"
+﻿Shader "SlidingTiles/SelectedTile"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color", Color) = (1,1,1,1)
-		_Target("Target", Range(0, 2)) = 0
+		[HideInInspector] _Rotation("Rotation", float) = 0
     }
     SubShader
     {
@@ -20,8 +20,8 @@
             CGPROGRAM	
             #pragma vertex vert
             #pragma fragment frag
-
-            #include "UnityCG.cginc"	
+			
+            #include "UnityCG.cginc"
 
 			float inverseLerp(float a, float b, float v) {
 				return (v - a) / (b - a);
@@ -31,38 +31,48 @@
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+				float4 color: COLOR;
             };
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+				fixed4 color : COLOR;
+				float4 world: TEXCOORD1;
+				float2 bUv: TEXCOORD2;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			float _Target;
-			fixed4 _Color;
+			float4 _Color;
+			float _Rotation;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
+				o.world = mul(unity_ObjectToWorld, v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				
+				float c = cos(_Rotation);
+				float s = sin(_Rotation);
+				o.bUv = float2(v.uv.x * c - v.uv.y * s, v.uv.x * s + v.uv.y * c);
+
+				o.color = v.color * _Color;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
+				
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-				
-				float val = (1 - (_Target - col.r)) * step(0, _Target - col.r);
-				val = saturate(val - 0.5 + col.b / 4);
-				float alpha = inverseLerp(0, 0.35, val) * col.a;
-				val = saturate(val - 0.3);
-				float4 color = lerp(float4(1, 1, 1, 1), _Color, inverseLerp(0, 0.2, val));
-				return color * alpha;
+				float uvOffset = i.bUv.x * 2 - 1; // -1 -> 1
+				float offsetCenter = -(i.world.x - 15) / 12; // 15 is center of grid (-1 -> 1)
+				float bright = 0.2 * ((1 - pow(abs(uvOffset - offsetCenter + i.bUv.y * 0.4 * offsetCenter), 0.8)));
+				return col * i.color + float4(bright.xxx, 0);
             }
             ENDCG
         }

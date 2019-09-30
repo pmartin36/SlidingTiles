@@ -16,6 +16,7 @@ public class Platform : MonoBehaviour
 		lastPosition = transform.position;
 		passengers = new HashSet<GameObject>();
 		box = GetComponent<BoxCollider2D>();
+		GetComponent<SpriteRenderer>().material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
     }
 
     void LateUpdate() {

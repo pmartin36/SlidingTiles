@@ -33,7 +33,7 @@ public class Tile : MonoBehaviour
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		if(!Movable) {
-			spriteRenderer.color = new Color(0.15f, 0, 0);
+			spriteRenderer.color = new Color(0.5f, 0.15f, 0f);
 		}
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;

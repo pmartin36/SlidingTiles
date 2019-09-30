@@ -13,6 +13,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 	public override void Start () {
 		base.Start ();
         Parent = transform.parent.GetComponent<Tile>();
+		GetComponent<SpriteRenderer>().material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
 	}
 
 	void Update () {
