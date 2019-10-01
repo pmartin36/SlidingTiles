@@ -18,7 +18,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
 		sr.material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
-		size = sr.size * transform.lossyScale;
+		size = (sr.size * transform.lossyScale).Rotate(transform.eulerAngles.z);
 	}
 
 	void Update () {

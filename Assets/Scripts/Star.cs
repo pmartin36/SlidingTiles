@@ -8,7 +8,9 @@ public class Star : MonoBehaviour
 		var animator = GetComponent<Animator>();
 		float startTime = Random.Range(0, animator.GetCurrentAnimatorStateInfo(0).length);
 		animator.Play("star", 0, startTime);
-    }
+
+		GetComponent<SpriteRenderer>().material.SetFloat("_Seed", Random.Range(0f, 100f));
+	}
 
     void Update() {
         
