@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable, ISpeedChangable {
@@ -35,6 +36,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	private float velocityXSmoothing;
 
 	private Controller2D controller;
+	private SpriteRenderer lights;
 
 	private float moveDirection;
 	private Vector3 spawnPosition;
@@ -54,15 +56,18 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	//bool wallSliding;
 	//int wallDirX;
 
+	void Awake() {
+		controller = GetComponent<Controller2D>();
+		lights = GetComponentsInChildren<SpriteRenderer>().First(s => s.gameObject != this.gameObject);
+	}
+
 	void Start() {
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
 		moveDirection = 1f;
 
-		UnsquishedDimensions = transform.localScale;
-		controller = GetComponent<Controller2D> ();
-
+		UnsquishedDimensions = transform.localScale;		
 		// player is set inactive in the respawn manager,
 		// when switching to next level, we don't initialize LevelManager/RespawnManager 
 		// until after the current scene is unloaded (see case WinTypeAction.Next)
@@ -189,7 +194,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
         Vector2 norm = original.normalized;
 		float skinWidth = 0.015f;
         RaycastHit2D hit = Physics2D.BoxCast(
-			transform.position,
+			(Vector2)transform.position + controller.collider.offset * transform.lossyScale,
 			controller.collider.size * transform.lossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			original.normalized,
@@ -198,9 +203,10 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		);
 
         if(hit) {
+			//Debug.Log($"Hit: {gameObject.name}, Original: {original}");
 			float amountToShrink = (original.magnitude - (hit.distance - skinWidth));
-			if(Mathf.Min(transform.localScale.x, transform.localScale.y) - amountToShrink < 1f) {
-				SetAlive(false);
+			if (Mathf.Min(transform.localScale.x, transform.localScale.y) - amountToShrink < 1f) {
+
 			}
 			else {
 				SetAlive(false);
@@ -236,6 +242,8 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		this.controller.collider.enabled = alive;
 		this.enabled = alive;
 		transform.position = RespawnManager.PlayerSpawnPosition;
+
+		lights.color = alive ? Color.green : Color.red;
 
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);

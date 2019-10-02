@@ -48,7 +48,7 @@ public abstract class WinType : MonoBehaviour {
 				Stars[i].color = Color.clear;
 			}
 			else if (stars > i) {
-				Stars[i].color = Color.white;
+				Stars[i].color = new Color(1,1,0.6f);
 			}
 		}
 	}
