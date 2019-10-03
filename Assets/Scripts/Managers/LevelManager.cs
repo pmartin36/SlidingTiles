@@ -41,65 +41,7 @@ public class LevelManager : ContextManager {
 
 	// called every frame from context manager
 	public override void HandleInput(InputPackage p) {
-		if(Won) {
-			if(!winType.IsAnimating) {
-				WinTypeAction w = WinTypeAction.None;
-				if(p.Touchdown) {
-					if(p.TouchdownChange || grabPoint.sqrMagnitude > 100000f) {
-						grabPoint = p.MousePositionWorldSpace;
-						grabReleasePoint = Vector2.zero;
-					}
-					else {
-						// moving
-						w = winType.SetGrabPosition(p.MousePositionWorldSpace - grabPoint);
-					}
-				}
-				else if (!p.Touchdown) {
-					if(p.TouchdownChange) {
-						grabReleasePoint = p.MousePositionWorldSpace;
-					}
-					w = winType.SetPositionNoGrab(grabReleasePoint - grabPoint);
-				}
-
-				if(w != WinTypeAction.None) {
-					AcceptingInputs = false;
-
-					int currentScene = GameManager.Instance.GetCurrentLevelBuildIndex();
-					// if we're not going to the next scene, cancel the load of the next scene
-					if(w != WinTypeAction.Next) {
-						cts.Cancel();
-					}
-
-					switch (w) {
-						case WinTypeAction.Menu:
-							GameManager.Instance.LoadScene(GameManager.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
-							break;
-						case WinTypeAction.Reset:
-							Reset(false);
-							break;
-						case WinTypeAction.LevelSelect:
-							GameManager.Instance.LoadScene(
-								GameManager.MenuBuildIndex, 
-								StartCoroutine(winType.WhenTilesOffScreen()), 
-								() => GameManager.Instance.MenuManager.OpenLevelSelect(false)
-							);
-							break;
-						case WinTypeAction.Next:
-							// Destroy Objects in back so during unblack they are not present (also speeds up unloading)
-							winType.Hide();
-							Destroy(Grid.gameObject);
-							RespawnManager.Destroy();
-
-							// once the tiles are offscreen, we can finally unload the level
-							StartCoroutine(winType.WhenTilesOffScreen(() => {
-								GameManager.Instance.UnloadScene(currentScene, null);
-							}));
-							break;
-					}				
-				}		
-			}
-		}
-		else {
+		if(!Won) {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
@@ -167,10 +109,47 @@ public class LevelManager : ContextManager {
 			SelectedTile = null;
 		}
 		grabPoint = new Vector2(1000,1000);
-		winType.Run(collectedStars, RespawnManager.Stars.Length);
+		winType.Run(collectedStars, RespawnManager.Stars.Length, ActionSelected);
 
 		cts = new CancellationTokenSource();
 		GameManager.Instance.AsyncLoadScene(GameManager.Instance.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
+	}
+
+	public void ActionSelected(WinTypeAction w) {
+		AcceptingInputs = false;
+
+		int currentScene = GameManager.Instance.GetCurrentLevelBuildIndex();
+		// if we're not going to the next scene, cancel the load of the next scene
+		if (w != WinTypeAction.Next) {
+			cts.Cancel();
+		}
+
+		switch (w) {
+			case WinTypeAction.Menu:
+				GameManager.Instance.LoadScene(GameManager.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
+				break;
+			case WinTypeAction.Reset:
+				Reset(false);
+				break;
+			case WinTypeAction.LevelSelect:
+				GameManager.Instance.LoadScene(
+					GameManager.MenuBuildIndex,
+					StartCoroutine(winType.WhenTilesOffScreen()),
+					() => GameManager.Instance.MenuManager.OpenLevelSelect(false)
+				);
+				break;
+			case WinTypeAction.Next:
+				// Destroy Objects in back so during unblack they are not present (also speeds up unloading)
+				winType.Hide();
+				Destroy(Grid.gameObject);
+				RespawnManager.Destroy();
+
+				// once the tiles are offscreen, we can finally unload the level
+				StartCoroutine(winType.WhenTilesOffScreen(() => {
+					GameManager.Instance.UnloadScene(currentScene, null);
+				}));
+				break;
+		}
 	}
 
 	public IEnumerator WaitActionSelected() {

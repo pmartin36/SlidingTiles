@@ -40,10 +40,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	private RespawnManager RespawnManager;
 
-	public bool WasSquishedThisFrame { get; set; }
-	public Vector3 UnsquishedDimensions { get; set; }
-	private static float ShrinkExplodeThreshold = 0.9f;
-
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
 	//public float wallStickTime = .25f;
@@ -66,9 +62,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
-		moveDirection = 1f;
-
-		UnsquishedDimensions = transform.localScale;		
+		moveDirection = 1f;	
 		// player is set inactive in the respawn manager,
 		// when switching to next level, we don't initialize LevelManager/RespawnManager 
 		// until after the current scene is unloaded (see case WinTypeAction.Next)
@@ -247,7 +241,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		this.controller.collider.enabled = alive;
 		this.enabled = alive;
 		transform.position = RespawnManager.PlayerSpawnPosition;
-		transform.localScale = UnsquishedDimensions;
+		transform.localScale = Vector2.one * 1.2f;
 
 		lights.color = alive ? Color.green : Color.red;
 

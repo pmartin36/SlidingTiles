@@ -7,7 +7,6 @@ public interface IMoveableCollider {
 }
 
 public interface IPlatformMoveBlocker {
-	bool WasSquishedThisFrame { get; set; }
 	bool CheckBlocking (ref Vector2 original, HashSet<Tile> movingTiles);
 }
 
