@@ -186,7 +186,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			}
 		}
 
-		velocity.x = 0;//Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection;
+		velocity.x = Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection;
 		velocity.y += gravity * Time.deltaTime;
 	}
 
