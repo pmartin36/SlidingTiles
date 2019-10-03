@@ -25,6 +25,6 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void Menu() {
-
+		GameManager.Instance.LoadScene(GameManager.MenuBuildIndex);
 	}
 }

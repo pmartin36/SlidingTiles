@@ -135,12 +135,19 @@ public class GameManager : Singleton<GameManager> {
 		);
 	}	
 
-	public void LoadScene(int buildIndex, Coroutine waitUntil, Action onSceneSwitch = null) {
+	public void LoadScene(int buildIndex, Coroutine waitUntil = null, Action onSceneSwitch = null) {
 		ShowLoadScreen(true);
-		StartCoroutine(LoadSceneAsync(buildIndex, waitUntil, null, () => {
-			onSceneSwitch?.Invoke();		
-			ShowLoadScreen(false);
-		}));	
+		StartCoroutine(
+			LoadSceneAsync(
+				buildIndex, 
+				StartCoroutine(LoadWrapper(waitUntil)), // wait for at least 1 seconds + waituntil
+				null, 
+				() => {
+					onSceneSwitch?.Invoke();		
+					ShowLoadScreen(false);
+				}
+			)
+		);	
 	}
 
 	public void UnloadScene(int buildIndex, Action<AsyncOperation> callback = null) {
@@ -156,5 +163,12 @@ public class GameManager : Singleton<GameManager> {
 		}
 
 		loadScreen.Show(show);
+	}
+
+	public IEnumerator LoadWrapper(Coroutine waitUntil = null) {
+		yield return new WaitForSeconds(1f);
+		if(waitUntil != null) {
+			yield return waitUntil;
+		}
 	}
 }
