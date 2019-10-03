@@ -4,13 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 [RequireComponent (typeof (Controller2D))]
-public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable, ISpeedChangable {
+public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, ISpringable, ISpeedChangable {
 
 	public event System.EventHandler<bool> aliveChanged;
 	public static event System.EventHandler<float> gravityDirectionChanged;
-
-    public bool WasSquishedThisFrame { get; set; }
-	public Vector3 UnsquishedDimensions { get; set; }
 
     public float maxJumpHeight = 4;
 	public float minJumpHeight = 1;
@@ -42,6 +39,10 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	private Vector3 spawnPosition;
 
 	private RespawnManager RespawnManager;
+
+	public bool WasSquishedThisFrame { get; set; }
+	public Vector3 UnsquishedDimensions { get; set; }
+	private static float ShrinkExplodeThreshold = 0.9f;
 
 	// Wall Stuff, will probably remove
 	//public float wallSlideSpeedMax = 3;
@@ -97,7 +98,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 	}
 
 	void LateUpdate() {
-		
+
 	}
 
 	public void Spring(Vector2 direction) {
@@ -185,41 +186,45 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 			}
 		}
 
-		velocity.x = Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection;
+		velocity.x = 0;//Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection;
 		velocity.y += gravity * Time.deltaTime;
 	}
 
-	public bool CheckSquishedAndResolve(Vector2 original) {
+	public bool CheckBlocking(ref Vector2 original, HashSet<Tile> tilesToMove) {
 		Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
+		float mag = original.magnitude;
 		float skinWidth = 0.015f;
-        RaycastHit2D hit = Physics2D.BoxCast(
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			(Vector2)transform.position + controller.collider.offset * transform.lossyScale,
 			controller.collider.size * transform.lossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
-			original.normalized,
-			original.magnitude + skinWidth,
+			norm,
+			mag + skinWidth,
 			controller.collisionMask
 		);
 
-        if(hit) {
-			//Debug.Log($"Hit: {gameObject.name}, Original: {original}");
-			float amountToShrink = (original.magnitude - (hit.distance - skinWidth));
-			if (Mathf.Min(transform.localScale.x, transform.localScale.y) - amountToShrink < 1f) {
-
+        if(hits.Length > 0) {
+			LayerMask border = LayerMask.NameToLayer("Wall");
+			float min = mag;
+			foreach(RaycastHit2D hit in hits) {
+				float dist = (hit.distance - skinWidth);
+				if(dist < min && hit.distance > 0) {
+					if (hit.collider.gameObject.layer == border) {
+						min = dist;
+					}
+					else {
+						// only stop if this tile is not also moving
+						// this only works presuming that the contents of the tile don't move independently of the tile
+						PlatformController p = hit.collider.GetComponent<PlatformController>();
+						if (!tilesToMove.Contains(p.Parent)) {
+							min = dist;
+						}
+					}
+				}
 			}
-			else {
-				SetAlive(false);
-
-				// replace with logic to squish player
-				//Vector2 localScale = transform.localScale;
-				//float mag = localScale.magnitude;
-				//transform.localScale = (localScale - norm * amountToShrink).normalized * mag;
-				//WasSquishedThisFrame = true;
-			}
-			return true;
+			original = min * norm;
 		}
-
 		return false;
 	}
 
@@ -242,6 +247,7 @@ public class Player : MonoBehaviour, ISquishable, IGravityChangable, ISpringable
 		this.controller.collider.enabled = alive;
 		this.enabled = alive;
 		transform.position = RespawnManager.PlayerSpawnPosition;
+		transform.localScale = UnsquishedDimensions;
 
 		lights.color = alive ? Color.green : Color.red;
 

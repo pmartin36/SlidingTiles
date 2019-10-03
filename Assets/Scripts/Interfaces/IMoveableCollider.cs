@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public interface IMoveableCollider {
     Tile Parent { get; }
-    void CheckAndRemoveSquishables(Vector2 original);
+    void CheckBlocking (ref Vector2 original, HashSet<Tile> movingTiles);
 }
 
-public interface ISquishable {
+public interface IPlatformMoveBlocker {
 	bool WasSquishedThisFrame { get; set; }
-	bool CheckSquishedAndResolve(Vector2 original);
+	bool CheckBlocking (ref Vector2 original, HashSet<Tile> movingTiles);
 }
 

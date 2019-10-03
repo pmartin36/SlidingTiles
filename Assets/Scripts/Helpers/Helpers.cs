@@ -89,6 +89,10 @@ public static class VectorHelpers {
 	public static Vector2 Rotate(this Vector2 v, float angle) {
 		return Quaternion.Euler(0, 0, angle) * v;
 	}
+
+	public static Vector2 Abs(this Vector2 v) {
+		return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
+	}
 }
 
 public static class GeneralHelpers {

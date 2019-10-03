@@ -88,7 +88,6 @@ public class Tile : MonoBehaviour
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 
 		foreach (PlatformController c in childPlatforms) {
-			c.CheckAndRemoveSquishables(globalMoveAmount);
 			c.Premove(ref globalMoveAmount);
 		}
 		transform.localPosition += moveAmount;
@@ -129,6 +128,17 @@ public class Tile : MonoBehaviour
 					tileMask)
 					.Where(r => r.gameObject != this.gameObject).ToArray();
 
+			Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
+			foreach (PlatformController p in childPlatforms) {
+				p.CheckBlocking(ref globalMoveAmount, tilesToMove);
+			}
+			Vector2 newMove = globalMoveAmount / transform.lossyScale.x;
+			if(newMove.sqrMagnitude - moveAmount.sqrMagnitude > 0.1f) {
+				// TODO (Audio): Play *dink* metal noise
+
+			}
+			moveAmount = newMove;
+
 			if (collisions.Length == 0) {
 				return true;
 			}
@@ -141,9 +151,6 @@ public class Tile : MonoBehaviour
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
 					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d);
-				}
-				else {
-					
 				}
 			}
 		}

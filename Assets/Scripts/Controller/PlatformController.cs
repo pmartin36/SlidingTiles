@@ -54,7 +54,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		}
 	}
 
-	public void CheckAndRemoveSquishables(Vector2 original) {
+	public void CheckBlocking(ref Vector2 original, HashSet<Tile> tilesToMove) {
         Vector2 largestValidMoveAmount = original;
         Vector2 norm = original.normalized;
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(
@@ -67,9 +67,11 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		);
 
 		foreach(RaycastHit2D hit in hits) {
-            ISquishable pass = hit.collider.GetComponent<ISquishable>();
+            IPlatformMoveBlocker pass = hit.collider.GetComponent<IPlatformMoveBlocker>();
             if (pass != null) {
-				pass.CheckSquishedAndResolve(original);
+				Vector2 passMoveAmount = original - norm * (hit.distance - skinWidth);
+				pass.CheckBlocking(ref passMoveAmount, tilesToMove);
+				original = passMoveAmount + norm * (hit.distance - skinWidth);
 			}
 		}
 	}
