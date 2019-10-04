@@ -31,12 +31,17 @@ public class Tile : MonoBehaviour
 	private Vector3 lastFramePosition;
 
 	private Tilespace initialTilespace;
+	private static Material ImmobileMaterial;
 
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		if(!Movable) {
-			spriteRenderer.color = new Color(0.5f, 0.15f, 0f);
+			if(ImmobileMaterial == null) {
+				ImmobileMaterial = new Material(Shader.Find("SlidingTiles/ImmobileTile"));
+			}
+			spriteRenderer.sharedMaterial = ImmobileMaterial;
+			spriteRenderer.color = new Color(0.4f, 0.15f, 0f);
 		}
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;

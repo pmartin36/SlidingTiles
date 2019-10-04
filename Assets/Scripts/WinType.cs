@@ -37,11 +37,11 @@ public abstract class WinType : MonoBehaviour {
 		frontPanel.gameObject.SetActive(true);
 		IsAnimating = true;
 		for (int i = 0; i < Stars.Length; i++) {
-			if (i >= availableStars) {
-				Stars[i].color = Color.clear;
+			if (stars > i) {
+				Stars[i].color = new Color(1, 1, 0.6f);
 			}
-			else if (stars > i) {
-				Stars[i].color = new Color(1,1,0.6f);
+			else {
+				Stars[i].color = new Color(0, 0, 0, 0.4f);
 			}
 		}
 		OnActionSelected = callback;
