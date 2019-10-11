@@ -55,7 +55,7 @@ public class Tile : MonoBehaviour
 		this.initialTilespace = t;
 	}
 
-	public void Update() {
+	public virtual void Update() {
 		if (!Centered && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
 			float distToMove = Time.deltaTime * SpeedCap;
 			Vector3 moveAmount;
@@ -76,7 +76,7 @@ public class Tile : MonoBehaviour
 		}
 	}
 
-	public void Select(bool select) {
+	public virtual void Select(bool select) {
 		Selected = select;
 		if (Selected) {
 			PositionWhenSelected = transform.position;
@@ -89,7 +89,7 @@ public class Tile : MonoBehaviour
 		space.Tile = this;		
 	}
 
-	public bool Move(Vector3 moveAmount, Direction d) {
+	public virtual bool Move(Vector3 moveAmount, Direction d) {
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 
 		foreach (PlatformController c in childPlatforms) {

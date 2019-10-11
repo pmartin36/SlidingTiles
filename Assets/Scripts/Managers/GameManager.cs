@@ -9,7 +9,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : Singleton<GameManager> {
 
 	private float _timeScale = 1f;
-	public float TimeScale {
+	private float _targetTimeScale = 1f;
+	private float TimeScale {
 		get => _timeScale;
 		set {
 			Time.timeScale = value;
@@ -27,6 +28,9 @@ public class GameManager : Singleton<GameManager> {
 		set => ContextManager = value;
 	}
 
+	public int HighestOwnedLevel { get; set; }
+	public int HighestUnlockedLevel { get; set; }
+
 	public static readonly int MenuBuildIndex = 0;
 	public static readonly int LoadSceneBuildIndex = 1;
 	public static readonly int TutorialLevelStart = 2;
@@ -34,8 +38,6 @@ public class GameManager : Singleton<GameManager> {
 	private LoadScreen loadScreen;
 	public StoreCommunicator StoreCommunicator { get; set; }
 	public bool IsMobilePlatform { get; set; }
-
-	// public PlayerData PlayerData { get; set; }
 
 	public void Awake() {
 		// TODO: Load saved PlayerData
@@ -45,6 +47,10 @@ public class GameManager : Singleton<GameManager> {
 
 		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 		IsMobilePlatform = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
+	}
+
+	public void Update() {
+		TimeScale = Mathf.Lerp(TimeScale, _targetTimeScale, 0.05f);
 	}
 
 	public void HandleInput(InputPackage p) {
@@ -58,6 +64,10 @@ public class GameManager : Singleton<GameManager> {
 
 	public void ToggleSoundOn() {
 		
+	}
+
+	public void SetTimescale(float timescale) {
+		_targetTimeScale = timescale;
 	}
 
 	public int GetNextLevelBuildIndex() {
