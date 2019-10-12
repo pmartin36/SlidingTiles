@@ -1,9 +1,8 @@
-﻿Shader "SlidingTiles/Finger"
+﻿Shader "SlidingTiles/SpawnIndicator"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
-		_Radius("Radius", Range(0,1)) = 0
+		_Radius("Radius", Range(0,2)) = 0
     }
     SubShader
     {
@@ -30,12 +29,14 @@
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+				float4 color: COLOR;
             };
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+				float4 color: COLOR;
             };
 
             sampler2D _MainTex;
@@ -46,22 +47,22 @@
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
- 
+                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				o.uv = v.uv;
+				o.color = v.color;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
-            {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-				
-				float max = 0.15;
-				float dist = abs(distance(i.uv, float2(0.5, 0.6)) - _Radius);
-				dist = saturate(1 - (inverseLerp(0, max, dist) / max));
-
-				float4 ring = lerp(float4(1, 1, 1, 0), float4(1, 1, 1, 1), dist) * (1-step(0.5, col.a));
-                return col + ring;
+            {	
+				float2 remappedUv = (i.uv * 2) - 1;
+				float len = length(remappedUv);
+				//float dist = pow(saturate(1 - (_Radius - len)),3) - step(min(_Radius, 0.92), len);
+				float dist = pow(saturate(1 - abs(_Radius - len)), 5) - max(len - 0.875, 0) * 15;
+				dist = saturate(dist);
+				float4 col = i.color;
+				col.a *= dist;
+				return col;
             }
             ENDCG
         }
