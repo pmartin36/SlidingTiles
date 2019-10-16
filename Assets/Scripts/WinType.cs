@@ -12,8 +12,12 @@ public enum WinTypeAction {
 }
 
 public abstract class WinType : MonoBehaviour {
-	public Image[] Stars;
+	public WinScreenStar[] Stars;
 	public Image Background;
+
+	[Range(0,1)]
+	public float PercentAnimated;
+
 	[HideInInspector]
 	public bool IsAnimating;
 
@@ -24,13 +28,14 @@ public abstract class WinType : MonoBehaviour {
 
 	[SerializeField]
 	protected RectTransform frontPanel; 
+	protected Image frontPanelImage;
 	protected Vector2 Position {
 		get => frontPanel.anchoredPosition;
 		set => frontPanel.anchoredPosition = value;
 	}
 
 	public virtual void Start() {
-	
+		frontPanelImage = frontPanel.GetComponent<Image>();
 	}
 
 	public virtual void Run(int stars, int availableStars = 3, Action<WinTypeAction> callback = null) {
@@ -38,10 +43,15 @@ public abstract class WinType : MonoBehaviour {
 		IsAnimating = true;
 		for (int i = 0; i < Stars.Length; i++) {
 			if (stars > i) {
-				Stars[i].color = new Color(1, 1, 0.6f);
+				Stars[i].MaxAlpha = 1f;
+				Stars[i].Color = new Color(1, 1, 0.6f);
+			}
+			else if (availableStars > i) {
+				Stars[i].MaxAlpha = 0.4f;
+				Stars[i].Color = new Color(0, 0, 0);
 			}
 			else {
-				Stars[i].color = new Color(0, 0, 0, 0.4f);
+				Stars[i].gameObject.SetActive(false);
 			}
 		}
 		OnActionSelected = callback;
@@ -72,6 +82,9 @@ public abstract class WinType : MonoBehaviour {
 		if(ActionSelected) {
 			float moveAmount = 2000 * Time.deltaTime;
 			Position += moveAmount * ActionMoveDirection;
+		}
+		if(IsAnimating) {
+			frontPanelImage.material.SetFloat("_AnimationPercent", PercentAnimated);
 		}
 	}
 

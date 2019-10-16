@@ -3,11 +3,10 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-		_Noise("Noise", 2D) = "white" {}
 		_Color("Color", Color) = (1,1,1,1)
 		_SecondaryColor("Selection Color", Color) = (0.5,0,0,1)
 
-		_PctDebug("Pct", Range(0,1)) = 0
+		_AnimationPercent("Animation Percent", Range(0,1)) = 0
     }
     SubShader
     {
@@ -48,17 +47,16 @@
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-				fixed4 primaryColor : COLOR0;
+				fixed4 color : COLOR0;
 				fixed4 secondaryColor : COLOR1;
             };
 
             sampler2D _MainTex;
-			sampler2D _Noise;
             float4 _MainTex_ST;
 			float4 _Color;
 			float4 _SecondaryColor;	
 
-			float _PctDebug;
+			float _AnimationPercent;
 			float4 _MainTex_TexelSize;
 
             v2f vert (appdata v)
@@ -66,39 +64,43 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				o.primaryColor = v.color * _Color;
+				o.color = v.color * _Color;
 				o.secondaryColor = v.color * _SecondaryColor;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {		
-				float boxSize = 150.0;
+				float boxSize = 150.0;		
+				float2 dim = _ScreenParams.xy;
+				float2 uv = i.uv * dim;
 
-				float2 offset = fmod(_MainTex_TexelSize.zw, boxSize) / 2.0;
+				// if the box size doesn't fit perfectly in each direction, center the boxes
+				float2 offset = fmod(dim, boxSize) / 2.0;
+				uv -= offset;
 
-				float row = floor(i.uv.y / boxSize);
+				float row = floor(uv.y / boxSize);			
+
+				// adjacent rows should move in opposite directions
 				float direction = sign(fmod(row, 2.0) - 0.5);
 
-				float2 uv = i.uv - offset;
-				float2 startingPosition = float2(uv.x - direction * _MainTex_TexelSize.z, uv.y);
-				//float2 samplePosition = lerp(startingPosition, fragCoord, clamp(_Time.x, 0, 1));
-				float2 samplePosition = lerp(startingPosition, uv, _PctDebug);
+				float2 startingPosition = float2(uv.x - direction * dim.x, uv.y);
+				float2 samplePosition = lerp(startingPosition, uv, _AnimationPercent);
 
-				// float mm = step(iResolution.x, samplePosition.x);
-				float mm = step(_MainTex_TexelSize.z + boxSize / 2.0, samplePosition.x) + (1. - step(-boxSize, samplePosition.x));
-				//fragColor = vec4(step(iResolution.x + boxSize/2.0, samplePosition.x), 1. - step(-boxSize, samplePosition.x), 0., 1.);
-				//return;
-				
+				float inverseAlpha = step(dim.x - offset.x, samplePosition.x) + (1. - step(-offset.x, samplePosition.x));
+				samplePosition += boxSize; // fmod doesn't work with numbers < 0 (but we don't want it to effect alpha)
 				uv = fmod(samplePosition, boxSize.xx) / boxSize;
-				uv.x = lerp(uv.x, 1, mm);
 
-				// Time varying pixel color
-				float maxVal = smoothstep(0.45, 0.5, max(abs(uv.x - 0.5), abs(uv.y - 0.5)));
+				float maxVal = smoothstep(0.3, 0.5, max(abs(uv.x - 0.5), abs(uv.y - 0.5)));
 
-				float3 col = saturate(float3(0.75, 0.75, 0.25) - maxVal * 0.05);
+				float2 rowColumn = floor(samplePosition / boxSize);
+				float colorinterpolator = fmod(rowColumn.x + rowColumn.y, 2);
+				float3 color = lerp(i.color.rgb, i.secondaryColor.rgb, colorinterpolator);
+
+				float3 tex = tex2D(_MainTex, uv).rgb;
+				float3 col = saturate(tex * color - maxVal * 0.05);
 				// Output to screen
-				return float4(col, 1);
+				return float4(col, 1 - inverseAlpha);
             }
             ENDCG
         }
