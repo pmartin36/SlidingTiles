@@ -29,10 +29,6 @@ public abstract class WinType : MonoBehaviour {
 	[SerializeField]
 	protected RectTransform frontPanel; 
 	protected Image frontPanelImage;
-	protected Vector2 Position {
-		get => frontPanel.anchoredPosition;
-		set => frontPanel.anchoredPosition = value;
-	}
 
 	public virtual void Start() {
 		frontPanelImage = frontPanel.GetComponent<Image>();
@@ -40,7 +36,6 @@ public abstract class WinType : MonoBehaviour {
 
 	public virtual void Run(int stars, int availableStars = 3, Action<WinTypeAction> callback = null) {
 		frontPanel.gameObject.SetActive(true);
-		IsAnimating = true;
 		for (int i = 0; i < Stars.Length; i++) {
 			if (stars > i) {
 				Stars[i].MaxAlpha = 1f;
@@ -59,30 +54,11 @@ public abstract class WinType : MonoBehaviour {
 
 	public virtual void SelectAction(WinTypeAction w) {
 		ActionSelected = true;
+		IsAnimating = true;
 		OnActionSelected?.Invoke(w);
-
-		switch (w) {
-			case WinTypeAction.Menu:
-				Background.gameObject.SetActive(false);
-				ActionMoveDirection = Vector2.up;
-				break;
-			case WinTypeAction.Reset:
-				ActionMoveDirection = Vector2.left;
-				break;
-			case WinTypeAction.LevelSelect:
-				ActionMoveDirection = Vector2.down;
-				break;
-			case WinTypeAction.Next:
-				ActionMoveDirection = Vector2.right;
-				break;
-		}
 	}
 
 	protected void Update() {
-		if(ActionSelected) {
-			float moveAmount = 2000 * Time.deltaTime;
-			Position += moveAmount * ActionMoveDirection;
-		}
 		if(IsAnimating) {
 			frontPanelImage.material.SetFloat("_AnimationPercent", PercentAnimated);
 		}
@@ -92,82 +68,22 @@ public abstract class WinType : MonoBehaviour {
 		Debug.Log("Leaderboard");
 	}
 
-	//public WinTypeAction SetGrabPosition(Vector2 offset) {
-	//	if(Centered) {
-	//		offset = offset.SnapToAxis() * scale;
-	//		if(offset.sqrMagnitude < threshold) {
-	//			offset = Vector2.zero;
-	//		}
-	//	}		
-	//	else {
-	//		Vector2 snap = Mathf.Abs(Position.x) > Mathf.Abs(Position.y) ? Vector2.right : Vector2.up;
-	//		offset = offset * snap * scale;
-	//	}
-
-	//	return SetPosition(offset);
-	//}
-
-	//public WinTypeAction SetPositionNoGrab(Vector2 grabReleasePoint) {
-	//	Vector2 dir = Position.normalized;
-	//	float moveAmount = 2000 * Time.deltaTime;
-
-	//	Vector2 target = Vector2.zero;
-	//	if((grabReleasePoint * dir * scale).sqrMagnitude > (ActionThreshold * dir).sqrMagnitude) {
-	//		target = ActionThreshold * dir * 2f;
-	//	}
-
-	//	return SetPosition(target);
-	//}
-
-	//private WinTypeAction SetPosition(Vector2 targetPosition) {
-	//	if(ActionSelected) {
-	//		float moveAmount = 2000 * Time.deltaTime;
-	//		Position += moveAmount * Position.normalized;
-	//	}
-	//	else {
-	//		float moveAmount = 2000 * Time.deltaTime;
-	//		Vector2 diff = (targetPosition - Position);
-	//		if (diff.magnitude > moveAmount) {
-	//			Position += diff.normalized * moveAmount;
-	//		}
-	//		else {
-	//			Position = targetPosition;
-	//		}
-
-	//		if(!Centered && Position.sqrMagnitude > (ActionThreshold * Position.normalized).sqrMagnitude) {
-	//			// start transition
-	//			ActionSelected = true;
-	//			if(Position.x > 100) {
-	//				return WinTypeAction.Next;
-	//			}
-	//			else if(Position.x < -100) {
-	//				return WinTypeAction.Reset;
-	//			}
-	//			else if(Position.y > 100) {
-	//				return WinTypeAction.LevelSelect;
-	//			}
-	//			else if(Position.y < -100) {
-	//				return WinTypeAction.Menu;
-	//			}
-	//		}	
-	//	}
-	//	return WinTypeAction.None;
-	//}
-
 	public void Hide() {
-		GetComponent<Animator>().Play("unblack");
+		Animator a = GetComponent<Animator>();
+		a.SetFloat("direction", -1);
+		a.Play("rowwin", 0, 1);
 	}
 
 	public virtual void Reset() {
 		frontPanel.gameObject.SetActive(false);
-		Position = Vector2.zero;
+		PercentAnimated = 0;
+		frontPanelImage.material.SetFloat("_AnimationPercent", PercentAnimated);
 		IsAnimating = false;
 		ActionSelected = false;
 	}
 
 	public IEnumerator WhenTilesOffScreen(Action action = null) {
-		var threshold = new Vector2(1601, 901); 
-		yield return new WaitUntil(() => Mathf.Abs(Position.x) > threshold.x || Mathf.Abs(Position.y) > threshold.y);
+		yield return new WaitUntil(() => PercentAnimated <= 0.001f);
 		action?.Invoke();
 	}
 }

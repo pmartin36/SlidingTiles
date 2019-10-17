@@ -20,6 +20,8 @@ public class LevelManager : ContextManager {
 
 	protected CancellationTokenSource cts;
 
+	public GameObject LevelObjectContainer;
+
 	public RespawnManager RespawnManager { get; protected set; }
 	public bool Won { get; set; }
 
@@ -101,6 +103,11 @@ public class LevelManager : ContextManager {
 		}));	
 	}
 
+	public void HideLevel() {
+		LevelObjectContainer.SetActive(false);
+		RespawnManager.ActionButtons.gameObject.SetActive(false);
+	}
+
 	public void PlayerWin(GoalFlag gf) {
 		goalFlag = gf;
 		Won = true;
@@ -139,10 +146,8 @@ public class LevelManager : ContextManager {
 				);
 				break;
 			case WinTypeAction.Next:
-				// Destroy Objects in back so during unblack they are not present (also speeds up unloading)
-				winType.Hide();
-				Destroy(Grid.gameObject);
-				RespawnManager.Destroy();
+				// hide objects in the current level so that as the wintype animation is playing, we see the next level
+				HideLevel();
 
 				// once the tiles are offscreen, we can finally unload the level
 				StartCoroutine(winType.WhenTilesOffScreen(() => {

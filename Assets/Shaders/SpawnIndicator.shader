@@ -12,6 +12,7 @@
 		}
 
 		Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite Off
 
         Pass
         {
