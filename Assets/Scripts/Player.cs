@@ -20,6 +20,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			return moveSpeed * moveDirection;
 		}
 	}
+	public Vector3 Direction => new Vector3(moveDirection, Mathf.Sign(gravity));
 	private float accelerationTimeAirborne = .2f;
 	private float accelerationTimeGrounded = .1f;
 	private float moveSpeed = 6;

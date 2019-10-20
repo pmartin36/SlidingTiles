@@ -23,6 +23,7 @@ public class Tile : MonoBehaviour
 	public bool Centered { get => transform.localPosition.sqrMagnitude < 0.000002f; } // (skinWidth / scale)^2 
 
 	private LayerMask tileMask;
+	protected LayerMask playerMask;
 	private SpriteRenderer spriteRenderer;
 
 	private PlatformController[] childPlatforms;
@@ -32,6 +33,10 @@ public class Tile : MonoBehaviour
 
 	private Tilespace initialTilespace;
 	private static Material ImmobileMaterial;
+
+	private void Awake() {
+		playerMask = 1 << LayerMask.NameToLayer("Player");
+	}
 
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
@@ -230,4 +235,6 @@ public class Tile : MonoBehaviour
 		this.Space = initialTilespace;
 		transform.localPosition = Vector2.zero;
 	}
+
+	public bool IsPlayerOnTile() => Physics2D.OverlapBox(transform.position, transform.lossyScale, 0, playerMask) != null;
 }

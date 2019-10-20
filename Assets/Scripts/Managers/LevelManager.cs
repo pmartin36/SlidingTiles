@@ -18,11 +18,16 @@ public class LevelManager : ContextManager {
 	protected int collectedStars;
 	protected GoalFlag goalFlag;
 
+	protected TilePreview Preview;
+
 	protected CancellationTokenSource cts;
 
 	public GameObject LevelObjectContainer;
 
 	public RespawnManager RespawnManager { get; protected set; }
+	public Player Player { 
+		get => RespawnManager.Player;
+	}
 	public bool Won { get; set; }
 
 	public override void Start() {
@@ -34,6 +39,7 @@ public class LevelManager : ContextManager {
 	public virtual void Init() {
 		Grid = FindObjectsOfType<Grid>().First(g => g.gameObject.scene == this.gameObject.scene);
 		winType = FindObjectsOfType<WinType>().First(g => g.gameObject.scene == this.gameObject.scene);
+		Preview = FindObjectsOfType<TilePreview>().First(g => g.gameObject.scene == this.gameObject.scene);
 		CreateRespawnManager();
 	}
 
@@ -70,12 +76,24 @@ public class LevelManager : ContextManager {
 							grabPoint.y = p.MousePositionWorldSpace.y;
 						}
 						SelectedTile.Select(true);
-					}
+					}		
+				}
+
+				Vector3 position = p.MousePositionWorldSpace + Player.Direction * -7.5f;
+				if (Vector2.Distance(Player.transform.position, p.MousePositionWorldSpace) < 5) {				
+					Preview.Show(true, position);
+					Preview.WatchedPosition = Player.transform.position;				
+				}
+				else {
+					Preview.Show(false, position);
 				}
 			}
-			else if(SelectedTile != null && !p.Touchdown && p.TouchdownChange) {
-				SelectedTile.Select(false);
-				SelectedTile = null;
+			else if (!p.Touchdown && p.TouchdownChange) {
+				Preview.Show(false);
+				if (SelectedTile != null) {
+					SelectedTile.Select(false);
+					SelectedTile = null;
+				}
 			}
 		}
 	}
@@ -96,7 +114,8 @@ public class LevelManager : ContextManager {
 		collectedStars = 0;
 		goalFlag?.Reset();
 		Grid?.Reset();
-		RespawnManager.Player?.SetAlive(false);
+		Player?.SetAlive(false);
+		Preview.Show(false);
 		StartCoroutine(winType.WhenTilesOffScreen(() => {
 			Won = false;
 			winType.Reset();
@@ -112,6 +131,7 @@ public class LevelManager : ContextManager {
 		goalFlag = gf;
 		Won = true;
 		if(SelectedTile != null) {
+			Preview.Show(false);
 			SelectedTile.Select(false);
 			SelectedTile = null;
 		}

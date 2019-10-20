@@ -10,7 +10,6 @@ public class TutorialTile : Tile
 	public Action<bool> OnPlayerEnteredOrLeft;
 
 	private bool playerInside = false;
-	private LayerMask playerMask;
 
 	public void TutorialInit(
 		Action onselect,
@@ -20,7 +19,6 @@ public class TutorialTile : Tile
 		OnSelected = onselect;
 		OnMovedFromCenter = onmove;
 		OnPlayerEnteredOrLeft = onplayer;
-		playerMask = 1 << LayerMask.NameToLayer("Player");
 	}
 
 	public override void Select(bool select) {
@@ -42,7 +40,7 @@ public class TutorialTile : Tile
 	public override void Update() {
 		base.Update();
 		
-		bool isPlayerInside = Physics2D.OverlapBox(transform.position, transform.lossyScale, 0, playerMask) != null;
+		bool isPlayerInside = IsPlayerOnTile();
 		if(isPlayerInside ^ playerInside) {
 			playerInside = isPlayerInside;
 			OnPlayerEnteredOrLeft?.Invoke(playerInside);

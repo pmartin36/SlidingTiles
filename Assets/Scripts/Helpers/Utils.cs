@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -41,6 +42,16 @@ public abstract class Utils {
 
 	public static float Sinh(float d) {
 		return (Mathf.Exp(d) - Mathf.Exp(-d)) / 2f;
+	}
+
+	public static IEnumerator SimpleLerp(float timeToComplete, System.Action<float> loopAction) {
+		float t = 0;
+		while (t < timeToComplete) {
+			loopAction(t / timeToComplete);
+			t += Time.deltaTime;
+			yield return null;
+		}
+		loopAction(t / timeToComplete);
 	}
 }
 

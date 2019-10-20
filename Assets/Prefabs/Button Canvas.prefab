@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3687039422300533423}
   - component: {fileID: 7657455168964418306}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,7 +186,7 @@ GameObject:
   - component: {fileID: 5369595855878816487}
   - component: {fileID: 6514423713644356208}
   m_Layer: 5
-  m_Name: Frame
+  m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -485,7 +485,7 @@ GameObject:
   - component: {fileID: 5679307049107619045}
   - component: {fileID: 5975277033373234401}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -507,8 +507,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.024996758}
-  m_SizeDelta: {x: 0, y: 0.049993515}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5679307049107619045
 CanvasRenderer:
@@ -774,7 +774,7 @@ PrefabInstance:
     - target: {fileID: 1454084575168052844, guid: 1f75c49c672774543b0457877a96e559,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 8.45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1454084575168052844, guid: 1f75c49c672774543b0457877a96e559,
         type: 3}
