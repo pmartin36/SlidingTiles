@@ -41,9 +41,15 @@ public class LevelSelectButton : MonoBehaviour
 		anim.Play("showLevelSelectButton", -1, hide ? 1 : 0);
 	}
 
-	public void SetStayHidden(bool stayHidden) {
-		text.color = stayHidden ? Color.clear : Color.white;
-		button.image.color = stayHidden ? Color.clear : tileColor;
+	public virtual void TryEnableInteractable() {
+		Interactable = true;
+	}
+
+	public virtual void SetStayHidden(bool stayHidden) {
+		Color clear = Color.white;
+		clear.a = 0;
+		text.color = stayHidden ? clear : Color.white;
+		button.image.color = stayHidden ? clear : tileColor;
 		button.enabled = !stayHidden;
 	}
 

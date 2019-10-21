@@ -28,8 +28,8 @@ public class GameManager : Singleton<GameManager> {
 		set => ContextManager = value;
 	}
 
-	public int HighestOwnedLevel { get; set; }
-	public int HighestUnlockedLevel { get; set; }
+	public int HighestOwnedWorld { get; private set; } = 5;
+	public int HighestUnlockedLevel { get; private set; } = 2;
 
 	public static readonly int MenuBuildIndex = 0;
 	public static readonly int LoadSceneBuildIndex = 1;
@@ -180,5 +180,9 @@ public class GameManager : Singleton<GameManager> {
 		if(waitUntil != null) {
 			yield return waitUntil;
 		}
+	}
+
+	public void SetHighestUnlockedLevel(int level) {
+		HighestUnlockedLevel = Mathf.Max(level, HighestUnlockedLevel);
 	}
 }

@@ -21,7 +21,7 @@ public class MenuManager : ContextManager {
 
 	public override void HandleInput(InputPackage p) {
 		if (p.Touchdown && !p.PointerOverGameObject && p.TouchdownChange) {
-			if(!(SettingsOpen || LevelSelectOpen)) {
+			if(!SettingsOpen && !LevelSelectOpen) {
 				if (temp_hasUserData) {
 					OpenLevelSelect(true);
 				}
@@ -35,6 +35,14 @@ public class MenuManager : ContextManager {
 
 	public void OpenLevelSelect(bool skipAnimation = false) { 
 		LevelSelectOpen = true;
+		int highestUnlocked = GameManager.Instance.HighestUnlockedLevel;
+
+
+		// User hasn't completed the tutorial levels yet
+		if (highestUnlocked < GameManager.TutorialLevelStart + 2) {
+			GameManager.Instance.LoadScene(highestUnlocked, null);
+			return;
+		}
 
 		if(skipAnimation) {
 			HomeScreen.SetActive(false);

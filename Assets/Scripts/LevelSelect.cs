@@ -15,6 +15,9 @@ public class LevelSelect : MonoBehaviour
 	private Vector2[] LevelPositions;
 	private Vector2[] WorldPositions;
 
+	private int highestUnlockedWorld;
+	private int highestUnlockedLevel;
+
 	void Awake() {
 		WorldSelected = 0;
 
@@ -45,13 +48,21 @@ public class LevelSelect : MonoBehaviour
 			new Vector2(-0.5f * tileWidth, -1.5f * tileWidth),
 			new Vector2( 1.5f * tileWidth, -1.5f * tileWidth),
 			new Vector2( 3.5f * tileWidth, -1.5f * tileWidth),
+			//garbage
+			Vector2.zero,
+			Vector2.zero
 		};
-		
+
+		int highest = GameManager.Instance.HighestUnlockedLevel;
+		highestUnlockedWorld = (highest - GameManager.TutorialLevelStart - 2) / 10 + 1;
+		highestUnlockedLevel = (highest - GameManager.TutorialLevelStart - 2) % 10 + 1;
+
 		NumberedLevelButtons = GetComponentsInChildren<NumberedLevelSelectButton>().OrderBy(g => g.name).ToArray(); // 1 - 12
 		for(int i = 0; i < NumberedLevelButtons.Length; i++) {
 			NumberedLevelSelectButton b = NumberedLevelButtons[i];
 			b.Init(i + 1);
 			SetLevelSelectButton(b);
+			b.TryEnableInteractable();
 		}
 
 		Back.Init();
@@ -59,30 +70,37 @@ public class LevelSelect : MonoBehaviour
 
 	public void SetLevelSelectButton(NumberedLevelSelectButton b) {
 		if(LevelSelectOpen) {
-			if(b.Number != WorldSelected) {
-				if (b.Number == 11) {
-					if(WorldSelected == 12) {
-						b.SetStayHidden(true);
+			b.SetPaywalled(false);
+			if (b.Number != WorldSelected) {
+				// what is usually #12 is used as a flex tile to fill the spot of the world selected
+				if(b.Number == 12) {
+					if (WorldSelected < 11) {
+						b.SetStayHidden(false);
+						b.SetButtonInfo(LevelSelectPosition(WorldSelected), WorldSelected, WorldSelected <= highestUnlockedLevel, false);
 					}
 					else {
-						b.SetPositionAndNumber(LevelSelectPosition(WorldSelected), WorldSelected);
+						// only 10 levels, don't need to show if level 11 is selected
+						b.SetStayHidden(true);
 					}
 				}
-				else if(b.Number == 12) {
-					if (WorldSelected < 11) {
-						b.SetPositionAndNumber(LevelSelectPosition(WorldSelected), WorldSelected);
-					}
-					else {
-						b.SetStayHidden(true);
-					}
+				else if(b.Number == 11) {
+					// since 12 is flexing, 11 is never needed in level select
+					b.SetStayHidden(true);
 				}
 				else {
-					b.SetPosition(LevelSelectPosition(b.Number));
+					b.SetStayHidden(false);
+					b.SetButtonInfo(LevelSelectPosition(b.Number), b.Number, b.Number <= highestUnlockedLevel, false);
   				}
 			}	
 		}
 		else {
-			b.SetPositionAndNumber(WorldSelectPosition(b.Number), b.Number);
+			b.SetStayHidden(false); // worlds are never hidden
+			b.SetButtonInfo(
+				position:	WorldSelectPosition(b.Number), 
+				num:		b.Number, 
+				unlocked:	b.Number <= highestUnlockedWorld,
+				paywalled:	b.Number > GameManager.Instance.HighestOwnedWorld
+			);
 		}
 	}
 
@@ -94,17 +112,22 @@ public class LevelSelect : MonoBehaviour
 		else {
 			WorldSelected = button.Number;
 
-			// move button to S position
-			button.SetSlidePosition(WorldSelectedTilePosition, false);
+			if(button.Paywalled) {
+				Debug.Log("TAKE ME TO THE STORE!");
+			}
+			else {
+				// move button to S position
+				button.SetSlidePosition(WorldSelectedTilePosition, false);
 
-			// move all other buttons to their position
-			foreach(NumberedLevelSelectButton b in NumberedLevelButtons) {
-				if(b != button) {
-					b.SetHidden(true, () => {
-						SetLevelSelectButton(b);
-						b.SetHidden(false, null);
-						Back.SetHidden(false, null);
-					});
+				// move all other buttons to their position
+				foreach(NumberedLevelSelectButton b in NumberedLevelButtons) {
+					if(b != button) {
+						b.SetHidden(true, () => {
+							SetLevelSelectButton(b);
+							b.SetHidden(false, null);
+							Back.SetHidden(false, null);
+						});
+					}
 				}
 			}
 		}
@@ -126,7 +149,6 @@ public class LevelSelect : MonoBehaviour
 			else {
 				b.SetHidden(true, () => {
 					SetLevelSelectButton(b);
-					b.SetStayHidden(false);
 					b.SetHidden(false, null);
 				});
 			}
