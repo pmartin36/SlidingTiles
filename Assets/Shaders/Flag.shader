@@ -15,6 +15,7 @@
         Pass
         {
 			Blend SrcAlpha OneMinusSrcAlpha
+			Cull Off
 			ZWrite Off
 
             CGPROGRAM	

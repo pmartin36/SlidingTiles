@@ -28,16 +28,17 @@ public class GameManager : Singleton<GameManager> {
 		set => ContextManager = value;
 	}
 
-	public int HighestOwnedWorld { get; private set; } = 5;
-	public int HighestUnlockedLevel { get; private set; } = 2;
-
 	public static readonly int MenuBuildIndex = 0;
 	public static readonly int LoadSceneBuildIndex = 1;
 	public static readonly int TutorialLevelStart = 2;
 
 	private LoadScreen loadScreen;
+
 	public StoreCommunicator StoreCommunicator { get; set; }
 	public bool IsMobilePlatform { get; set; }
+	public SaveData SaveData { get; private set; }
+	public int HighestOwnedWorld => SaveData.HighestOwnedWorld;
+	public int HighestUnlockedLevel => SaveData.HighestUnlockedLevel;
 
 	public void Awake() {
 		// TODO: Load saved PlayerData
@@ -47,6 +48,14 @@ public class GameManager : Singleton<GameManager> {
 
 		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 		IsMobilePlatform = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
+
+		bool retrievedData = StoreCommunicator.TryLoadSaveData(out string jsonString);
+		if(retrievedData) {
+			SaveData = JsonUtility.FromJson<SaveData>(jsonString);
+		}
+		else {
+			SaveData = new SaveData();
+		}
 	}
 
 	public void Update() {
@@ -183,6 +192,21 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public void SetHighestUnlockedLevel(int level) {
-		HighestUnlockedLevel = Mathf.Max(level, HighestUnlockedLevel);
+		SaveData.HighestUnlockedLevel = Mathf.Max(level, HighestUnlockedLevel);
+		Save();
+	}
+
+	public void AdjustAudio(SoundType t, float value) {
+		if(t == SoundType.VFX) {
+			SaveData.FxVolume = value;
+		}
+		else {
+			SaveData.MusicVolume = value;
+		}
+	}
+
+	public void Save() {
+		string json = JsonUtility.ToJson(SaveData);
+		StoreCommunicator.AddSaveData(json);
 	}
 }

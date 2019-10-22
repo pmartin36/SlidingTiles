@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class TestCommunicator : StoreCommunicator {
 	public override void AddAchievement(string name) {
@@ -10,11 +11,17 @@ public class TestCommunicator : StoreCommunicator {
 	}
 
 	public override void AddPurchase(string purchaseType) {
-		throw new NotImplementedException();
+		Debug.Log(purchaseType);
 	}
 
-	public override void AddSaveData() {
-		throw new NotImplementedException();
+	public override void AddSaveData(string json) {
+		Debug.Log(json);
+	}
+
+	public override bool TryLoadSaveData(out string jsonString) {
+		jsonString = "{ test: {} }";
+		Debug.Log("Trying to load saved data");
+		return false;
 	}
 
 	public override void AddToLeaderboard(string score, int leaderboardType) {

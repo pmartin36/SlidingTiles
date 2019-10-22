@@ -33,6 +33,7 @@ public class AudioController : MonoBehaviour
 		}
 
 		// tell audio manager that value changed
+		GameManager.Instance.AdjustAudio(SoundType, slider.value);
 	}
 
 	public void OnMuteButtonToggle() {
@@ -41,6 +42,6 @@ public class AudioController : MonoBehaviour
 		muteButton.image.sprite = isMuting ? mutedSprite : unmutedSprite;
 
 		// tell audio manager that value changed
-
+		GameManager.Instance.AdjustAudio(SoundType, slider.value);
 	}
 }

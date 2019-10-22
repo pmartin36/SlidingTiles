@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class CameraManager : Singleton<CameraManager> {
     
-	public Camera MainCamera { get; private set; }
+	public CameraController CameraController { get; private set; }
+	public Camera Camera => CameraController.Camera;
 
-	public void Create(Camera cameraPrefab, bool isMain) {
+	public void Create(CameraController cameraPrefab, bool isMain) {
 		transform.position = Vector3.zero;
-		MainCamera = Instantiate(cameraPrefab, cameraPrefab.transform.position, cameraPrefab.transform.rotation, this.transform); 
+		CameraController = Instantiate(cameraPrefab, cameraPrefab.transform.position, cameraPrefab.transform.rotation, this.transform); 
 	}
 }

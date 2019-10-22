@@ -29,10 +29,17 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void Reset() {
-		GameManager.Instance.LevelManager.Reset(true);
+		//GameManager.Instance.LevelManager.Reset(true);
+		CameraManager.Instance.CameraController.RandomShake(5f, 5f, 0.7f, false);
 	}
 
 	public void Menu() {
-		GameManager.Instance.LoadScene(GameManager.MenuBuildIndex);
+		CameraManager.Instance.CameraController.Shake(
+			2f,
+			0.3f,
+			Vector2.up * 5f,
+			Vector2.up * -1f
+		);
+		//GameManager.Instance.LoadScene(GameManager.MenuBuildIndex);
 	}
 }

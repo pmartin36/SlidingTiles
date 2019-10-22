@@ -10,11 +10,16 @@ public class SteamCommunicator : StoreCommunicator {
 	}
 
 	public override void AddPurchase(string purchaseType) {
-		throw new NotImplementedException();
+		
 	}
 
-	public override void AddSaveData() {
-		throw new NotImplementedException();
+	public override void AddSaveData(string json) {
+		
+	}
+
+	public override bool TryLoadSaveData(out string jsonString) {
+		jsonString = "{ test: {} }";
+		return false;
 	}
 
 	public override void AddToLeaderboard(string score, int leaderboardType) {

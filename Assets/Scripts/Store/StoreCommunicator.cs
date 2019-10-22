@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
 public abstract class StoreCommunicator {
+	public bool HasData { get; protected set; }
+
 	public static StoreCommunicator StoreCommunicatorFactory() {
 		switch (Application.platform) {
 			case RuntimePlatform.OSXEditor:
@@ -29,7 +31,8 @@ public abstract class StoreCommunicator {
 	}
 
 	public abstract void AddAchievement(string name);
-	public abstract void AddSaveData();
+	public abstract void AddSaveData(string json);
+	public abstract bool TryLoadSaveData(out string jsonString);
 
 	public abstract void AddToLeaderboard(string score, int leaderboardType);
 	public abstract void AddPurchase(string purchaseType);

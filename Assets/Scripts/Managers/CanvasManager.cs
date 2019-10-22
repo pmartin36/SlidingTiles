@@ -6,7 +6,7 @@ public class CanvasManager : MonoBehaviour
 {
     void Start() {
 		foreach(Canvas c in GetComponentsInChildren<Canvas>()) {
-			c.worldCamera = CameraManager.Instance.MainCamera;
+			c.worldCamera = CameraManager.Instance.Camera;
 		}
     }
 }
