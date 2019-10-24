@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2300834580857512375}
   - component: {fileID: 2300834580857512374}
   - component: {fileID: 2300834580857512369}
+  - component: {fileID: 2300979200037101161}
   m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
@@ -146,7 +147,6 @@ MonoBehaviour:
   maxJumpHeight: 4
   minJumpHeight: 1
   timeToJumpApex: 0.4
-  Ghost: 0
 --- !u!50 &2300834580857512369
 Rigidbody2D:
   serializedVersion: 4
@@ -168,6 +168,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!95 &2300979200037101161
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2300834580857512379}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 160737af0da366c43bacec657204a53c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8709623336300932689
 GameObject:
   m_ObjectHideFlags: 0

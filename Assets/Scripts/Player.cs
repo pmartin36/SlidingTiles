@@ -13,8 +13,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public float minJumpHeight = 1;
 	public float timeToJumpApex = .4f;
 
-	public bool Ghost;
-
 	public float Vx {
 		get {
 			return moveSpeed * moveDirection;
@@ -31,6 +29,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private float maxJumpVelocity;
 	private float minJumpVelocity;
 	private Vector3 velocity;
+	private Vector3 lastFrameVelocity;
 	private float velocityXSmoothing;
 
 	private Controller2D controller;
@@ -40,23 +39,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Vector3 spawnPosition;
 
 	private RespawnManager RespawnManager;
-
-	// Wall Stuff, will probably remove
-	//public float wallSlideSpeedMax = 3;
-	//public float wallStickTime = .25f;
-	//private float timeToWallUnstick;
-	//public float wallSlideSpeedMax = 3;
-	//public float wallStickTime = .25f;
-	//float timeToWallUnstick;
-	//public Vector2 wallJumpClimb;
-	//public Vector2 wallJumpOff;
-	//public Vector2 wallLeap;
-	//bool wallSliding;
-	//int wallDirX;
+	private Animator animator;
 
 	void Awake() {
 		controller = GetComponent<Controller2D>();
 		lights = GetComponentsInChildren<SpriteRenderer>().First(s => s.gameObject != this.gameObject);
+		animator = GetComponent<Animator>();
 	}
 
 	void Start() {
@@ -82,6 +70,19 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 				velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
 			} else {
 				velocity.y = 0;
+
+				//// little screen shake
+				//float absLastY = Mathf.Abs(lastFrameVelocity.y);
+				//float sign = Mathf.Sign(lastFrameVelocity.y);
+				//if (absLastY > 40f) {
+				//	float a = absLastY / 175f;
+				//	CameraManager.Instance.CameraController.Shake(
+				//		1f,
+				//		a * 0.3f,
+				//		Vector2.up * sign * a,
+				//		Vector2.down * sign * a * 0.9f
+				//	);
+				//}
 			}
 		}
 
@@ -89,7 +90,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			&& ((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left))
 		) {
 			moveDirection *= -1f;
+
+			Vector3 localScale = transform.localScale;
+			localScale.x *= -1f;
+			transform.localScale = localScale;
 		}
+		lastFrameVelocity = velocity;
 	}
 
 	void LateUpdate() {
@@ -97,20 +103,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void Spring(Vector2 direction) {
-		//if (wallSliding) {
-		//	if (wallDirX == moveDirection) {
-		//		velocity.x = -wallDirX * wallJumpClimb.x;
-		//		velocity.y = wallJumpClimb.y;
-		//	}
-		//	else if (moveDirection == 0) {
-		//		velocity.x = -wallDirX * wallJumpOff.x;
-		//		velocity.y = wallJumpOff.y;
-		//	}
-		//	else {
-		//		velocity.x = -wallDirX * wallLeap.x;
-		//		velocity.y = wallLeap.y;
-		//	}
-		//}
 		//if (controller.collisions.slidingDownMaxSlope) {
 		//	if (moveDirection != -Mathf.Sign (controller.collisions.slopeNormal.x)) { // not jumping against max slope
 		//		velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
@@ -124,35 +116,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		}
 		velocity += Vector3.right * moveDirection * vx;
 	}	
-
-	void HandleWallSliding() {
-		//wallDirX = (controller.collisions.left) ? -1 : 1;
-		//wallSliding = false;
-		//if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below && velocity.y < 0) {
-		//	wallSliding = true;
-
-		//	if (velocity.y < -wallSlideSpeedMax) {
-		//		velocity.y = -wallSlideSpeedMax;
-		//	}
-
-		//	if (timeToWallUnstick > 0) {
-		//		velocityXSmoothing = 0;
-		//		velocity.x = 0;
-
-		//		if (moveDirection != wallDirX && moveDirection != 0) {
-		//			timeToWallUnstick -= Time.deltaTime;
-		//		}
-		//		else {
-		//			timeToWallUnstick = wallStickTime;
-		//		}
-		//	}
-		//	else {
-		//		timeToWallUnstick = wallStickTime;
-		//	}
-
-		//}
-
-	}
 
 	public void SetVelocityFromBump(Vector2 bumpVelocity) {
 		float absBump = Mathf.Abs(bumpVelocity.x);
@@ -181,8 +144,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			}
 		}
 
-		velocity.x = Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection;
-		velocity.y += gravity * Time.deltaTime;
+		velocity = new Vector2(
+			Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection,
+			velocity.y + gravity * Time.deltaTime
+		);
 	}
 
 	public bool CheckBlocking(ref Vector2 original, HashSet<Tile> tilesToMove) {
@@ -227,15 +192,13 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		if (collision.CompareTag("Reset")) {
 			SetAlive(false);
 		}
-		else if(!Ghost) {
-			if (collision.CompareTag("Flag")) { 
-				moveDirection = 0f;
-				collision.GetComponent<GoalFlag>().PlayerReached();
-			}
-			else if(collision.CompareTag("Star")) {
-				collision.GetComponent<Star>().Collected();
-			}
+		if (collision.CompareTag("Flag")) { 
+			moveDirection = 0f;
+			StartCoroutine(FlagReached(collision.GetComponent<GoalFlag>()));
 		}
+		else if(collision.CompareTag("Star")) {
+			collision.GetComponent<Star>().Collected();
+		}	
 	}
 
 	public void SetAlive(bool alive) {
@@ -249,6 +212,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;
+		animator.SetBool("Won", false);
 		aliveChanged?.Invoke(this, alive);
 	}
 
@@ -266,5 +230,13 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public void SetTemporarySpeed(float speed) {
 		temporarySpeed = Mathf.Abs(speed);
 		temporarySpeedTimer = 1f;
+	}
+
+	private IEnumerator FlagReached(GoalFlag flag) {
+		flag.PlayerReached();
+		yield return new WaitUntil(() => controller.collisions.below); // wait for the player to hit the ground
+		animator.SetBool("Won", true); //start animation for reaching flag
+		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
+		GameManager.Instance.LevelManager.PlayerWin(flag);
 	}
 }

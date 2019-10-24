@@ -13,7 +13,6 @@ public class GoalFlag : MonoBehaviour
 
 	public void PlayerReached() {
 		particles.gameObject.SetActive(true);
-		GameManager.Instance.LevelManager.PlayerWin(this);
 	}
 
 	public void Reset() {

@@ -93,5 +93,6 @@ public class CameraController : MonoBehaviour
 			shakeOffsets.Enqueue(offset);
 		}
 		targetOffset = shakeOffsets.Dequeue();
+		offset = Vector3.Lerp(offset, targetOffset, shakeSpeed);
 	}
 }

@@ -38,12 +38,10 @@ public abstract class WinType : MonoBehaviour {
 		frontPanel.gameObject.SetActive(true);
 		for (int i = 0; i < Stars.Length; i++) {
 			if (stars > i) {
-				Stars[i].MaxAlpha = 1f;
-				Stars[i].Color = new Color(1, 1, 0.6f);
+				Stars[i].AllowAnimate = true;
 			}
 			else if (availableStars > i) {
-				Stars[i].MaxAlpha = 0.4f;
-				Stars[i].Color = new Color(0, 0, 0);
+				Stars[i].AllowAnimate = false;
 			}
 			else {
 				Stars[i].gameObject.SetActive(false);

@@ -5,30 +5,39 @@ using UnityEngine.UI;
 
 public class WinScreenStar : MonoBehaviour
 {
-	private Image image;
+	private Image outerStar;
+	private Image innerStar;
+
 	[Range(0,1)]
-	public float Alpha;
-	public float MaxAlpha { get; set; }
-	public Color Color {
-		get => image.color;
-		set {
-			Color c = value;
-			c.a = Mathf.Min(MaxAlpha, Alpha);
-			image.color = c;
+	public float PercentAnimated;
+	public bool AllowAnimate { get; set; }
+
+	[Range(-1f, 1f)]
+	public float RadiusModifier;
+
+	void Awake() {
+		foreach(Image i in GetComponentsInChildren<Image>()) {
+			i.material = new Material(i.material);
+			if(i.gameObject == this.gameObject) {
+				outerStar = i;
+			}
+			else {
+				innerStar = i;
+			}
+		};
+		UpdateAnimation();
+	}
+
+	void LateUpdate() {
+		if(AllowAnimate) {
+			UpdateAnimation();
 		}
 	}
 
-	void Awake() {
-		image = GetComponent<Image>();
-	}
-
-	void Update() {
-		UpdateAlpha(Alpha);
-	}
-
-	public void UpdateAlpha(float alpha) {
-		var bc = image.color;
-		bc.a = Mathf.Min(MaxAlpha, alpha);
-		image.color = bc;
+	private void UpdateAnimation() {
+		outerStar.material.SetFloat("_PctAnimated", PercentAnimated);
+		innerStar.material.SetFloat("_PctAnimated", PercentAnimated);
+		
+		outerStar.material.SetFloat("_RadiusModifier", RadiusModifier);
 	}
 }
