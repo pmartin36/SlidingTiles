@@ -71,12 +71,12 @@
 
             fixed4 frag (v2f i) : SV_Target
             {	
-                // sample the texture
+                
                 fixed4 col = tex2D(_MainTex, i.uv) * i.color;	
 				float4 cAlpha = float4(1, 1, 1, col.a);
-
+				
+				// animation based
 				float center = _PctAnimated * 4 - 2;
-				// center =  fmod(_Time.y, 4) - 2; // -4 to 4
 				float l = center + i.uv.x - i.uv.y;
 				float lsqr = pow(l, 2);
 
@@ -92,9 +92,13 @@
 				float4 add = _ShineColor * (lerpSqr + noise * pow(lerpSqr, 2) * lerp(0.6, 0.0, lerpSqr)) * cAlpha;
 				float4 hiddenColor = _HiddenColor * cAlpha;
 				col = lerp(hiddenColor, col, saturate(l * 5 + 0.2));
-				//return col;
 
-				return col + add;
+				// time based
+				center = fmod(_Time.y * 2, 10) - 5; // -4 to 4
+				l = center + i.uv.x - i.uv.y;
+				lerpVal = pow(1 - saturate(abs(l)), 2);
+				float4 timeAdd = _ShineColor * lerpVal * col.a * step(0.99, _PctAnimated) * 0.5;
+				return col + add + timeAdd;
             }
             ENDCG
         }

@@ -78,7 +78,6 @@
                 fixed4 col = tex2D(_MainTex, i.uv) * i.color;	
 
 				float center = _PctAnimated * 4 - 2;
-				//center =  fmod(_Time.y, 4) - 2; // -4 to 4
 				float l = center + i.uv.x - i.uv.y;
 
 				float2 remappedUv = i.uv * 2 - 1;
@@ -97,14 +96,15 @@
 				float tVal2 = (theta01 + 0.1) * 35 + _Time.y;
 				float m2 = min(frac(tVal2), frac(1 - tVal2));
 				float alpha = inverseLerp(0.4, 0.7, noise * m2);			
-				float4 cAlpha = float4(1, 1, 1, alpha * 1.5 + col.a);
+				float4 cAlpha = float4(1, 1, 1, (alpha * 1.5 + col.a) * 0.2);
 
 				float4 color = float4(i.color.rgb, 1);
-				float lVal = inverseLerp(0.9, 1.1, noise);
-				col = 
+				float lVal = inverseLerp(-2, 0.5, noise);
+				float ssRadius = smoothstep(0.5, 0.2, radius);
+				col =
 					(1 - step(l, 0)) // from percent animation
-					* (	lerp(color, float4(1, 1, 1, 1), lVal) * cAlpha 
-						+ smoothstep(0.5, 0.2, radius) * float4(1,1,1,1) );
+					* (lerp(float4(1, 1, 1, 1), color, lVal) * cAlpha
+						+ ssRadius * lerp(color, float4(1, 1, 1, 1), ssRadius));
 				return saturate(col);
             }
             ENDCG
