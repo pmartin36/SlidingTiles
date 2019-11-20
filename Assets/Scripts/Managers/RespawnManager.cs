@@ -27,12 +27,15 @@ public class RespawnManager
 	public void RespawnPlayer() {
 		Player.SetAlive(true);
 		ActionButtons.HighlightSpawn(false);
+		foreach (Star s in Stars) {
+			s.Reset();
+		}
 	}
 
 	public void PlayerAliveChange(object player, bool alive) {
 		if(!alive) {
 			foreach (Star s in Stars) {
-				s.gameObject.SetActive(true);
+				s.Reset();
 			}
 
 			ActionButtons.HighlightSpawn(true);

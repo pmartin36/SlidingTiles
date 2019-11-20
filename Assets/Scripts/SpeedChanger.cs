@@ -25,6 +25,8 @@ public class SpeedChanger : MonoBehaviour
     }
 
 	public void OnTriggerEnter2D(Collider2D collision) {
+		if (collision.gameObject.scene != this.gameObject.scene) return;
+
 		ISpeedChangable s = collision.GetComponent<ISpeedChangable>();
 		if (s != null) {
 			EffectedBodies.Add(s);

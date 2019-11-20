@@ -4,9 +4,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class LevelSelectButton : MonoBehaviour
-{
-	
+public class LevelSelectButton : MenuImageCopy
+{	
 	public bool Interactable { 
 		get => button.interactable;
 		set => button.interactable = value;

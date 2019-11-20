@@ -50,10 +50,15 @@ public abstract class WinType : MonoBehaviour {
 		OnActionSelected = callback;
 	}
 
-	public virtual void SelectAction(WinTypeAction w) {
+	public virtual bool SelectAction(WinTypeAction w) {
+		if(w == WinTypeAction.Next && !GameManager.Instance.CanPlayNextLevel()) {
+			return false;
+		}
+
 		ActionSelected = true;
 		IsAnimating = true;
 		OnActionSelected?.Invoke(w);
+		return true;
 	}
 
 	protected void Update() {

@@ -58,10 +58,10 @@
             {	
 				float2 remappedUv = (i.uv * 2) - 1;
 				float len = length(remappedUv);
-				//float dist = pow(saturate(1 - (_Radius - len)),3) - step(min(_Radius, 0.92), len);
-				float dist = pow(saturate(1 - abs(_Radius - len)), 5) - max(len - 0.875, 0) * 15;
-				dist = saturate(dist);
-				float4 col = i.color;
+
+				float dist = pow(saturate(1 - abs(_Radius - len)), 10);
+				dist = smoothstep(0, 1, dist);
+				float4 col = lerp(float4(1,1,1,1), i.color, smoothstep(1.5, 0.5, dist));
 				col.a *= dist;
 				return col;
             }

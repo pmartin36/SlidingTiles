@@ -12,12 +12,18 @@ public class MenuManager : ContextManager {
 	public GameObject SettingsMenu;
 	public SettingsButton SettingsButton;
 
+	public float LevelBlend { get; set; }
+
 	[SerializeField]
 	private GameObject HomeScreen;
 	[SerializeField]
-	private GameObject LevelSelectScreen;
+	private LevelSelect LevelSelectScreen;
 
 	bool temp_hasUserData = true;
+
+	public override void Start() {
+		base.Start();
+	}
 
 	public override void HandleInput(InputPackage p) {
 		if (p.Touchdown && !p.PointerOverGameObject && p.TouchdownChange) {
@@ -27,7 +33,7 @@ public class MenuManager : ContextManager {
 				}
 				else {
 					AcceptingInputs = false;
-					GameManager.Instance.LoadScene(GameManager.TutorialLevelStart, null);
+					GameManager.Instance.LoadScene(SceneHelpers.TutorialLevelStart, null);
 				}
 			}
 		}
@@ -39,18 +45,28 @@ public class MenuManager : ContextManager {
 
 
 		// User hasn't completed the tutorial levels yet
-		if (highestUnlocked < GameManager.TutorialLevelStart + 2) {
+		if (highestUnlocked < SceneHelpers.TutorialLevelStart + 2) {
 			GameManager.Instance.LoadScene(highestUnlocked, null);
 			return;
 		}
 
 		if(skipAnimation) {
 			HomeScreen.SetActive(false);
-			LevelSelectScreen.SetActive(true);
+
+			int world = GameManager.Instance.LastPlayedWorld;
+			LevelSelectScreen.Init(world, this);
+			(LevelSelectScreen.MirroredComponent as LevelSelect).Init(world, this);
+
+			LevelSelectScreen.gameObject.SetActive(true);
+			LevelSelectScreen.MirroredComponent.gameObject.SetActive(true);		
 		}
 		else {
 
 		}
+	}
+
+	public void LateUpdate() {
+		CameraManager.Instance.CameraController.ModifyPostProcessSettings(LevelBlend);
 	}
 
 	public void ToggleSettings() {

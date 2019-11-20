@@ -17,6 +17,8 @@ public class Spring : MonoBehaviour
 	}
 
 	public void OnTriggerEnter2D(Collider2D collision) {
+		if (collision.gameObject.scene != this.gameObject.scene) return;
+
 		ISpringable s = collision.GetComponent<ISpringable>();
 		if( s != null ) {
 			s.Spring(direction);

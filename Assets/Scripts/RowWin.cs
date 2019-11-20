@@ -16,8 +16,10 @@ public class RowWin : WinType
 		base.Reset();
 	}
 
-	public void SelectActionInspector(int w) {
-		Hide();
-		base.SelectAction((WinTypeAction)w); /// needed to show up in inspector?
+	public void SelectActionInspector(int w) {	
+		bool actionSuccess = base.SelectAction((WinTypeAction)w);
+		if(actionSuccess) {
+			Hide();
+		}
 	}
 }

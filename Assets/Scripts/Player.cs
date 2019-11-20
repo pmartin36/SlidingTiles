@@ -189,6 +189,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void OnTriggerEnter2D(Collider2D collision) {
+		if (collision.gameObject.scene != this.gameObject.scene) return;
+
 		if (collision.CompareTag("Reset")) {
 			SetAlive(false);
 		}

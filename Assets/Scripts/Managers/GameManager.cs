@@ -28,10 +28,6 @@ public class GameManager : Singleton<GameManager> {
 		set => ContextManager = value;
 	}
 
-	public static readonly int MenuBuildIndex = 0;
-	public static readonly int LoadSceneBuildIndex = 1;
-	public static readonly int TutorialLevelStart = 2;
-
 	private LoadScreen loadScreen;
 
 	public StoreCommunicator StoreCommunicator { get; set; }
@@ -39,12 +35,13 @@ public class GameManager : Singleton<GameManager> {
 	public SaveData SaveData { get; private set; }
 	public int HighestOwnedWorld => SaveData.HighestOwnedWorld;
 	public int HighestUnlockedLevel => SaveData.HighestUnlockedLevel;
+	public int LastPlayedWorld => SaveData.LastPlayedWorld;
 
 	public void Awake() {
 		// TODO: Load saved PlayerData
 		// PlayerData = new PlayerData(2f, 1.25f, 0.2f);
 		ContextManager = GameObject.FindObjectOfType<ContextManager>();
-		SceneManager.LoadSceneAsync(LoadSceneBuildIndex, LoadSceneMode.Additive);
+		SceneManager.LoadSceneAsync(SceneHelpers.LoadSceneBuildIndex, LoadSceneMode.Additive);
 
 		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 		IsMobilePlatform = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
@@ -79,37 +76,14 @@ public class GameManager : Singleton<GameManager> {
 		_targetTimeScale = timescale;
 	}
 
-	public int GetNextLevelBuildIndex() {
-		return GetCurrentLevelBuildIndex() + 1;
-	}
-
-	public int GetCurrentLevelBuildIndex() {
-		var buildIndex = 0;
-		for(int i = 0; i < SceneManager.sceneCount; i++) {
-			Scene s = SceneManager.GetSceneAt(i);
-			if (s.isLoaded && s.buildIndex != LoadSceneBuildIndex) {
-				return s.buildIndex;
-			}
+	public bool CanPlayNextLevel() {
+		int nextLevelIndex = SceneHelpers.GetNextLevelBuildIndex();
+		int world = SceneHelpers.GetWorldFromBuildIndex(nextLevelIndex);
+		if(world > HighestOwnedWorld) {
+			Debug.Log("Player doesn't own level, go to store!");
+			return false;
 		}
-		return buildIndex;
-	}
-
-	public string GetSceneName() {
-		for (int i = 0; i < SceneManager.sceneCount; i++) {
-			Scene s = SceneManager.GetSceneAt(i);
-			if (s.buildIndex != LoadSceneBuildIndex) {
-				return s.name;
-			}
-		}
-		return "";
-	}
-
-	public int GetBuildIndexFromLevel(int world, int level) {
-		return 
-			TutorialLevelStart + 
-			2 + // two tutorial levels
-			(world-1) * 10 + // each world has 10 levels
-			(level - 1); // 0 indexed levels
+		return true;
 	}
 
 	private IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {
@@ -128,7 +102,7 @@ public class GameManager : Singleton<GameManager> {
 			SceneManager.UnloadSceneAsync(buildIndex);
 		}
 		else {
-			int currentScene = GetCurrentLevelBuildIndex();
+			int currentScene = SceneHelpers.GetCurrentLevelBuildIndex();
 
 			asyncLoad.allowSceneActivation = true;
 			yield return new WaitUntil(() => asyncLoad.isDone);

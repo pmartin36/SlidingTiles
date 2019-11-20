@@ -18,22 +18,13 @@
         {
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
+			Cull Back
 
             CGPROGRAM	
             #pragma vertex vert
             #pragma fragment frag
 			
             #include "UnityCG.cginc"
-
-			float inverseLerp(float a, float b, float v) {
-				return (v - a) / (b - a);
-			}
-
-			float2 rotate(float2 o, float r) {
-				float c = cos(r);
-				float s = sin(r);
-				return float2(o.x * c - o.y * s, o.x * s + o.y * c);
-			}
 
             struct appdata
             {
@@ -76,5 +67,55 @@
             }
             ENDCG
         }
-    }
+
+		Pass
+		{
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite Off
+			Cull Front
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+
+			#include "UnityCG.cginc"
+
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+				float4 color: COLOR;
+			};
+
+			struct v2f
+			{
+				float2 uv : TEXCOORD0;
+				float4 vertex : SV_POSITION;
+				fixed4 color : COLOR;
+			};
+
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
+			float4 _Color;
+
+			v2f vert(appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				o.color = v.color * _Color;
+				return o;
+			}
+
+			fixed4 frag(v2f i) : SV_Target
+			{
+				// sample the texture
+				fixed4 col = tex2D(_MainTex, i.uv) * i.color;
+				col.a *= 0.6f + 0.1 * step(col.r, 0.99);
+				col.rgb = saturate(col.rgb - 0.95);
+				return col;
+			}
+			ENDCG
+		}
+	}
 }

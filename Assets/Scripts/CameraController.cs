@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class CameraController : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class CameraController : MonoBehaviour
 	private float shakeDuration;
 	private bool shakeDecreasingSpeed;
 	private float shakeSpeed;	
+
+	public PostProcessVolume PostProcessVolume { get; set; }
 
 	public Camera Camera { get; private set; }
 
@@ -94,5 +97,12 @@ public class CameraController : MonoBehaviour
 		}
 		targetOffset = shakeOffsets.Dequeue();
 		offset = Vector3.Lerp(offset, targetOffset, shakeSpeed);
+	}
+
+	public void ModifyPostProcessSettings(float value) {
+		if(PostProcessVolume != null && PostProcessVolume.gameObject != null) {
+			PostProcessVolume.profile.TryGetSettings<ScreenWipe>(out ScreenWipe wipe);
+			wipe.blend.value = value;
+		}
 	}
 }

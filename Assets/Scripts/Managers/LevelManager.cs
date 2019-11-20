@@ -137,15 +137,16 @@ public class LevelManager : ContextManager {
 		}
 		grabPoint = new Vector2(1000,1000);
 		winType.Run(collectedStars, RespawnManager.Stars.Length, ActionSelected);
+		GameManager.Instance.SetHighestUnlockedLevel(SceneHelpers.GetNextLevelBuildIndex());
 
 		cts = new CancellationTokenSource();
-		GameManager.Instance.AsyncLoadScene(GameManager.Instance.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
+		GameManager.Instance.AsyncLoadScene(SceneHelpers.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
 	}
 
 	public void ActionSelected(WinTypeAction w) {
 		AcceptingInputs = false;
 
-		int currentScene = GameManager.Instance.GetCurrentLevelBuildIndex();
+		int currentScene = SceneHelpers.GetCurrentLevelBuildIndex();
 		// if we're not going to the next scene, cancel the load of the next scene
 		if (w != WinTypeAction.Next) {
 			cts.Cancel();
@@ -153,14 +154,14 @@ public class LevelManager : ContextManager {
 
 		switch (w) {
 			case WinTypeAction.Menu:
-				GameManager.Instance.LoadScene(GameManager.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
+				GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
 				break;
 			case WinTypeAction.Reset:
 				Reset(false);
 				break;
 			case WinTypeAction.LevelSelect:
 				GameManager.Instance.LoadScene(
-					GameManager.MenuBuildIndex,
+					SceneHelpers.MenuBuildIndex,
 					StartCoroutine(winType.WhenTilesOffScreen()),
 					() => GameManager.Instance.MenuManager.OpenLevelSelect(false)
 				);

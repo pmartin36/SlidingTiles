@@ -14,8 +14,7 @@ public class NumberedLevelSelectButton : LevelSelectButton
 	public bool Paywalled { get; private set; }
 
 	public void Init(int num) {
-		base.Init();
-		
+		base.Init();	
 		Number = num;
 		text.text = num.ToString();
 	}

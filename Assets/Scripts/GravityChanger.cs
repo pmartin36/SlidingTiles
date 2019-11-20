@@ -49,6 +49,8 @@ public class GravityChanger : MonoBehaviour
 	}
 
 	public void OnTriggerEnter2D(Collider2D collision) {
+		if(collision.gameObject.scene != this.gameObject.scene) return;
+
 		IGravityChangable c = collision.GetComponent<IGravityChangable>();
 		if(c != null) {
 			c.ChangeGravityDirection(Up ? 1f : -1f);
