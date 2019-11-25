@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ public class SettingsButton : MonoBehaviour
 	private Sprite SettingsClosedSprite;
 
     void Start() {
-		image = GetComponent<Image>();
+		image = GetComponentsInChildren<Image>().First(i => i.gameObject != this.gameObject);
     }
 	
 	public void SetIcon(bool open) {

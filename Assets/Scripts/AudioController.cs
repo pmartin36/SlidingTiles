@@ -5,32 +5,27 @@ using UnityEngine.UI;
 
 public enum SoundType {
 	Music,
-	VFX
+	SFX
 }
 
 public class AudioController : MonoBehaviour
 {
 	public SoundType SoundType;
-	private Button muteButton;
 	private Slider slider;
 
-	[SerializeField]
-	private Sprite mutedSprite;
-	[SerializeField]
-	private Sprite unmutedSprite;
+	public Image Icon;
 
 	public void Start() {
-		muteButton = GetComponentInChildren<Button>();
 		slider = GetComponentInChildren<Slider>();
+
+		slider.value = SoundType == SoundType.SFX
+			? GameManager.Instance.SaveData.FxVolume
+			: GameManager.Instance.SaveData.MusicVolume;
+		SetIconColor();
 	}
 
 	public void OnSliderValueChange() {
-		if(slider.value > 0 && muteButton.image.sprite == mutedSprite) {
-			muteButton.image.sprite = unmutedSprite;
-		}
-		else if(slider.value <= 0.001f && muteButton.image.sprite == unmutedSprite) {
-			muteButton.image.sprite = mutedSprite;
-		}
+		SetIconColor();
 
 		// tell audio manager that value changed
 		GameManager.Instance.AdjustAudio(SoundType, slider.value);
@@ -39,9 +34,12 @@ public class AudioController : MonoBehaviour
 	public void OnMuteButtonToggle() {
 		bool isMuting = slider.value > 0;
 		slider.value = isMuting ? 0 : 1; // maybe should animate
-		muteButton.image.sprite = isMuting ? mutedSprite : unmutedSprite;
+		OnSliderValueChange();
+	}
 
-		// tell audio manager that value changed
-		GameManager.Instance.AdjustAudio(SoundType, slider.value);
+	public void SetIconColor() {
+		Color c = Icon.color;
+		c.a = slider.value;
+		Icon.color = c;
 	}
 }

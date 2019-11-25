@@ -171,12 +171,16 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public void AdjustAudio(SoundType t, float value) {
-		if(t == SoundType.VFX) {
+		if(t == SoundType.SFX) {
 			SaveData.FxVolume = value;
 		}
 		else {
 			SaveData.MusicVolume = value;
 		}
+	}
+
+	public void SetShowMilliseconds(bool val) {
+		SaveData.ShowMilliseconds = val;
 	}
 
 	public void Save() {
