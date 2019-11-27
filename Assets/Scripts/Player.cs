@@ -236,9 +236,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	private IEnumerator FlagReached(GoalFlag flag) {
 		flag.PlayerReached();
+		GameManager.Instance.LevelManager.PlayerWin(flag);
 		yield return new WaitUntil(() => controller.collisions.below); // wait for the player to hit the ground
 		animator.SetBool("Won", true); //start animation for reaching flag
 		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
-		GameManager.Instance.LevelManager.PlayerWin(flag);
+		GameManager.Instance.LevelManager.PlayerWinAnimation();
 	}
 }

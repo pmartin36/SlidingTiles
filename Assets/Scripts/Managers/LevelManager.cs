@@ -22,12 +22,14 @@ public class LevelManager : ContextManager {
 
 	protected CancellationTokenSource cts;
 
+	protected Timer Timer;
+	protected bool TimerRunning;
+	protected float ElapsedTime;
+
 	public GameObject LevelObjectContainer;
 
 	public RespawnManager RespawnManager { get; protected set; }
-	public Player Player { 
-		get => RespawnManager.Player;
-	}
+	public Player Player { get; set; }
 	public bool Won { get; set; }
 
 	public override void Start() {
@@ -40,11 +42,26 @@ public class LevelManager : ContextManager {
 		Grid = FindObjectsOfType<Grid>().First(g => g.gameObject.scene == this.gameObject.scene);
 		winType = FindObjectsOfType<WinType>().First(g => g.gameObject.scene == this.gameObject.scene);
 		Preview = FindObjectsOfType<TilePreview>().First(g => g.gameObject.scene == this.gameObject.scene);
+
+		Player = GameObject.FindObjectsOfType<Player>().First(g => g.gameObject.scene == this.gameObject.scene);
+		Player.aliveChanged += PlayerAliveChange;
+
+		Timer = FindObjectsOfType<Timer>().First(g => g.gameObject.scene == this.gameObject.scene);
+		Timer.SetTimer(ElapsedTime);
+
 		CreateRespawnManager();
 	}
 
 	public virtual void CreateRespawnManager() {
-		RespawnManager = new RespawnManager(gameObject.scene);
+		RespawnManager = new RespawnManager(gameObject.scene, Player);
+	}
+
+	public override void Update() {
+		base.Update();
+		if(TimerRunning && !Won) {
+			ElapsedTime += Time.deltaTime;
+			Timer.SetTimer(ElapsedTime);
+		}
 	}
 
 	// called every frame from context manager
@@ -64,9 +81,9 @@ public class LevelManager : ContextManager {
 					float scale = SelectedTile.transform.lossyScale.x;
 					Vector2 moveAmount = (p.MousePositionWorldSpace - grabPoint) / scale;
 					Tilespace tileBeforeMove = SelectedTile.Space;
-					bool moved = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
+					bool changedTilespaces = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
 
-					if(moved) {
+					if(changedTilespaces) {
 						Vector3 move = ((Vector2)SelectedTile.transform.position - SelectedTile.PositionWhenSelected);
 						grabPoint += move;
 						if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
@@ -77,6 +94,10 @@ public class LevelManager : ContextManager {
 						}
 						SelectedTile.Select(true);
 					}		
+
+					if(!TimerRunning && !Won && !SelectedTile.Centered) {
+						TimerRunning = true;
+					}
 				}
 
 				Vector3 position = p.MousePositionWorldSpace + Player.Direction * -7.5f;
@@ -104,6 +125,15 @@ public class LevelManager : ContextManager {
 
 	public virtual void Respawn() {
 		RespawnManager.RespawnPlayer();
+		TimerRunning = true;
+	}
+
+	public virtual void PlayerAliveChange(object player, bool alive) {
+		if (!alive) {
+			ElapsedTime = 0;
+			Timer.SetTimer(ElapsedTime);
+			TimerRunning = false;
+		}
 	}
 
 	public virtual void Reset(bool fromButton) {
@@ -116,6 +146,11 @@ public class LevelManager : ContextManager {
 		Grid?.Reset();
 		Player?.SetAlive(false);
 		Preview.Show(false);
+
+		TimerRunning = false;
+		ElapsedTime = 0;
+		Timer.SetTimer(ElapsedTime);
+
 		StartCoroutine(winType.WhenTilesOffScreen(() => {
 			Won = false;
 			winType.Reset();
@@ -129,15 +164,18 @@ public class LevelManager : ContextManager {
 
 	public void PlayerWin(GoalFlag gf) {
 		goalFlag = gf;
-		Won = true;
-		if(SelectedTile != null) {
+		Won = true;	
+		GameManager.Instance.SetHighestUnlockedLevel(SceneHelpers.GetNextLevelBuildIndex());	
+	}
+
+	public void PlayerWinAnimation() {
+		if (SelectedTile != null) {
 			Preview.Show(false);
 			SelectedTile.Select(false);
 			SelectedTile = null;
 		}
-		grabPoint = new Vector2(1000,1000);
+		grabPoint = new Vector2(1000, 1000);
 		winType.Run(collectedStars, RespawnManager.Stars.Length, ActionSelected);
-		GameManager.Instance.SetHighestUnlockedLevel(SceneHelpers.GetNextLevelBuildIndex());
 
 		cts = new CancellationTokenSource();
 		GameManager.Instance.AsyncLoadScene(SceneHelpers.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
@@ -180,5 +218,10 @@ public class LevelManager : ContextManager {
 
 	public IEnumerator WaitActionSelected() {
 		yield return new WaitUntil( () => winType.ActionSelected );
+	}
+
+	private void OnDestroy() {
+		if(Player != null)
+			Player.aliveChanged -= PlayerAliveChange;
 	}
 }

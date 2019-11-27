@@ -46,7 +46,6 @@ public class TutorialManager : LevelManager
 		int tutorialNumber = int.Parse(sn.Substring(sn.Length - 1));
 		anim.SetInteger("Level", tutorialNumber);
 
-		RespawnManager.Player.aliveChanged += PlayerAliveChanged;
 		TutorialTile.TutorialInit(
 			() => Pressed = true,
 			() => {
@@ -77,7 +76,7 @@ public class TutorialManager : LevelManager
 	}
 
 	public override void CreateRespawnManager() {
-		RespawnManager = new RespawnManager(gameObject.scene);
+		RespawnManager = new RespawnManager(gameObject.scene, Player);
 	}
 
 	public override void Reset(bool fromButton) {
@@ -105,7 +104,8 @@ public class TutorialManager : LevelManager
 		FingerTrail.enabled = true;
 	}
 
-	public void PlayerAliveChanged(object sender, bool alive) {
+	public override void PlayerAliveChange(object player, bool alive) {
+		base.PlayerAliveChange(player, alive);
 		if(!alive) {
 			ResetAnimation();
 			Grid.Reset();
