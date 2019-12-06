@@ -16,6 +16,7 @@ public class TutorialManager : LevelManager
 	public TutorialTile TutorialTile;
 
 	private Animator anim;
+	private float lastTimeScale;
 
 	private bool playerEnteredTile, pressed;
 	private bool PlayerEnteredTile {
@@ -49,15 +50,15 @@ public class TutorialManager : LevelManager
 		TutorialTile.TutorialInit(
 			() => Pressed = true,
 			() => {
-				GameManager.Instance.SetTimescale(1f);
+				GameManager.Instance.SetTimescale(1f, 0.05f);
 				Finger.gameObject.SetActive(false);
 			},
 			(entered) => {
 				if(entered) {
-					GameManager.Instance.SetTimescale(0.05f);
+					GameManager.Instance.SetTimescale(0.05f, 0.05f);
 				}
 				else {
-					GameManager.Instance.SetTimescale(1f);
+					GameManager.Instance.SetTimescale(1f, 0.05f);
 				}
 			}
 		);
@@ -75,23 +76,29 @@ public class TutorialManager : LevelManager
 		}
 	}
 
+	protected override void Pause() {
+		lastTimeScale = Time.timeScale;
+		base.Pause();
+	}
+
+	protected override void Unpause() {
+		GameManager.Instance.SetTimescale(lastTimeScale);
+	}
+
 	public override void CreateRespawnManager() {
 		RespawnManager = new RespawnManager(gameObject.scene, Player);
 	}
 
 	public override void Reset(bool fromButton) {
 		base.Reset(fromButton);
-
 		ResetAnimation();
 	}
 
-	public override void Respawn() {
+	public override void PlayPauseButtonClicked() {
 		Finger.gameObject.SetActive(true);
 		PlayerEnteredTile = true;
 
-		//StartCoroutine(TimeScaleIndepedentMoveTo(new Vector2(-92,-99), 1f, ReachedTile));
-
-		base.Respawn();
+		base.PlayPauseButtonClicked();
 	}
 
 	public void ClearTrail() {
@@ -113,6 +120,7 @@ public class TutorialManager : LevelManager
 	}
 
 	private void ResetAnimation() {
+		lastTimeScale = 1f;
 		PlayerEnteredTile = false;
 		Pressed = false;
 		anim.SetBool("AtStartingTile", false);

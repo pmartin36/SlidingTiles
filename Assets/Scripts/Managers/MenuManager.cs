@@ -71,7 +71,6 @@ public class MenuManager : ContextManager {
 
 	public void ToggleSettings() {
 		SettingsOpen = !SettingsOpen;
-		SettingsButton.SetIcon(SettingsOpen);
 		GameManager.Instance.Save();
 	}
 

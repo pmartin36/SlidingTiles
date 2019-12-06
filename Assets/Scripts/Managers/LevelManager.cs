@@ -32,6 +32,8 @@ public class LevelManager : ContextManager {
 	public Player Player { get; set; }
 	public bool Won { get; set; }
 
+	public bool Paused { get; set; }
+
 	public override void Start() {
 		base.Start();
 		Init();
@@ -49,6 +51,7 @@ public class LevelManager : ContextManager {
 		Timer = FindObjectsOfType<Timer>().First(g => g.gameObject.scene == this.gameObject.scene);
 		Timer.SetTimer(ElapsedTime);
 
+		StartCoroutine(RunTimer());
 		CreateRespawnManager();
 	}
 
@@ -58,15 +61,11 @@ public class LevelManager : ContextManager {
 
 	public override void Update() {
 		base.Update();
-		if(TimerRunning && !Won) {
-			ElapsedTime += Time.deltaTime;
-			Timer.SetTimer(ElapsedTime);
-		}
 	}
 
 	// called every frame from context manager
 	public override void HandleInput(InputPackage p) {
-		if(!Won) {
+		if(!Won && !Paused) {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
@@ -96,7 +95,7 @@ public class LevelManager : ContextManager {
 					}		
 
 					if(!TimerRunning && !Won && !SelectedTile.Centered) {
-						TimerRunning = true;
+						StartTimer();
 					}
 				}
 
@@ -123,9 +122,14 @@ public class LevelManager : ContextManager {
 		collectedStars++;
 	}
 
-	public virtual void Respawn() {
-		RespawnManager.RespawnPlayer();
-		TimerRunning = true;
+	public virtual void PlayPauseButtonClicked() {
+		if (Player.Alive) {
+			SetPause(!Paused);
+		}
+		else {
+			RespawnManager.RespawnPlayer();
+			StartTimer();
+		}
 	}
 
 	public virtual void PlayerAliveChange(object player, bool alive) {
@@ -146,10 +150,12 @@ public class LevelManager : ContextManager {
 		Grid?.Reset();
 		Player?.SetAlive(false);
 		Preview.Show(false);
-
+		
 		TimerRunning = false;
 		ElapsedTime = 0;
 		Timer.SetTimer(ElapsedTime);
+
+		SetPause(false);
 
 		StartCoroutine(winType.WhenTilesOffScreen(() => {
 			Won = false;
@@ -157,9 +163,39 @@ public class LevelManager : ContextManager {
 		}));	
 	}
 
+	public void StartTimer() {
+		TimerRunning = true;
+		RespawnManager.ActionButtons.ResetButton.interactable = true;
+	}
+
+	public void SetPause(bool pause) {
+		Paused = pause;
+		RespawnManager.ActionButtons.Pause(!Player.Alive || pause);
+		if (Paused) {
+			Pause();
+		}
+		else {
+			Unpause();
+		}
+	}
+
+	protected virtual void Pause() {
+		Preview.Show(false);
+		if (SelectedTile != null) {
+			SelectedTile.Select(false);
+			SelectedTile = null;
+		}
+		GameManager.Instance.SetTimescale(0.00001f);
+	}
+
+	protected virtual void Unpause() {
+		GameManager.Instance.SetTimescale(1f);
+	}
+
 	public void HideLevel() {
 		LevelObjectContainer.SetActive(false);
 		RespawnManager.ActionButtons.gameObject.SetActive(false);
+		Timer.gameObject.SetActive(false);
 	}
 
 	public void PlayerWin(GoalFlag gf) {
@@ -220,7 +256,20 @@ public class LevelManager : ContextManager {
 		yield return new WaitUntil( () => winType.ActionSelected );
 	}
 
+	public IEnumerator RunTimer() {
+		float deltaT = 0.049f;
+		var t = new WaitForSecondsRealtime(deltaT);
+		while(true) {
+			if (TimerRunning && !Won) {
+				ElapsedTime += deltaT;
+				Timer.SetTimer(ElapsedTime);
+			}
+			yield return t;
+		}
+	}
+
 	private void OnDestroy() {
+		StopCoroutine(RunTimer());
 		if(Player != null)
 			Player.aliveChanged -= PlayerAliveChange;
 	}

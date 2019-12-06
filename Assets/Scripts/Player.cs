@@ -13,6 +13,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public float minJumpHeight = 1;
 	public float timeToJumpApex = .4f;
 
+	public bool Alive { get; private set; }
+
 	public float Vx {
 		get {
 			return moveSpeed * moveDirection;
@@ -204,6 +206,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void SetAlive(bool alive) {
+		if (Alive != alive) {
+			aliveChanged?.Invoke(this, alive);
+		}
+
+		Alive = alive;
 		this.controller.collider.enabled = alive;
 		this.enabled = alive;
 		transform.position = RespawnManager.PlayerSpawnPosition;
@@ -215,7 +222,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;
 		animator.SetBool("Won", false);
-		aliveChanged?.Invoke(this, alive);
 	}
 
 	public void OnDestroy() {

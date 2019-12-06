@@ -11,23 +11,22 @@ public class RespawnManager
 
 	public ActionButtons ActionButtons;
 
-    public RespawnManager(Scene scene, Player player, bool highlight = true) {
+    public RespawnManager(Scene scene, Player player, bool playerAlive = false) {
 		Player = player;
-		Player = GameObject.FindObjectsOfType<Player>().First(g => g.gameObject.scene == scene);
 		PlayerSpawnPosition = Player.transform.position;
 		Player.SetRespawnManager(this);
-		Player.SetAlive(false);
+		Player.SetAlive(playerAlive);
 
 		Stars = GameObject.FindObjectsOfType<Star>().Where(g => g.gameObject.scene == scene).ToArray();
 		ActionButtons = GameObject.FindObjectsOfType<ActionButtons>().First(g => g.gameObject.scene == scene);
-		ActionButtons.HighlightSpawn(highlight);
+		ActionButtons.ForceSetBasedOnPlayerAlive(playerAlive);
 
 		Player.aliveChanged += PlayerAliveChange;
     }
 
 	public void RespawnPlayer() {
 		Player.SetAlive(true);
-		ActionButtons.HighlightSpawn(false);
+		ActionButtons.ForceSetBasedOnPlayerAlive(true);
 		foreach (Star s in Stars) {
 			s.Reset();
 		}
@@ -39,7 +38,7 @@ public class RespawnManager
 				s.Reset();
 			}
 
-			ActionButtons.HighlightSpawn(true);
+			ActionButtons.ForceSetBasedOnPlayerAlive(false);
 		}
 	}
 

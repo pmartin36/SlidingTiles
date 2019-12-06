@@ -10,6 +10,7 @@ public class GameManager : Singleton<GameManager> {
 
 	private float _timeScale = 1f;
 	private float _targetTimeScale = 1f;
+	private float timeLerpScale;
 	private float TimeScale {
 		get => _timeScale;
 		set {
@@ -56,7 +57,7 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public void Update() {
-		TimeScale = Mathf.Lerp(TimeScale, _targetTimeScale, 0.05f);
+		TimeScale = Mathf.Lerp(TimeScale, _targetTimeScale, timeLerpScale);
 	}
 
 	public void HandleInput(InputPackage p) {
@@ -72,8 +73,9 @@ public class GameManager : Singleton<GameManager> {
 		
 	}
 
-	public void SetTimescale(float timescale) {
+	public void SetTimescale(float timescale, float lerpScale = 0.5f) {
 		_targetTimeScale = timescale;
+		timeLerpScale = lerpScale;
 	}
 
 	public bool CanPlayNextLevel() {

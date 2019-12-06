@@ -91,8 +91,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65f3d2225609744cbd8ee0b0806d8ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnHighlightBorder: {fileID: 1454084576121024082}
+  ResetButton: {fileID: 1454084576878836141}
+  SpawnButton: {fileID: 1454084575671105432}
   SpawnHighlightBorderRadius: 1.8081486
+  PlaySprite: {fileID: 21300000, guid: 9274e836521db4e4bbae0dcbcaa0f5c6, type: 3}
+  PauseSprite: {fileID: 21300000, guid: 9f0d074f61528744d863bd157bb75a09, type: 3}
 --- !u!95 &1454084575168052832
 Animator:
   serializedVersion: 3
@@ -598,7 +601,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1454084575168052845}
-        m_MethodName: Spawn
+        m_MethodName: PlayPauseButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

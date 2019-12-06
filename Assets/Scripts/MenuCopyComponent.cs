@@ -36,7 +36,7 @@ public abstract class KeyedMenuCopyComponent : MenuCopyComponent {
 			if(world > 0) {
 				if (lm.World != world) {
 					lm.World = world;
-					lm.Material = Resources.Load<Material>($"Materials/World{world}_{Key}");
+					lm.Material = Resources.Load<Material>($"Materials/World {world}/{Key}");
 				}
 				SetMaterial(lm.Material);
 			}

@@ -9,7 +9,7 @@ public class MenuTextCopy : KeyedMenuCopyComponent {
 	public override void Start() {
 		text = GetComponent<TMP_Text>();
 		if(!IsCopy) {
-			text.fontSharedMaterial = Resources.Load<Material>($"Materials/World1_{Key}");
+			text.fontSharedMaterial = Resources.Load<Material>($"Materials/World 1/{Key}");
 		}
 		base.Start();
 	}
