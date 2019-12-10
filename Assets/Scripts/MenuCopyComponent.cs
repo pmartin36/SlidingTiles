@@ -38,11 +38,11 @@ public abstract class KeyedMenuCopyComponent : MenuCopyComponent {
 					lm.World = world;
 					lm.Material = Resources.Load<Material>($"Materials/World {world}/{Key}");
 				}
-				SetMaterial(lm.Material);
+				SetMaterial(lm.Material, world);
 			}
 		}
 	}
-	public abstract void SetMaterial(Material m);
+	public abstract void SetMaterial(Material m, int world);
 }
 
 public struct LevelMaterial {

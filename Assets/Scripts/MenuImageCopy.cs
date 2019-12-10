@@ -11,7 +11,7 @@ public class MenuImageCopy : KeyedMenuCopyComponent {
 		base.Start();
 	}
 
-	public override void SetMaterial(Material m) {
+	public override void SetMaterial(Material m, int world) {
 		image.material = m;
 	}
 }

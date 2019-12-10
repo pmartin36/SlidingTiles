@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class MenuManager : ContextManager {
 	public bool LevelSelectOpen { get; set; }
-	public bool SettingsOpen {
-		get => SettingsMenu.activeInHierarchy;
-		set => SettingsMenu.SetActive(value);
-	}
+	public bool SettingsOpen { get; set; }
 
-	public GameObject SettingsMenu;
-	public SettingsButton SettingsButton;
+	public SettingsMenu SettingsMenu;
 
 	public float LevelBlend { get; set; }
 
@@ -71,7 +67,14 @@ public class MenuManager : ContextManager {
 
 	public void ToggleSettings() {
 		SettingsOpen = !SettingsOpen;
+		SetSettingsOpen();
 		GameManager.Instance.Save();
+	}
+
+	public void SetSettingsOpen() {
+		//SettingsMenu.gameObject.SetActive(SettingsOpen);
+		
+		SettingsMenu.Show(SettingsOpen);
 	}
 
 	public void GooglePlayGamesClicked() {
