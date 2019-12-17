@@ -17,6 +17,7 @@ public class MenuCopyManager : MonoBehaviour {
 		var copy = Instantiate(original, original.transform.position, original.transform.rotation, this.transform);
 		copy.name = "Copy";
 		CopyComponent(original.transform, copy.transform);
+		OnLevelChange(GameManager.Instance.LastPlayedWorld);
 	}
 
 	public void CopyComponent(Transform original, Transform copy) {
@@ -43,11 +44,5 @@ public class MenuCopyManager : MonoBehaviour {
 		foreach(var c in keyedCopyComponents) {
 			c.OnWorldChange(world);
 		}
-	}
-
-	public void SetSecondaryTexture(int num) {
-		string path = $"Textures/Menu-{gameObject.name}-Level{num}";
-		Texture texture = Resources.Load<Texture>(path);
-		//CopyComponent.Image.material.SetTexture("_SecondaryTexture", texture);
 	}
 }

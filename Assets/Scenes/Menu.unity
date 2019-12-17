@@ -1252,7 +1252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!114 &256553803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1301,13 +1301,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -1426,7 +1426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!114 &272689764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1475,13 +1475,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -1864,7 +1864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc930475d68db614f81411f99a481b2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: Grid
+  Key: 2
 --- !u!114 &304951394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2081,7 +2081,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!114 &318968834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2130,13 +2130,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -3365,7 +3365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cc507ef97e09a49af6c8cce931e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: Back
+  Key: 0
 --- !u!95 &541134914
 Animator:
   serializedVersion: 3
@@ -4380,7 +4380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc930475d68db614f81411f99a481b2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: Background
+  Key: 1
 --- !u!114 &836602741 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1857308432007823415, guid: fbc09a6ebd463b747b39ed001bebbf12,
@@ -4660,8 +4660,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555c5f0b8cf818b44b2c9fc074e8ddec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SettingsMenu: {fileID: 1406008687}
-  SettingsButton: {fileID: 0}
+  SettingsMenu: {fileID: 1406008689}
   HomeScreen: {fileID: 773233886}
   LevelSelectScreen: {fileID: 1973078439}
 --- !u!114 &1010700191 stripped
@@ -6008,7 +6007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!1 &1273704004
 GameObject:
   m_ObjectHideFlags: 0
@@ -6347,7 +6346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!114 &1377019419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6396,13 +6395,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -6480,6 +6479,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1406008688}
+  - component: {fileID: 1406008689}
   m_Layer: 16
   m_Name: Settings
   m_TagString: Untagged
@@ -6507,6 +6507,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1406008689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406008687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79382e83b3c86e54d9bfd2fcb309d1ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1424542474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6759,7 +6771,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!114 &1522187576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6808,13 +6820,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -7209,7 +7221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11154482cc2e1124291a9a01b50ebe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: TileText
+  Key: 4
 --- !u!114 &1654096389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7258,13 +7270,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -8219,7 +8231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1973078438
 RectTransform:
   m_ObjectHideFlags: 0

@@ -40,10 +40,6 @@ public class LevelSelectButton : MenuImageCopy
 		anim.Play("showLevelSelectButton", -1, hide ? 1 : 0);
 	}
 
-	public virtual void TryEnableInteractable() {
-		Interactable = true;
-	}
-
 	public virtual void SetStayHidden(bool stayHidden) {
 		Color clear = Color.white;
 		clear.a = 0;
@@ -52,7 +48,15 @@ public class LevelSelectButton : MenuImageCopy
 		button.enabled = !stayHidden;
 	}
 
-	public void InvokeHideShowCallback() {
+	public virtual void TryEnableInteractable() {
+		Interactable = true;
+	}
+
+	public virtual void AtAnimationEnd() {
+		Interactable = true;
+	}
+
+	public void AtAnimationBegin() {
 		OnHideShowCallback?.Invoke();
 	}
 }

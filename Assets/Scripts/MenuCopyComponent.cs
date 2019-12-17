@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public abstract class MenuCopyComponent : MonoBehaviour
@@ -14,19 +15,16 @@ public abstract class MenuCopyComponent : MonoBehaviour
 }
 
 public abstract class KeyedMenuCopyComponent : MenuCopyComponent {
-	public string Key;
-	private static Dictionary<string, LevelMaterial> LoadedLevelForKey;
+	public CopyKey Key;
+	private static Dictionary<CopyKey, LevelMaterial> LoadedLevelForKey;
 
-	public virtual void Start() {
-		if (LoadedLevelForKey == null) {
-			LoadedLevelForKey = new Dictionary<string, LevelMaterial>();
-		}
-
-		OnWorldChange(GameManager.Instance.LastPlayedWorld);
-	}
+	public virtual void Start() { }
 
 	public void OnWorldChange(int world) {
 		if (IsCopy) {
+			if (LoadedLevelForKey == null) {
+				LoadedLevelForKey = new Dictionary<CopyKey, LevelMaterial>();
+			}
 			bool success = LoadedLevelForKey.TryGetValue(Key, out LevelMaterial lm);
 			if(!success) {
 				lm = new LevelMaterial(0, null);
@@ -36,22 +34,36 @@ public abstract class KeyedMenuCopyComponent : MenuCopyComponent {
 			if(world > 0) {
 				if (lm.World != world) {
 					lm.World = world;
-					lm.Material = Resources.Load<Material>($"Materials/World {world}/{Key}");
+					Addressables.LoadAssetAsync<CopyObject>($"World{world}/{Key.ToString()}").Completed +=
+						(obj) =>  {
+							SetMaterial(obj.Result, world);
+							lm.CopyObject = obj.Result;
+						};
 				}
-				SetMaterial(lm.Material, world);
+				else {
+					SetMaterial(lm.CopyObject, world);
+				}
 			}
 		}
 	}
-	public abstract void SetMaterial(Material m, int world);
+	public abstract void SetMaterial(CopyObject m, int world);
 }
 
 public struct LevelMaterial {
 	public int World { get; set; }
-	public Material Material { get; set; }
+	public CopyObject CopyObject { get; set; }
 
-	public LevelMaterial(int world, Material material) : this() {
+	public LevelMaterial(int world, CopyObject co) : this() {
 		World = world;
-		Material = material;
+		CopyObject = co;
 	}
+}
+
+public enum CopyKey {
+	Back,
+	Background,
+	Grid,
+	Tile,
+	TileText
 }
 
