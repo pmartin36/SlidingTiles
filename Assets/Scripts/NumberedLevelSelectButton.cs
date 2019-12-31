@@ -85,9 +85,14 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		}
 
 		for (int i = 0; i < time.Length; i++) {
+			if(time[i] < 0.25f && time[i] > 0.01f) {
+				time[i] = 0.25f;
+			}
 			float t = 0;
 			while (t < time[i]) {
-				rectTransform.anchoredPosition = Vector2.Lerp(positions[i], positions[i + 1], t / time[i]);
+				rectTransform.anchoredPosition = Vector2.Lerp(positions[i], positions[i + 1], Mathf.SmoothStep(0, 1, t / time[i]));
+				// rectTransform.anchoredPosition = Vector2.Lerp(positions[i], positions[i + 1], EaseOut(0, 1, t, time[i]));
+				// rectTransform.anchoredPosition = Vector2.Lerp(positions[i], positions[i + 1], t / time[i]);
 				t += Time.deltaTime;
 				yield return null;
 			}
@@ -95,5 +100,15 @@ public class NumberedLevelSelectButton : LevelSelectButton
 
 		rectTransform.anchoredPosition = position;
 		Interactable = interactableAtEnd;
+	}
+
+	private float EaseOut(float start, float end, float time, float duration) {
+		time /= duration;
+		return -end * time * (time - 2) + start;
+	}
+	
+	private Vector2 EaseOut(Vector2 start, Vector2 end, float time, float duration) {
+		time /= duration;
+		return -end * (Vector2.one * time * (time - 2)) + start;
 	}
 }

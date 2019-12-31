@@ -110,6 +110,7 @@ public class GameManager : Singleton<GameManager> {
 			yield return new WaitUntil(() => asyncLoad.isDone);
 
 			ContextManager = GameObject.FindObjectsOfType<ContextManager>().First(g => g.gameObject.scene.buildIndex == buildIndex);
+			yield return new WaitUntil(() => ContextManager.ResourcesLoaded);
 			onSceneSwitch?.Invoke();
 
 			if (shouldUnloadCurrentScene) {

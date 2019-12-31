@@ -3266,7 +3266,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -3316,8 +3316,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: c222581505defc148a2b569fab899a40, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -8231,7 +8231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1973078438
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9032,7 +9032,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4485578901948797494}
   - component: {fileID: 4485578901948797641}
-  - component: {fileID: 4485578901948797643}
   - component: {fileID: 4485578901948797644}
   m_Layer: 0
   m_Name: Level Effect Camera
@@ -9041,14 +9040,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &4485578901948797643
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4485578901948797642}
-  m_Enabled: 1
 --- !u!114 &4485578901948797644
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,7 +7,6 @@ public class MenuImageCopy : KeyedMenuCopyComponent {
 	private Image image;
 
 	public override void Start() {
-		
 		base.Start();
 	}
 

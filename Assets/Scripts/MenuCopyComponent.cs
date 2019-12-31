@@ -14,35 +14,39 @@ public abstract class MenuCopyComponent : MonoBehaviour
 	}
 }
 
-public abstract class KeyedMenuCopyComponent : MenuCopyComponent {
+public abstract class KeyedMenuCopyComponent : MenuCopyComponent, IRequireResources {
 	public CopyKey Key;
 	private static Dictionary<CopyKey, LevelMaterial> LoadedLevelForKey;
+	public bool Loaded { get; set; } = false;
 
-	public virtual void Start() { }
+	public virtual void Start() {
+		if(!IsCopy) {
+			Loaded = true;
+		}
+	}
 
 	public void OnWorldChange(int world) {
-		if (IsCopy) {
-			if (LoadedLevelForKey == null) {
-				LoadedLevelForKey = new Dictionary<CopyKey, LevelMaterial>();
-			}
-			bool success = LoadedLevelForKey.TryGetValue(Key, out LevelMaterial lm);
-			if(!success) {
-				lm = new LevelMaterial(0, null);
-				LoadedLevelForKey.Add(Key, lm);
-			}
+		if (LoadedLevelForKey == null) {
+			LoadedLevelForKey = new Dictionary<CopyKey, LevelMaterial>();
+		}
+		bool success = LoadedLevelForKey.TryGetValue(Key, out LevelMaterial lm);
+		if(!success) {
+			lm = new LevelMaterial(0, null);
+			LoadedLevelForKey.Add(Key, lm);
+		}
 
-			if(world > 0) {
-				if (lm.World != world) {
-					lm.World = world;
-					Addressables.LoadAssetAsync<CopyObject>($"World{world}/{Key.ToString()}").Completed +=
-						(obj) =>  {
-							SetMaterial(obj.Result, world);
-							lm.CopyObject = obj.Result;
-						};
-				}
-				else {
-					SetMaterial(lm.CopyObject, world);
-				}
+		if(world > 0) {
+			if (lm.World != world) {
+				lm.World = world;
+				Addressables.LoadAssetAsync<CopyObject>($"World{world}/{Key.ToString()}").Completed +=
+					(obj) =>  {
+						SetMaterial(obj.Result, world);
+						lm.CopyObject = obj.Result;
+						Loaded = true;
+					};
+			}
+			else {
+				SetMaterial(lm.CopyObject, world);
 			}
 		}
 	}

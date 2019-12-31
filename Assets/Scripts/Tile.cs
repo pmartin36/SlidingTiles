@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class Tile : MonoBehaviour
 {
@@ -13,9 +15,6 @@ public class Tile : MonoBehaviour
 	public Tilespace Space { get; set; }
 
 	public bool Movable;
-	[SerializeField]
-	private Material SelectedMaterial;
-	private Material UnselectedMaterial;
 
 	public bool Selected { get; set; }
 	public Vector2 PositionWhenSelected { get; set; }
@@ -32,7 +31,13 @@ public class Tile : MonoBehaviour
 	private Vector3 lastFramePosition;
 
 	private Tilespace initialTilespace;
+
+	private int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
+	private static Material SelectedMaterial;
+	private static Material UnselectedMaterial;
+
+	private static AsyncOperationHandle<Material> OnImmobileMaterialLoad;
 
 	private void Awake() {
 		playerMask = 1 << LayerMask.NameToLayer("Player");
@@ -41,18 +46,29 @@ public class Tile : MonoBehaviour
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
-		if(!Movable) {
-			if(ImmobileMaterial == null) {
-				ImmobileMaterial = new Material(Shader.Find("SlidingTiles/ImmobileTile"));
-			}
-			spriteRenderer.sharedMaterial = ImmobileMaterial;
-			spriteRenderer.color = new Color(0.4f, 0.15f, 0f);
+
+		if(Movable && UnselectedMaterial != spriteRenderer.sharedMaterial) {
+			UnselectedMaterial = spriteRenderer.sharedMaterial;
 		}
+		if(SelectedMaterial == null) {
+			// TODO: Determine whether we need mulitple selected tiles, and, if not, switch this to initialize with Immobile Material
+			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
+				(obj) => SelectedMaterial = obj.Result;
+		}
+		if (GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
+			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
+			OnImmobileMaterialLoad = Addressables.LoadAssetAsync<Material>($"World{LoadedMaterialWorld}/Level_ImmobileTile");
+			OnImmobileMaterialLoad.Completed += (obj) => ImmobileMaterial = obj.Result;
+		}
+
+		if (!Movable) {
+			OnImmobileMaterialLoad.Completed += (obj) => spriteRenderer.sharedMaterial = obj.Result;
+		}
+
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;
 		lastFrameVelocity = Vector3.zero;	
 
-		UnselectedMaterial = spriteRenderer.sharedMaterial;
 	}
 
 	public void Init(Tilespace t) {

@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_Color("Color", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -38,13 +39,14 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+			float4 _Color;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				o.color = v.color;
+				o.color = v.color * _Color;
                 return o;
             }
 

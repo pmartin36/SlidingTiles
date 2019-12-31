@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class LevelSelectButton : MenuImageCopy
+public class LevelSelectButton : MenuImageSpriteCopy
 {	
 	public bool Interactable { 
 		get => button.interactable;
@@ -33,6 +33,7 @@ public class LevelSelectButton : MenuImageCopy
 	}
 
 	public void SetHidden(bool hide, System.Action callback = null) {
+		Interactable = false;
 		OnHideShowCallback = callback;
 
 		anim.SetBool("hidden", hide);
@@ -53,7 +54,9 @@ public class LevelSelectButton : MenuImageCopy
 	}
 
 	public virtual void AtAnimationEnd() {
-		Interactable = true;
+		if(anim.GetFloat("dir") > 0) {
+			TryEnableInteractable();
+		}
 	}
 
 	public void AtAnimationBegin() {

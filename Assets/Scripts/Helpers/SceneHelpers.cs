@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
 public static class SceneHelpers {
-	public static readonly int MenuBuildIndex = 0;
-	public static readonly int LoadSceneBuildIndex = 1;
-	public static readonly int TutorialLevelStart = 2;
+	public static readonly int SplashBuildIndex = 0;
+	public static readonly int MenuBuildIndex = 1;
+	public static readonly int LoadSceneBuildIndex = 2;
+	public static readonly int TutorialLevelStart = 3;
 
 	public static int GetNextLevelBuildIndex() {
 		return GetCurrentLevelBuildIndex() + 1;

@@ -12,9 +12,12 @@ public class MenuTextCopy : KeyedMenuCopyComponent {
 			Addressables.LoadAssetAsync<CopyObject>($"World1/{Key.ToString()}").Completed +=
 				(obj) => {
 					SetMaterial(obj.Result, 1);
+					Loaded = true;
 				};
 		}
-		base.Start();
+		else {
+			Loaded = true;
+		}
 	}
 
 	public override void SetMaterial(CopyObject m, int world) {

@@ -100,3 +100,9 @@ public static class GeneralHelpers {
 		UnityEngine.Object.Destroy(g, time);
 	}
 }
+
+[Serializable]
+public class Movable {
+	public bool Value;
+	public static implicit operator bool(Movable m) => m.Value;
+}

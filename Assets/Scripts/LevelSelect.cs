@@ -158,10 +158,8 @@ public class LevelSelect : MenuCopyComponent
 		int prevSelected = WorldSelected;
 		WorldSelected = 0;
 
-		Back.Interactable = false;
-
 		// hide back button
-		Back.SetHidden(true, () => Back.Interactable = true);
+		Back.SetHidden(true);
 
 		foreach (NumberedLevelSelectButton b in NumberedLevelButtons) {
 			b.TempNumber = null;

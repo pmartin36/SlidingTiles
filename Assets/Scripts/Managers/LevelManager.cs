@@ -6,7 +6,7 @@ using System.Threading;
 using UnityEngine;
 
 public class LevelManager : ContextManager {
-
+	public int World { get; set; }
 	public Grid Grid { get; set; }
 
 	protected LayerMask tileMask;
@@ -33,6 +33,12 @@ public class LevelManager : ContextManager {
 	public bool Won { get; set; }
 
 	public bool Paused { get; set; }
+
+	public override void Awake() {
+		base.Awake();
+		World = Int32.Parse(gameObject.scene.name.Split('-')[0]);
+		GameManager.Instance.SaveData.LastPlayedWorld = World;
+	}
 
 	public override void Start() {
 		base.Start();
@@ -69,9 +75,10 @@ public class LevelManager : ContextManager {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
-					SelectedTile = Physics2D.OverlapPoint(p.MousePositionWorldSpace, tileMask)?.GetComponent<Tile>();
+					Tile t = Physics2D.OverlapPoint(p.MousePositionWorldSpace, tileMask)?.GetComponent<Tile>();
 
-					if (SelectedTile != null && SelectedTile.Movable) {
+					if (t != null && t.Movable) {
+						SelectedTile = t;
 						grabPoint = p.MousePositionWorldSpace;
 						SelectedTile.Select(true);
 					}

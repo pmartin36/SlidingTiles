@@ -66,17 +66,23 @@ public class Timer : MonoBehaviour
 		if (enabled) {
 			minutesSeconds.ForceMeshUpdate();
 			milliseconds.ForceMeshUpdate();
-			float totalWidth = minutesSeconds.textBounds.size.x * 1.01f + milliseconds.textBounds.size.x * 1.1f;
-			minutesSecondsRT.sizeDelta = new Vector2(minutesSeconds.textBounds.size.x*1.01f, minutesSecondsRT.sizeDelta.y);
-			millisecondsRT.sizeDelta = new Vector2(milliseconds.textBounds.size.x*1.1f, millisecondsRT.sizeDelta.y);
+
+			float minuteSecondSizeFactor = 1.05f;
+			float millisecondsSizeFactor = 1.1f;
+
+			float totalWidth = minutesSeconds.textBounds.size.x * minuteSecondSizeFactor + milliseconds.textBounds.size.x * millisecondsSizeFactor;
+			minutesSecondsRT.sizeDelta = new Vector2(minutesSeconds.textBounds.size.x* minuteSecondSizeFactor, minutesSecondsRT.sizeDelta.y);
+			millisecondsRT.sizeDelta = new Vector2(milliseconds.textBounds.size.x* millisecondsSizeFactor, millisecondsRT.sizeDelta.y);
 			minutesSecondsRT.anchoredPosition = new Vector2((minutesSeconds.textBounds.size.x - totalWidth) / 2f, minutesSecondsRT.anchoredPosition.y);
 			millisecondsRT.anchoredPosition = new Vector2(
 				(minutesSecondsRT.sizeDelta.x + millisecondsRT.sizeDelta.x) / 2f + minutesSecondsRT.anchoredPosition.x
 				, millisecondsRT.anchoredPosition.y);
+			minutesSeconds.alignment = TextAlignmentOptions.MidlineRight;
 		}
 		else {
 			minutesSecondsRT.sizeDelta = new Vector2(maxWidth, rt.sizeDelta.y);
 			minutesSecondsRT.anchoredPosition = Vector2.zero;
+			minutesSeconds.alignment = TextAlignmentOptions.Center;
 		}
 	}
 }
