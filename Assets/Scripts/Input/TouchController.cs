@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TouchController : InputController {
 	public TouchController() {
@@ -13,9 +14,11 @@ public class TouchController : InputController {
 	public override InputPackage GetInput() {
 		if(Input.touchCount > 0) {
 			package.Touchdown = true;
-			package.PointerOverGameObject = EventSystem?.IsPointerOverGameObject(0) ?? false;
 
 			Touch t = Input.GetTouch(0);
+			if(t.phase == TouchPhase.Began) {
+				package.PointerOverGameObject = EventSystem.current.IsPointerOverGameObject(t.fingerId);
+			}
 			package.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(t.position);
 		}
 		else {

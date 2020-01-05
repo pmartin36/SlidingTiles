@@ -5,7 +5,6 @@ public abstract class InputController {
 	protected Camera main;
 	protected InputPackage package;
 	protected InputPackage lastFramePackage;
-	protected UnityEngine.EventSystems.StandaloneInputModule EventSystem;
 
 	public static InputController CreateInputController() {
 		if (Application.isMobilePlatform) {
@@ -22,7 +21,6 @@ public abstract class InputController {
 	public InputController() {
 		main = Camera.main;
 		package = new InputPackage();
-		EventSystem = GameObject.FindObjectOfType<UnityEngine.EventSystems.StandaloneInputModule>();
 	}
 
 	public abstract InputPackage GetInput();

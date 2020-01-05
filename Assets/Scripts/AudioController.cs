@@ -39,7 +39,7 @@ public class AudioController : MonoBehaviour
 
 	public void SetIconColor() {
 		Color c = Icon.color;
-		c.a = slider.value;
+		c.a = slider.value * 0.66f + 0.34f;
 		Icon.color = c;
 	}
 }

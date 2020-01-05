@@ -70,11 +70,11 @@
             fixed4 frag (v2f i) : SV_Target
             {		
                 // sample the texture
-				fixed4 noise = tex2D(_Noise, i.uv - float2(_Time.x,0)).r * 0.3 - 0.1;	
-				//float y = sin(i.uv.y * 5 + _Time.x * 2) * 0.005;
+				// fixed4 noise = tex2D(_Noise, i.uv - float2(_Time.x,0)).r * 0.2 - 0.05;	
+				float y = sin(i.uv.y * 5 + _Time.x * 5) * 0.005;
 				// float x = (sin((i.uv.x + y) * 75) + 1) / 2;
-				float x = (sin((i.uv.x) * 75) + 1) / 2;
-				return lerp(i.primaryColor, i.secondaryColor, smoothstep(0.2, 0.8, x + noise));
+				float x = (sin((i.uv.x + y + 0.05) * 25) + 1) / 2;
+				return lerp(i.primaryColor, i.secondaryColor, smoothstep(0.3, 0.7, x));
             }
             ENDCG
         }

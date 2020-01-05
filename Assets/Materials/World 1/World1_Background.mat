@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: World2Background
-  m_Shader: {fileID: 4800000, guid: 1a14f26a5ddebf440abea8a3a88d8b1c, type: 3}
+  m_Name: World1_Background
+  m_Shader: {fileID: 4800000, guid: e6a8b104c90d5d74589397048beaaab0, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -77,6 +77,6 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.21568628, g: 0.03529412, b: 0.050980393, a: 1}
+    - _Color: {r: 0.38679248, g: 0.18886603, b: 0.18062478, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SecondaryColor: {r: 0.3764706, g: 0.41568628, b: 0.4392157, a: 1}
+    - _SecondaryColor: {r: 0.18867922, g: 0.0934664, b: 0.06852971, a: 1}

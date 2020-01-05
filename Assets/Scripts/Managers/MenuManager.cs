@@ -15,8 +15,6 @@ public class MenuManager : ContextManager {
 	[SerializeField]
 	private LevelSelect LevelSelectScreen;
 
-	bool temp_hasUserData = true;
-
 	public override void Start() {
 		base.Start();
 	}
@@ -24,7 +22,7 @@ public class MenuManager : ContextManager {
 	public override void HandleInput(InputPackage p) {
 		if (p.Touchdown && !p.PointerOverGameObject && p.TouchdownChange) {
 			if(!SettingsOpen && !LevelSelectOpen) {
-				if (temp_hasUserData) {
+				if (GameManager.Instance.SaveData.LastPlayedWorld > 0) {
 					OpenLevelSelect(true);
 				}
 				else {

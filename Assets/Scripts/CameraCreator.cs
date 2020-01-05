@@ -8,7 +8,7 @@ public class CameraCreator : MonoBehaviour
 	public CameraController MainCameraPrefab;
 
     void Awake() {
-		Screen.orientation = ScreenOrientation.Landscape;
+		Screen.orientation = ScreenOrientation.LandscapeLeft;
 
 		if(CameraManager.Instance.CameraController == null) {
 			CameraManager.Instance.Create(MainCameraPrefab, true);

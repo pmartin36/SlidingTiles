@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseController : InputController {
 	public MouseController() {
@@ -8,7 +9,7 @@ public class MouseController : InputController {
 	public override InputPackage GetInput() {
 		package.MousePositionWorldSpace = (Vector2)main.ScreenToWorldPoint(Input.mousePosition);
 		package.Touchdown = Input.GetButton("LeftMouse");
-		package.PointerOverGameObject = EventSystem?.IsPointerOverGameObject(-1) ?? false;
+		package.PointerOverGameObject = EventSystem.current.IsPointerOverGameObject(-1);
 		if (lastFramePackage != null) {
 			package.TouchdownChange = package.Touchdown ^ lastFramePackage.Touchdown;
 			package.MousePositionWorldSpaceDelta = package.MousePositionWorldSpace - lastFramePackage.MousePositionWorldSpace;

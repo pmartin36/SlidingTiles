@@ -48,22 +48,23 @@ public class Tile : MonoBehaviour
 		spriteRenderer = GetComponent<SpriteRenderer>();
 
 		if(Movable && UnselectedMaterial != spriteRenderer.sharedMaterial) {
-			UnselectedMaterial = spriteRenderer.sharedMaterial;
+			UnselectedMaterial = spriteRenderer.material;
 		}
 		if(SelectedMaterial == null) {
 			// TODO: Determine whether we need mulitple selected tiles, and, if not, switch this to initialize with Immobile Material
 			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
 				(obj) => SelectedMaterial = obj.Result;
 		}
-		if (GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
-			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
-			OnImmobileMaterialLoad = Addressables.LoadAssetAsync<Material>($"World{LoadedMaterialWorld}/Level_ImmobileTile");
-			OnImmobileMaterialLoad.Completed += (obj) => ImmobileMaterial = obj.Result;
-		}
 
-		if (!Movable) {
-			OnImmobileMaterialLoad.Completed += (obj) => spriteRenderer.sharedMaterial = obj.Result;
-		}
+		//if (GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
+		//	LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
+		//	OnImmobileMaterialLoad = Addressables.LoadAssetAsync<Material>($"World{LoadedMaterialWorld}/Level_ImmobileTile");
+		//	OnImmobileMaterialLoad.Completed += (obj) => ImmobileMaterial = obj.Result;
+		//}
+
+		//if (!Movable) {
+		//	OnImmobileMaterialLoad.Completed += (obj) => spriteRenderer.sharedMaterial = obj.Result;
+		//}
 
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;
