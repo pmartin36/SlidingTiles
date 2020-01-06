@@ -92,12 +92,13 @@ public class LevelManager : ContextManager {
 					if(changedTilespaces) {
 						Vector3 move = ((Vector2)SelectedTile.transform.position - SelectedTile.PositionWhenSelected);
 						grabPoint += move;
-						if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
-							grabPoint.x = p.MousePositionWorldSpace.x;
-						}
-						else {
-							grabPoint.y = p.MousePositionWorldSpace.y;
-						}
+						// 1/5/20 - I don't know why this was here but keeping it around for a bit just in case
+						//if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
+						//	grabPoint.x = p.MousePositionWorldSpace.x;
+						//}
+						//else {
+						//	grabPoint.y = p.MousePositionWorldSpace.y;
+						//}
 						SelectedTile.Select(true);
 					}		
 

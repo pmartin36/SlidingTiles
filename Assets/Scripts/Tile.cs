@@ -132,7 +132,6 @@ public class Tile : MonoBehaviour
 				}
 			
 				next.SetChildTile(this);
-				// Debug.Log(next);
 				return true;
 			}	
 		}
@@ -188,9 +187,35 @@ public class Tile : MonoBehaviour
 		if(Movable) {
 			Vector2 position = mouseMoveSinceSelection + (this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x;
 			bool centered = Centered;
+			float deltaTimeSpeedCap = SpeedCap * Time.deltaTime;
 
 			if(!centered) {
-				position *= new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
+				Vector2 normalized = new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
+				var pNorm = position * normalized;
+				float pNormMag = pNorm.magnitude;
+
+				Vector2 orthogonalVector = (position - pNorm);
+				float orthogonalVectorMag = orthogonalVector.magnitude;
+
+				// if the direction orthogonal to the movement direction is larger, 
+				// we'll assume player is trying to change direction and center the tile
+				if (pNormMag < orthogonalVectorMag 
+					&& pNormMag < 1 
+					&& orthogonalVectorMag > deltaTimeSpeedCap 
+					&& orthogonalVectorMag > BaseThreshold + 0.001f) {
+					if((1 - pNormMag) < BaseThreshold * 2) {
+						position = normalized;
+					}
+					else if(pNormMag < deltaTimeSpeedCap * 2) {
+						position = Vector2.zero;
+					}
+					else {
+						position = pNorm;
+					}
+				}
+				else {
+					position = pNorm;
+				}
 			}
 
 			Direction direction = GetDirectionFromPosition(ref position);
@@ -207,8 +232,8 @@ public class Tile : MonoBehaviour
 			if (centered && position.magnitude > BaseThreshold) {
 				position = (BaseThreshold + 0.001f) * position.normalized;
 			}
-			else if (move.magnitude > SpeedCap * Time.deltaTime) {
-				position = transform.localPosition + move.normalized * SpeedCap * Time.deltaTime;
+			else if (move.magnitude > deltaTimeSpeedCap) {
+				position = transform.localPosition + move.normalized * deltaTimeSpeedCap;
 			}
 
 			float mag = position.magnitude;
