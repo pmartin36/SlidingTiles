@@ -49,6 +49,9 @@ public abstract class KeyedMenuCopyComponent : MenuCopyComponent, IRequireResour
 				SetMaterial(lm.CopyObject, world);
 			}
 		}
+		else {
+			Loaded = true;
+		}
 	}
 	public abstract void SetMaterial(CopyObject m, int world);
 }

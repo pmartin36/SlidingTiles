@@ -24,7 +24,7 @@ public class SaveData {
 		ShowMilliseconds = showms;
 	}
 
-	//public SaveData() : this(2, 5, 0, false, 1f, 1f, false) {}
-	public SaveData() : this(40, 2, 3, false, 1f, 1f, true) { } // only for testing
+	public SaveData() : this(2, 4, 0, false, 1f, 1f, false) {}
+	// public SaveData() : this(40, 2, 3, false, 1f, 1f, true) { } // only for testing
 }
 

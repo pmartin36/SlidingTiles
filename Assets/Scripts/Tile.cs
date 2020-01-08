@@ -7,7 +7,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class Tile : MonoBehaviour
 {
-	public const float BaseThreshold = 0.10f;
+	public const float BaseThreshold = 0.15f;
 	private const float BaseThresholdSquared = BaseThreshold * BaseThreshold;
 
 	private const float SpeedCap = 4f;
@@ -199,14 +199,14 @@ public class Tile : MonoBehaviour
 
 				// if the direction orthogonal to the movement direction is larger, 
 				// we'll assume player is trying to change direction and center the tile
-				if (pNormMag < orthogonalVectorMag 
-					&& pNormMag < 1 
+				if (pNormMag < 1 
+					&& orthogonalVectorMag > pNormMag
 					&& orthogonalVectorMag > deltaTimeSpeedCap 
-					&& orthogonalVectorMag > BaseThreshold + 0.001f) {
+					&& orthogonalVectorMag > BaseThreshold * 2) {
 					if((1 - pNormMag) < BaseThreshold * 2) {
 						position = normalized;
 					}
-					else if(pNormMag < deltaTimeSpeedCap * 2) {
+					else if(pNormMag < BaseThreshold * 2) {
 						position = Vector2.zero;
 					}
 					else {

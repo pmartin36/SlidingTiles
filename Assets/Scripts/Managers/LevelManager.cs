@@ -36,8 +36,11 @@ public class LevelManager : ContextManager {
 
 	public override void Awake() {
 		base.Awake();
-		World = Int32.Parse(gameObject.scene.name.Split('-')[0]);
-		GameManager.Instance.SaveData.LastPlayedWorld = World;
+		bool parsed = Int32.TryParse(gameObject.scene.name.Split('-')[0], out int world);
+		if(parsed) {
+			World = world;
+			GameManager.Instance.SaveData.LastPlayedWorld = World;
+		}
 	}
 
 	public override void Start() {
@@ -75,7 +78,10 @@ public class LevelManager : ContextManager {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
-					Tile t = Physics2D.OverlapPoint(p.MousePositionWorldSpace, tileMask)?.GetComponent<Tile>();
+					var tileTouched = Physics2D.OverlapPointAll(p.MousePositionWorldSpace, tileMask)
+										.OrderBy(g => Vector2.Distance(p.MousePositionWorldSpace, g.transform.position))
+										.FirstOrDefault();
+					Tile t = tileTouched?.GetComponent<Tile>();
 
 					if (t != null && t.Movable) {
 						SelectedTile = t;
@@ -92,13 +98,12 @@ public class LevelManager : ContextManager {
 					if(changedTilespaces) {
 						Vector3 move = ((Vector2)SelectedTile.transform.position - SelectedTile.PositionWhenSelected);
 						grabPoint += move;
-						// 1/5/20 - I don't know why this was here but keeping it around for a bit just in case
-						//if(Mathf.Abs(move.y) > Mathf.Abs(move.x)) {
-						//	grabPoint.x = p.MousePositionWorldSpace.x;
-						//}
-						//else {
-						//	grabPoint.y = p.MousePositionWorldSpace.y;
-						//}
+						if (Mathf.Abs(move.y) > Mathf.Abs(move.x) && Mathf.Abs(moveAmount.x) < 2 * Tile.BaseThreshold) {
+							grabPoint.x = p.MousePositionWorldSpace.x;
+						}
+						else if(Mathf.Abs(moveAmount.y) < 2 * Tile.BaseThreshold) {
+							grabPoint.y = p.MousePositionWorldSpace.y;
+						}
 						SelectedTile.Select(true);
 					}		
 
