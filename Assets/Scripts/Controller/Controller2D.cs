@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class Controller2D : RaycastController {
 
@@ -56,6 +57,52 @@ public class Controller2D : RaycastController {
 		return moveAmount;
 	}
 
+	public bool ShouldEntityJump(Vector2 moveAmount, bool standingOnPlatform = false, out float jumpHeight) {
+		float directionX = collisions.faceDir;
+		float rayLength = Mathf.Abs(moveAmount.x * 2) + skinWidth;
+
+		jumpHeight = -1f;
+		if (Mathf.Abs(moveAmount.x) < skinWidth) {
+			return false;
+		}
+
+		int canJumpUpIndex = 3;
+		bool hasHitBlockingObject = false;
+
+		for (int i = 1; i < horizontalRayCount; i++) {
+			Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
+			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
+			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
+
+			if (hit) {
+				if (hit.distance == 0) {
+					continue;
+				}
+
+				// if there are any hits above the index, jumping isn't possible since it's blocked
+				if (i >= canJumpUpIndex) {
+					return false;
+				}
+				else {
+					jumpHeight = -1;
+				}
+
+				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
+				if (slopeAngle > maxSlopeAngle) {
+					hasHitBlockingObject = true;
+				}
+				
+			}
+			else if (hasHitBlockingObject && i <= canJumpUpIndex && jumpHeight < 0) {
+				float height = (rayOrigin.y - raycastOrigins.bottomLeft.y) - moveAmount.y;
+				if (height > 0) {
+					jumpHeight = height;
+				}
+			}
+		}
+		return jumpHeight > 0;
+	}
+
 	void HorizontalCollisions(ref Vector2 moveAmount) {
 		float directionX = collisions.faceDir;
 		float rayLength = Mathf.Abs (moveAmount.x) + skinWidth;
@@ -63,6 +110,9 @@ public class Controller2D : RaycastController {
 		if (Mathf.Abs(moveAmount.x) < skinWidth) {
 			rayLength = 2*skinWidth;
 		}
+
+		int canJumpUpIndex = 3;
+		bool hasHitBlockingObject = false;
 
 		for (int i = 0; i < horizontalRayCount; i ++) {
 			Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
@@ -75,6 +125,12 @@ public class Controller2D : RaycastController {
 
 				if (hit.distance == 0) {
 					continue;
+				}
+
+				// if there are any hits above the index, jumping isn't possible since it's blocked
+				if(i >= canJumpUpIndex) {
+					collisions.canJumpUp = false;
+					collisions.jumpHeight = null;
 				}
 
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
@@ -93,18 +149,33 @@ public class Controller2D : RaycastController {
 					moveAmount.x += distanceToSlopeStart * directionX;
 				}
 
-				if (!collisions.climbingSlope || slopeAngle > maxSlopeAngle) {
-					moveAmount.x = (hit.distance - skinWidth) * directionX;
-					rayLength = hit.distance;
+				float amountToMove = (hit.distance - skinWidth);
+				if (amountToMove < Mathf.Abs(moveAmount.x)) {
+					if (!collisions.climbingSlope || slopeAngle > maxSlopeAngle) {
+						hasHitBlockingObject = true;
+						moveAmount.x = amountToMove * directionX;
 
-					if (collisions.climbingSlope) {
-						moveAmount.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(moveAmount.x);
+						if (collisions.climbingSlope) {
+							moveAmount.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(moveAmount.x);
+						}
+
+						collisions.left = directionX == -1;
+						collisions.right = directionX == 1;
 					}
-
-					collisions.left = directionX == -1;
-					collisions.right = directionX == 1;
 				}
 			}
+			else if(hasHitBlockingObject && i <= canJumpUpIndex && collisions.jumpHeight == null) {
+				float jumpHeight = (rayOrigin.y - raycastOrigins.bottomLeft.y) - moveAmount.y;
+				if(jumpHeight > 0) {
+					collisions.jumpHeight = jumpHeight;
+				}
+			}
+		}
+
+		if(collisions.canJumpUp && collisions.jumpHeight != null) {
+			moveAmount.x = (rayLength - skinWidth) * directionX;
+			moveAmount.y += collisions.jumpHeight.Value;
+			collisions.left = collisions.right = false;
 		}
 	}
 
@@ -268,6 +339,9 @@ public class Controller2D : RaycastController {
 		public int faceDir;
 		public bool fallingThroughPlatform;
 
+		public bool canJumpUp;
+		public float? jumpHeight;
+
 		public HashSet<GameObject> collisionsBelow;
 		public HashSet<Platform> collisionsBelowOld;
 
@@ -286,6 +360,9 @@ public class Controller2D : RaycastController {
 			faceDir = info.faceDir;
 			fallingThroughPlatform = info.fallingThroughPlatform;
 
+			canJumpUp = info.canJumpUp;
+			jumpHeight = info.jumpHeight;
+
 			collisionsBelow = info.collisionsBelow != null ? new HashSet<GameObject>(info.collisionsBelow) : new HashSet<GameObject>();
 			collisionsBelowOld = info.collisionsBelowOld != null ? new HashSet<Platform>(info.collisionsBelowOld) : new HashSet<Platform>();
 		}
@@ -301,7 +378,10 @@ public class Controller2D : RaycastController {
 			slopeAngleOld = slopeAngle;
 			slopeAngle = 0;
 
-			if(collisionsBelow != null) {
+			canJumpUp = true;
+			jumpHeight = null;
+
+			if (collisionsBelow != null) {
 				collisionsBelow.Clear();
 			}
 			else {
