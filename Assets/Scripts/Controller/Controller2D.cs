@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Controller2D : RaycastController {
-
+	private static int canJumpUpIndex = 3;
 	public float maxSlopeAngle = 80;
 
 	public CollisionInfo collisions;
@@ -12,7 +12,6 @@ public class Controller2D : RaycastController {
 	public override void Start() {
 		base.Start ();
 		collisions.faceDir = 1;
-
 	}
 
 	public void MoveFromPlatform(object sender, Vector3 diff) {
@@ -20,14 +19,15 @@ public class Controller2D : RaycastController {
 		extraMove = diff;
 	}
 
-	public Vector2 Move(Vector2 moveAmount, bool standingOnPlatform = false, bool fromEvent = false) {
+	public Vector2 Move(Vector2 moveAmount, bool jumping = false, bool standingOnPlatform = false, bool fromEvent = false) {
 		moveAmount += extraMove;
 		extraMove = Vector2.zero;
-		UpdateRaycastOrigins ();
+		UpdateRaycastOrigins();
 
 		CollisionInfo old = new CollisionInfo(collisions);
 		collisions.Reset ();
 		collisions.moveAmountOld = moveAmount;
+		collisions.jumping = jumping;
 
 		if (moveAmount.y < 0) {
 			DescendSlope(ref moveAmount);
@@ -56,6 +56,53 @@ public class Controller2D : RaycastController {
 		return moveAmount;
 	}
 
+	public bool ShouldEntityJump(Vector2 moveAmount, out float jumpHeight, bool standingOnPlatform = false) {
+		UpdateRaycastOrigins();
+
+		jumpHeight = -1f;
+		if (Mathf.Abs(moveAmount.x) < skinWidth) {
+			return false;
+		}
+
+		float directionX = collisions.faceDir;
+		float rayLength = Mathf.Abs(moveAmount.x * 5) + skinWidth;
+		bool hasHitBlockingObject = false;
+
+		for (int i = 0; i < horizontalRayCount; i++) {
+			Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
+			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
+			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
+			Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.blue);
+
+			if (hit) {
+				if (hit.distance == 0) {
+					continue;
+				}
+
+				// if there are any hits above the index, jumping isn't possible since it's blocked
+				if (i >= canJumpUpIndex) {
+					return false;
+				}
+				else {
+					jumpHeight = -1;
+				}
+
+				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
+				if (slopeAngle > maxSlopeAngle) {
+					hasHitBlockingObject = true;
+				}
+
+			}
+			else if (hasHitBlockingObject && i <= canJumpUpIndex && jumpHeight < 0) {
+				float height = (rayOrigin.y - raycastOrigins.bottomLeft.y) - moveAmount.y;
+				if (height > 0) {
+					jumpHeight = height;
+				}
+			}
+		}
+		return jumpHeight > 0;
+	}
+
 	void HorizontalCollisions(ref Vector2 moveAmount) {
 		float directionX = collisions.faceDir;
 		float rayLength = Mathf.Abs (moveAmount.x) + skinWidth;
@@ -69,7 +116,8 @@ public class Controller2D : RaycastController {
 			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 
-			Debug.DrawRay(rayOrigin, Vector2.right * directionX,Color.red);
+			// Debug.DrawRay(rayOrigin, Vector2.right * directionX,Color.red);
+			Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
 
 			if (hit) {
 
@@ -91,6 +139,11 @@ public class Controller2D : RaycastController {
 					}
 					ClimbSlope(ref moveAmount, slopeAngle, hit.normal);
 					moveAmount.x += distanceToSlopeStart * directionX;
+				}
+
+
+				if(collisions.jumping && i < canJumpUpIndex) {
+					continue;
 				}
 
 				if (!collisions.climbingSlope || slopeAngle > maxSlopeAngle) {
@@ -268,6 +321,8 @@ public class Controller2D : RaycastController {
 		public int faceDir;
 		public bool fallingThroughPlatform;
 
+		public bool jumping;
+
 		public HashSet<GameObject> collisionsBelow;
 		public HashSet<Platform> collisionsBelowOld;
 
@@ -284,6 +339,7 @@ public class Controller2D : RaycastController {
 			slopeNormal = info.slopeNormal;
 			moveAmountOld = info.moveAmountOld;
 			faceDir = info.faceDir;
+			jumping = info.jumping;
 			fallingThroughPlatform = info.fallingThroughPlatform;
 
 			collisionsBelow = info.collisionsBelow != null ? new HashSet<GameObject>(info.collisionsBelow) : new HashSet<GameObject>();

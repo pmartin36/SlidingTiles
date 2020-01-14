@@ -30,9 +30,10 @@ public class Tile : MonoBehaviour
 	private Vector3 lastFrameVelocity;
 	private Vector3 lastFramePosition;
 
+	private bool initialMovable;
 	private Tilespace initialTilespace;
 
-	private int LoadedMaterialWorld = -1;
+	private static int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
 	private static Material SelectedMaterial;
 	private static Material UnselectedMaterial;
@@ -47,20 +48,18 @@ public class Tile : MonoBehaviour
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
 
-		if(Movable && UnselectedMaterial != spriteRenderer.sharedMaterial) {
+		if(Movable && UnselectedMaterial != spriteRenderer.material) {
 			UnselectedMaterial = spriteRenderer.material;
 		}
-		if(SelectedMaterial == null) {
-			// TODO: Determine whether we need mulitple selected tiles, and, if not, switch this to initialize with Immobile Material
+		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
+			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
+		
 			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
 				(obj) => SelectedMaterial = obj.Result;
-		}
 
-		//if (GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
-		//	LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
-		//	OnImmobileMaterialLoad = Addressables.LoadAssetAsync<Material>($"World{LoadedMaterialWorld}/Level_ImmobileTile");
-		//	OnImmobileMaterialLoad.Completed += (obj) => ImmobileMaterial = obj.Result;
-		//}
+			Addressables.LoadAssetAsync<Material>($"World{LoadedMaterialWorld}/Level_ImmobileTile").Completed +=
+				(obj) => ImmobileMaterial = obj.Result;
+		}
 
 		//if (!Movable) {
 		//	OnImmobileMaterialLoad.Completed += (obj) => spriteRenderer.sharedMaterial = obj.Result;
@@ -75,6 +74,7 @@ public class Tile : MonoBehaviour
 	public void Init(Tilespace t) {
 		this.Space = t;
 		this.initialTilespace = t;
+		this.initialMovable = this.Movable;
 	}
 
 	public virtual void Update() {
@@ -103,7 +103,12 @@ public class Tile : MonoBehaviour
 		if (Selected) {
 			PositionWhenSelected = transform.position;
 		}
-		spriteRenderer.sharedMaterial = Selected ? SelectedMaterial : UnselectedMaterial;
+		spriteRenderer.sharedMaterial = 
+			Movable  
+				? Selected 
+					? SelectedMaterial 
+					: UnselectedMaterial
+				: ImmobileMaterial;
 	}
 
 	public void CompleteMove(Tilespace space) {
@@ -275,7 +280,15 @@ public class Tile : MonoBehaviour
 	public void Reset() {
 		transform.parent = initialTilespace.transform;
 		this.Space = initialTilespace;
+		this.Movable = initialMovable;
 		transform.localPosition = Vector2.zero;
+	}
+
+	public void SetImmobile() {
+		Movable = false;
+		if(Selected) {
+			Select(false);
+		}
 	}
 
 	public bool IsPlayerOnTile() => Physics2D.OverlapBox(transform.position, transform.lossyScale, 0, playerMask) != null;

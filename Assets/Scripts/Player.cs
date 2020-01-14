@@ -34,6 +34,9 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Vector3 lastFrameVelocity;
 	private float velocityXSmoothing;
 
+	private int jumpFramesRemaining = 0;
+	private float jumpHeight;
+
 	private Controller2D controller;
 	private SpriteRenderer lights;
 
@@ -62,10 +65,39 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public void SetRespawnManager(RespawnManager m) => RespawnManager = m;
 
 	void Update() {
-		CalculateVelocity ();
-		// HandleWallSliding ();
+		CalculateVelocity();
 
-		controller.Move (velocity * Time.deltaTime);
+		Vector3 addedJumpVelocity = Vector2.zero;
+		bool isJumping = false;
+		if(jumpFramesRemaining <= 0) {
+			if(controller.collisions.below) {
+				isJumping = controller.ShouldEntityJump(velocity * Time.deltaTime, out float heightToJump);
+				if(isJumping) {
+					jumpHeight = heightToJump / 5f;
+					jumpFramesRemaining = 4;
+					addedJumpVelocity = Vector3.up * (jumpHeight) * -Mathf.Sign(gravity);
+				}
+			}
+			
+		}
+		else {
+			addedJumpVelocity = Vector3.up * (jumpHeight) * -Mathf.Sign(gravity);
+			isJumping = true;
+			jumpFramesRemaining--;
+		}
+
+		// if jumping, ignore gravity
+		if(isJumping) {
+			velocity.y -= gravity * Time.deltaTime;
+		}
+
+		// actually perform movement
+		controller.Move (velocity * Time.deltaTime + addedJumpVelocity, isJumping);
+
+		//if we hit something above while jumping, stop jumping
+		if(isJumping && controller.collisions.above) {
+			jumpFramesRemaining = 0;
+		}
 
 		if (controller.collisions.above || controller.collisions.below) {
 			if (controller.collisions.slidingDownMaxSlope) {
@@ -88,7 +120,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			}
 		}
 
-		if( !controller.collisions.climbingSlope
+		if(
+			!isJumping 
 			&& ((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left))
 		) {
 			moveDirection *= -1f;
@@ -157,16 +190,26 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
         Vector2 norm = original.normalized;
 		float mag = original.magnitude;
 		float skinWidth = 0.015f;
+		Vector2 positiveLossyScale = transform.lossyScale * new Vector2(Mathf.Sign(transform.lossyScale.x), Mathf.Sign(transform.lossyScale.y));
         RaycastHit2D[] hits = Physics2D.BoxCastAll(
-			(Vector2)transform.position + controller.collider.offset * transform.lossyScale,
-			controller.collider.size * transform.lossyScale - Vector2.one * 2 * skinWidth,
+			(Vector2)transform.position + controller.collider.offset * positiveLossyScale,
+			controller.collider.size * positiveLossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			norm,
 			mag + skinWidth,
 			controller.collisionMask
 		);
 
-        if(hits.Length > 0) {
+		var t = Physics2D.BoxCastAll(
+			(Vector2)transform.position,
+			controller.collider.size * positiveLossyScale - Vector2.one * 2 * skinWidth,
+			transform.eulerAngles.z,
+			norm,
+			mag + skinWidth,
+			controller.collisionMask
+		);
+
+		if (hits.Length > 0) {
 			LayerMask border = LayerMask.NameToLayer("Wall");
 			float min = mag;
 			foreach(RaycastHit2D hit in hits) {

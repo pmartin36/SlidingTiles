@@ -18,6 +18,7 @@
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZTest Always
 			ZWrite Off
+			Cull Off
 
             CGPROGRAM	
             #pragma vertex vert
@@ -25,15 +26,6 @@
 			
             #include "UnityCG.cginc"
 
-			float inverseLerp(float a, float b, float v) {
-				return (v - a) / (b - a);
-			}
-
-			float2 rotate(float2 o, float r) {
-				float c = cos(r);
-				float s = sin(r);
-				return float2(o.x * c - o.y * s, o.x * s + o.y * c);
-			}
 
             struct appdata
             {
@@ -45,6 +37,7 @@
             struct v2f
             {
                 float2 uv : TEXCOORD0;
+				float2 screenPos: TEXCOORD1;
                 float4 vertex : SV_POSITION;
 				fixed4 primaryColor : COLOR0;
 				fixed4 secondaryColor : COLOR1;
@@ -61,6 +54,7 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				o.screenPos = ComputeScreenPos(o.vertex);
 				o.primaryColor = v.color * _Color;
 				o.secondaryColor = v.color * _SecondaryColor;
                 return o;
@@ -69,9 +63,14 @@
             fixed4 frag (v2f i) : SV_Target
             {		
                 // sample the texture
-				float noise = tex2D(_Noise, (i.uv / 3) + 0.25).r * 0.85;
-				noise += tex2D(_Noise, i.uv * 2).r * 0.15;
-				return lerp(i.primaryColor, i.secondaryColor, noise);
+				float2 pos = i.screenPos;
+				float noise = tex2D(_Noise, (pos / 2) + 0.25).r * 0.85;
+				noise += tex2D(_Noise, pos * 3).r * 0.15;
+
+				float4 main = tex2D(_Noise, i.uv);
+				float4 col = lerp(i.primaryColor, i.secondaryColor, noise);
+				col.a = main.a;
+				return col;
             }
             ENDCG
         }

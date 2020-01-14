@@ -86,4 +86,8 @@ public class MenuManager : ContextManager {
 	public void CreditsClicked() {
 
 	}
+
+	public void RemoveAdsClicked() {
+		SettingsMenu.HideAdRemovalWidget();
+	}
 }

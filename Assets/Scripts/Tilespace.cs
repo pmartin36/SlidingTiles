@@ -12,7 +12,10 @@ public class Tilespace : MonoBehaviour
 	// visible in inspector
 	public TilePosition Position;
 
-    void Awake() {
+	// Will tiles get stuck if they move onto this tilespace
+	public bool Sticky;
+
+	void Awake() {
 		transform.localPosition = new Vector2(Position.x, Position.y) * transform.localScale.x;
 		Tile = GetComponentInChildren<Tile>();
 		if(Tile != null) {

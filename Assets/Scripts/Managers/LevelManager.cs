@@ -96,15 +96,22 @@ public class LevelManager : ContextManager {
 					bool changedTilespaces = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
 
 					if(changedTilespaces) {
-						Vector3 move = ((Vector2)SelectedTile.transform.position - SelectedTile.PositionWhenSelected);
-						grabPoint += move;
-						if (Mathf.Abs(move.y) > Mathf.Abs(move.x) && Mathf.Abs(moveAmount.x) < 2 * Tile.BaseThreshold) {
-							grabPoint.x = p.MousePositionWorldSpace.x;
+						if(SelectedTile.Space.Sticky) {
+							SelectedTile.SetImmobile();
+							SelectedTile = null;
 						}
-						else if(Mathf.Abs(moveAmount.y) < 2 * Tile.BaseThreshold) {
-							grabPoint.y = p.MousePositionWorldSpace.y;
+						else {
+							Vector3 move = ((Vector2)SelectedTile.transform.position - SelectedTile.PositionWhenSelected);
+							grabPoint += move;
+							if (Mathf.Abs(move.y) > Mathf.Abs(move.x) && Mathf.Abs(moveAmount.x) < 2 * Tile.BaseThreshold) {
+								grabPoint.x = p.MousePositionWorldSpace.x;
+							}
+							else if(Mathf.Abs(moveAmount.y) < 2 * Tile.BaseThreshold) {
+								grabPoint.y = p.MousePositionWorldSpace.y;
+							}
+
+							SelectedTile.Select(true);
 						}
-						SelectedTile.Select(true);
 					}		
 
 					if(!TimerRunning && !Won && !SelectedTile.Centered) {
@@ -150,6 +157,7 @@ public class LevelManager : ContextManager {
 			ElapsedTime = 0;
 			Timer.SetTimer(ElapsedTime);
 			TimerRunning = false;
+			collectedStars = 0;
 		}
 	}
 

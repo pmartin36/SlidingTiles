@@ -9,6 +9,24 @@ public class SettingsMenu : MonoBehaviour
 	private float source, target;
 	private RectTransform rt;
 
+	public RectTransform MusicWidget;
+	public RectTransform SoundWidget;
+	public RectTransform ShowMSWidget;
+	public GameObject AdRemovalWidget;
+
+	public void Start() {
+		if (GameManager.Instance.SaveData.AdsRemoved) {
+			HideAdRemovalWidget();
+		}
+	}
+
+	public void HideAdRemovalWidget() {
+		AdRemovalWidget.SetActive(false);
+		MusicWidget.anchoredPosition =  new Vector2(-58, MusicWidget.anchoredPosition.y);
+		SoundWidget.anchoredPosition =  new Vector2(-58, SoundWidget.anchoredPosition.y);
+		ShowMSWidget.anchoredPosition = new Vector2(-58, ShowMSWidget.anchoredPosition.y);
+	}
+
 	public void Show(bool show) {
 		showing = show;
 		if (showing) {
