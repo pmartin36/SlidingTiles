@@ -32,8 +32,10 @@ public class GameManager : Singleton<GameManager> {
 	private LoadScreen loadScreen;
 
 	public StoreCommunicator StoreCommunicator { get; set; }
+	public AdvertisementManager AdManager { get; set; }
 	public bool IsMobilePlatform { get; set; }
 	public SaveData SaveData { get; private set; }
+
 	public int HighestOwnedWorld => SaveData.HighestOwnedWorld;
 	public int HighestUnlockedLevel => SaveData.HighestUnlockedLevel;
 	public int LastPlayedWorld => SaveData.LastPlayedWorld;
@@ -44,9 +46,8 @@ public class GameManager : Singleton<GameManager> {
 		ContextManager = GameObject.FindObjectOfType<ContextManager>();
 		SceneManager.LoadSceneAsync(SceneHelpers.LoadSceneBuildIndex, LoadSceneMode.Additive);
 
-		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 		IsMobilePlatform = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
-
+		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
 		bool retrievedData = StoreCommunicator.TryLoadSaveData(out string jsonString);
 		if(retrievedData) {
 			SaveData = JsonUtility.FromJson<SaveData>(jsonString);
@@ -54,6 +55,8 @@ public class GameManager : Singleton<GameManager> {
 		else {
 			SaveData = new SaveData();
 		}
+
+		AdManager = new AdvertisementManager();
 	}
 
 	public void Update() {
@@ -72,6 +75,8 @@ public class GameManager : Singleton<GameManager> {
 	public void ToggleSoundOn() {
 		
 	}
+
+	public void ShowAd() => AdManager.TryShowAd();
 
 	public void SetTimescale(float timescale, float lerpScale = 0.5f) {
 		_targetTimeScale = timescale;

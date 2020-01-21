@@ -52,6 +52,7 @@ public class Tile : MonoBehaviour
 			UnselectedMaterial = spriteRenderer.material;
 		}
 		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
+			Debug.Log($"{LoadedMaterialWorld}  {GameManager.Instance.LastPlayedWorld}");
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
 		
 			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
@@ -78,7 +79,28 @@ public class Tile : MonoBehaviour
 	}
 
 	public virtual void Update() {
-		if (!Centered && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
+		LevelManager lm = GameManager.Instance.LevelManager;
+		if(lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
+			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
+			Vector3 moveAmount = position - transform.localPosition;
+
+			float distToMove = Time.deltaTime * SpeedCap;
+			if (distToMove < moveAmount.magnitude) {
+				moveAmount = moveAmount.normalized * distToMove;
+			}
+
+			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
+			Vector2 v2 = position;
+			Direction direction = GetDirectionFromPosition(ref v2);
+			if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
+				foreach (Tile t in tilesToMove) {
+					t.Move(moveAmount, direction);
+				}
+			}
+			return;
+		}
+		// try centering selected tiles that are close to being centered
+		else if (Selected && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
 			float distToMove = Time.deltaTime * SpeedCap;
 			Vector3 moveAmount;
 			if (distToMove > transform.localPosition.magnitude) {
@@ -178,7 +200,7 @@ public class Tile : MonoBehaviour
 			
 				Tile collidedTile = collisions[0].GetComponent<Tile>();
 				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
-				if (collidedTile.Movable && canMoveInDirection) {		
+				if (collidedTile.Movable && !collidedTile.Selected && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
 					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d);

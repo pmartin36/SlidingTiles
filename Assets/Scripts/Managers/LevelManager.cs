@@ -9,8 +9,8 @@ public class LevelManager : ContextManager {
 	public int World { get; set; }
 	public Grid Grid { get; set; }
 
+	public Tile SelectedTile { get; private set; }
 	protected LayerMask tileMask;
-	protected Tile SelectedTile;
 	protected Vector3 grabPoint;
 	protected Vector3 grabReleasePoint;
 
@@ -34,13 +34,20 @@ public class LevelManager : ContextManager {
 
 	public bool Paused { get; set; }
 
+	public bool SnapAfterDeselected;
+
 	public override void Awake() {
 		base.Awake();
 		bool parsed = Int32.TryParse(gameObject.scene.name.Split('-')[0], out int world);
 		if(parsed) {
-			World = world;
-			GameManager.Instance.SaveData.LastPlayedWorld = World;
+			World = Mathf.Max(1, world);
 		}
+		else {
+			// tutorial level
+			World = 1;
+		}
+
+		GameManager.Instance.SaveData.LastPlayedWorld = World;
 	}
 
 	public override void Start() {
@@ -50,6 +57,8 @@ public class LevelManager : ContextManager {
 	}
 
 	public virtual void Init() {
+		SnapAfterDeselected = true;
+
 		Grid = FindObjectsOfType<Grid>().First(g => g.gameObject.scene == this.gameObject.scene);
 		winType = FindObjectsOfType<WinType>().First(g => g.gameObject.scene == this.gameObject.scene);
 		Preview = FindObjectsOfType<TilePreview>().First(g => g.gameObject.scene == this.gameObject.scene);
@@ -78,10 +87,11 @@ public class LevelManager : ContextManager {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
-					var tileTouched = Physics2D.OverlapPointAll(p.MousePositionWorldSpace, tileMask)
+					Tile t = Physics2D.OverlapCircleAll(p.MousePositionWorldSpace, 7.5f, tileMask)
+										.Select(g => g.GetComponent<Tile>())
+										.Where(g => g != null && g.Movable)
 										.OrderBy(g => Vector2.Distance(p.MousePositionWorldSpace, g.transform.position))
 										.FirstOrDefault();
-					Tile t = tileTouched?.GetComponent<Tile>();
 
 					if (t != null && t.Movable) {
 						SelectedTile = t;
@@ -252,6 +262,7 @@ public class LevelManager : ContextManager {
 				GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
 				break;
 			case WinTypeAction.Reset:
+				GameManager.Instance.ShowAd();
 				Reset(false);
 				break;
 			case WinTypeAction.LevelSelect:
@@ -262,6 +273,8 @@ public class LevelManager : ContextManager {
 				);
 				break;
 			case WinTypeAction.Next:
+				GameManager.Instance.ShowAd();
+
 				// hide objects in the current level so that as the wintype animation is playing, we see the next level
 				HideLevel();
 

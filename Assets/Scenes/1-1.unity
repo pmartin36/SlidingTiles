@@ -2887,6 +2887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LevelObjectContainer: {fileID: 1853636628}
+  SnapAfterDeselected: 0
 --- !u!4 &1693928946
 Transform:
   m_ObjectHideFlags: 0
@@ -3506,12 +3507,17 @@ PrefabInstance:
     - target: {fileID: 3247695231144024825, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20
+      value: -36
       objectReference: {fileID: 0}
     - target: {fileID: 3247695231144024825, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3247695231144024825, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 204
       objectReference: {fileID: 0}
     - target: {fileID: 5814786753432757794, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
@@ -3533,45 +3539,15 @@ PrefabInstance:
       propertyPath: ResetButton
       value: 
       objectReference: {fileID: 1364382610}
-    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_margin.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
+    - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_textAlignment
-      value: 514
-      objectReference: {fileID: 0}
-    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_enableWordWrapping
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_text
-      value: .000
-      objectReference: {fileID: 0}
-    - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_textAlignment
-      value: 1026
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd06a0798a9539c45a6228cab7593341, type: 3}

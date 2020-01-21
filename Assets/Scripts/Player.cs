@@ -92,7 +92,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		}
 
 		// actually perform movement
-		controller.Move (velocity * Time.deltaTime + addedJumpVelocity, isJumping);
+		Vector2 amountMoved = controller.Move (velocity * Time.deltaTime + addedJumpVelocity, isJumping);
 
 		//if we hit something above while jumping, stop jumping
 		if(isJumping && controller.collisions.above) {
@@ -125,11 +125,15 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			&& ((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left))
 		) {
 			moveDirection *= -1f;
+		}
 
+		// swap player direction only when it starts moving the other way, otherwise it swaps rapidly when smushed between two objects
+		if (amountMoved.sqrMagnitude > 0.001f && transform.localScale.x * amountMoved.x < 0) {
 			Vector3 localScale = transform.localScale;
 			localScale.x *= -1f;
 			transform.localScale = localScale;
 		}
+
 		lastFrameVelocity = velocity;
 	}
 
@@ -193,15 +197,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		Vector2 positiveLossyScale = transform.lossyScale * new Vector2(Mathf.Sign(transform.lossyScale.x), Mathf.Sign(transform.lossyScale.y));
         RaycastHit2D[] hits = Physics2D.BoxCastAll(
 			(Vector2)transform.position + controller.collider.offset * positiveLossyScale,
-			controller.collider.size * positiveLossyScale - Vector2.one * 2 * skinWidth,
-			transform.eulerAngles.z,
-			norm,
-			mag + skinWidth,
-			controller.collisionMask
-		);
-
-		var t = Physics2D.BoxCastAll(
-			(Vector2)transform.position,
 			controller.collider.size * positiveLossyScale - Vector2.one * 2 * skinWidth,
 			transform.eulerAngles.z,
 			norm,
