@@ -17,8 +17,8 @@ public class AppleCommunicator : StoreCommunicator {
 		
 	}
 
-	public override bool TryLoadSaveData(out string jsonString) {
-		jsonString = "{ test: {} }";
+	public override bool TryLoadSaveData(Action<string> callback) {
+		callback("");
 		return false;
 	}
 

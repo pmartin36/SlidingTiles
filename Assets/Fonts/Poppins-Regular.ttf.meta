@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 758c55c3229f2824eae39de059871c04
+guid: 011b27018e817064e9b2595839a9caf8
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,10 +8,11 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Crom
+  fontName: Poppins
   fontNames:
-  - Crom
-  fallbackFontReferences: []
+  - Poppins
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a600d2a18540e534ab999dd2b28d5c6d, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

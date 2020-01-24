@@ -214,11 +214,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tile
       objectReference: {fileID: 0}
-    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 3385497937541243512, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -274,6 +269,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
 --- !u!4 &195718528 stripped
@@ -1257,16 +1257,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tile
       objectReference: {fileID: 0}
-    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: Movable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 22fc1fc60bdec4a42a15d0aed479fdc2, type: 2}
     - target: {fileID: 3385497937541243512, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1322,6 +1312,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: Movable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 22fc1fc60bdec4a42a15d0aed479fdc2, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
 --- !u!1 &735206007
@@ -1740,6 +1740,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win Screen Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1843,31 +1848,6 @@ PrefabInstance:
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
-    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 5675921555796371971, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: PercentAnimated
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7856298136429560452, guid: 36c234df805c6f74e9f917be183a199d,
@@ -2656,6 +2636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LevelObjectContainer: {fileID: 735206007}
+  SnapAfterDeselected: 0
 --- !u!4 &1693928946
 Transform:
   m_ObjectHideFlags: 0
@@ -3002,16 +2983,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tile
       objectReference: {fileID: 0}
-    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: Movable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 22fc1fc60bdec4a42a15d0aed479fdc2, type: 2}
     - target: {fileID: 3385497937541243512, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3067,6 +3038,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: Movable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 22fc1fc60bdec4a42a15d0aed479fdc2, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
 --- !u!1001 &2147174730

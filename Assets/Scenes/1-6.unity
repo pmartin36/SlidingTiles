@@ -2354,6 +2354,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win Screen Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2458,16 +2463,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
-    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36c234df805c6f74e9f917be183a199d, type: 3}
@@ -4870,45 +4865,25 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 856132472866506067, guid: dd06a0798a9539c45a6228cab7593341,
+    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_havePropertiesChanged
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 856132472866506067, guid: dd06a0798a9539c45a6228cab7593341,
+    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 856132471982570726, guid: dd06a0798a9539c45a6228cab7593341,
+    - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_havePropertiesChanged
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 856132471982570726, guid: dd06a0798a9539c45a6228cab7593341,
+    - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_isInputParsingRequired
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 856132473470290623, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 856132473470290623, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 856132473978176628, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 579.87036
-      objectReference: {fileID: 0}
-    - target: {fileID: 856132473978176628, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd06a0798a9539c45a6228cab7593341, type: 3}

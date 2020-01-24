@@ -13,6 +13,7 @@ public class SettingsMenu : MonoBehaviour
 	public RectTransform SoundWidget;
 	public RectTransform ShowMSWidget;
 	public GameObject AdRemovalWidget;
+	public RectTransform CreditsPanel;
 
 	public void Start() {
 		if (GameManager.Instance.SaveData.AdsRemoved) {
@@ -22,9 +23,10 @@ public class SettingsMenu : MonoBehaviour
 
 	public void HideAdRemovalWidget() {
 		AdRemovalWidget.SetActive(false);
-		MusicWidget.anchoredPosition =  new Vector2(-58, MusicWidget.anchoredPosition.y);
-		SoundWidget.anchoredPosition =  new Vector2(-58, SoundWidget.anchoredPosition.y);
-		ShowMSWidget.anchoredPosition = new Vector2(-58, ShowMSWidget.anchoredPosition.y);
+		MusicWidget.anchoredPosition =  new Vector2(-58, 225);
+		SoundWidget.anchoredPosition =  new Vector2(-58, 42);
+		ShowMSWidget.anchoredPosition = new Vector2(-58, -143);
+		CreditsPanel.anchoredPosition = new Vector2(-37, -400);
 	}
 
 	public void Show(bool show) {

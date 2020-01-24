@@ -164,9 +164,6 @@ public class LevelManager : ContextManager {
 
 	public virtual void PlayerAliveChange(object player, bool alive) {
 		if (!alive) {
-			ElapsedTime = 0;
-			Timer.SetTimer(ElapsedTime);
-			TimerRunning = false;
 			collectedStars = 0;
 		}
 	}
@@ -232,7 +229,29 @@ public class LevelManager : ContextManager {
 	public void PlayerWin(GoalFlag gf) {
 		goalFlag = gf;
 		Won = true;	
-		GameManager.Instance.SetHighestUnlockedLevel(SceneHelpers.GetNextLevelBuildIndex());	
+
+		int bi = SceneHelpers.GetCurrentLevelBuildIndex();
+		SceneHelpers.GetWorldAndLevelFromBuildIndex(bi, out int world, out int level);
+
+		// don't save data for tutorial levels
+		if(world > 0 && level > 0) {
+			LevelData ld = GameManager.Instance.SaveData.LevelData[world-1, level-1];
+			if(collectedStars > ld.MaxStarsCollected) {
+				ld.MaxStarsCollected = collectedStars;
+			}
+			if(collectedStars < 3) {
+				if(ld.AnyStarCompletionTime < 0 || ElapsedTime < ld.AnyStarCompletionTime) {
+					ld.AnyStarCompletionTime = ElapsedTime;
+				}
+			}
+			else {
+				if (ld.ThreeStarCompletionTime < 0 || ElapsedTime < ld.ThreeStarCompletionTime) {
+					ld.ThreeStarCompletionTime = ElapsedTime;
+				}
+			}
+		}
+
+		GameManager.Instance.SaveLevelCompleteData(bi+1);	
 	}
 
 	public void PlayerWinAnimation() {
@@ -242,7 +261,7 @@ public class LevelManager : ContextManager {
 			SelectedTile = null;
 		}
 		grabPoint = new Vector2(1000, 1000);
-		winType.Run(collectedStars, RespawnManager.Stars.Length, ActionSelected);
+		winType.Run(ElapsedTime, collectedStars, RespawnManager.Stars.Length, ActionSelected);
 
 		cts = new CancellationTokenSource();
 		GameManager.Instance.AsyncLoadScene(SceneHelpers.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);

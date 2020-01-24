@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 public class RowWin : WinType
 {
-	public override void Run(int stars, int availableStars = 3, System.Action<WinTypeAction> callback = null) {
+	public override void Run(float elapsedTime, int stars, int availableStars = 3, System.Action<WinTypeAction> callback = null) {
 		Animator a = GetComponent<Animator>();
 		a.SetFloat("direction", 1);
 		a.Play("rowwin", 0, 0);
-		base.Run(stars, availableStars, callback);
+		base.Run(elapsedTime, stars, availableStars, callback);
 	}
 
 	public override void Reset() {

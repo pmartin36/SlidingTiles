@@ -32,7 +32,7 @@ public abstract class StoreCommunicator {
 
 	public abstract void AddAchievement(string name);
 	public abstract void AddSaveData(string json);
-	public abstract bool TryLoadSaveData(out string jsonString);
+	public abstract bool TryLoadSaveData( System.Action<string> callback);
 
 	public abstract void AddToLeaderboard(string score, int leaderboardType);
 	public abstract void AddPurchase(string purchaseType);

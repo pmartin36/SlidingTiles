@@ -40,7 +40,6 @@ public class ActionButtons : MonoBehaviour
 
 	public void ForceSetBasedOnPlayerAlive(bool alive) {
 		Pause(!alive);
-		ResetButton.interactable = alive;
 		Animator.SetBool("highlight", !alive);
 	}
 

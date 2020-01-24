@@ -1,8 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-Shader "SlidingTiles/Platform"
+﻿Shader "SlidingTiles/Platform"
 {
     Properties
     {
@@ -67,7 +63,7 @@ Shader "SlidingTiles/Platform"
 				o.world = mul(unity_ObjectToWorld, v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				
-				o.bUv = rotate(v.uv, _Rotation);
+				o.bUv = rotate(o.uv, _Rotation);
 
 				o.color = v.color * _Color;
                 return o;
@@ -78,9 +74,11 @@ Shader "SlidingTiles/Platform"
 				
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
+
 				float uvOffset = i.bUv.x * 2 - 1; // -1 -> 1
 				float offsetCenter = -(i.world.x - 15) / 12; // 15 is center of grid (-1 -> 1)
 				float bright = 0.2 * ((1 - pow(abs(uvOffset - offsetCenter + i.bUv.y * 0.4 * offsetCenter), 0.8)));
+
 				return col * i.color + float4(bright.xxx, 0);
             }
             ENDCG

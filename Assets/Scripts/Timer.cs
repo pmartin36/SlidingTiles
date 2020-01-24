@@ -5,6 +5,9 @@ using TMPro;
 
 public class Timer : MonoBehaviour
 {
+	private static int msShowingSpace = 120;
+	private static int msHiddenSpace = 130;
+
 	public TMP_Text minutesSeconds;
 	private RectTransform minutesSecondsRT;
 	public TMP_Text milliseconds;
@@ -26,6 +29,7 @@ public class Timer : MonoBehaviour
 		minutesSecondsRT = minutesSeconds.GetComponent<RectTransform>();
 		millisecondsRT = milliseconds.GetComponent<RectTransform>();
 
+		SetTimer(0);
 		minutesSeconds.ForceMeshUpdate();
 		milliseconds.ForceMeshUpdate();
 		showMilliseconds = GameManager.Instance.SaveData.ShowMilliseconds;
@@ -36,11 +40,13 @@ public class Timer : MonoBehaviour
 		minutes = Mathf.FloorToInt(_seconds / 60f);
 		int intSeconds = Mathf.FloorToInt(_seconds);
 		seconds = intSeconds % 60;
-		minutesSeconds.text = $"{minutes:0}:{seconds:00}";
+		int mspace = msHiddenSpace;
 		if(showMilliseconds) {
+			mspace = msShowingSpace;
 			float s = _seconds - intSeconds;
 			milliseconds.text = $"{s:.000}";		
 		}
+		minutesSeconds.text = $"<mspace={mspace}>{minutes:0}</mspace>:<mspace={mspace}>{seconds:00}</mspace>";
 
 		int newMinutesDigits = minutes > 1 ? (int)(Mathf.Log10(minutes) + 1) : 1;
 		if (newMinutesDigits != minutesDigits) {
@@ -55,7 +61,7 @@ public class Timer : MonoBehaviour
 
 		float width = minutesSeconds.textBounds.size.x;
 		if (width > maxWidth) {
-			minutesSeconds.text = minutes.ToString();
+			minutesSeconds.text = $"<mspace=130>{minutes}</mspace>";
 			SetMillisecondsEnabled(false);
 		}
 		else if (showMilliseconds) {
@@ -68,7 +74,7 @@ public class Timer : MonoBehaviour
 		milliseconds.gameObject.SetActive(enabled);
 		if (enabled) {
 			float minuteSecondSingleLetterSize = minutesSeconds.textBounds.size.x / (float)minutesSeconds.text.Length;
-			float minuteSecondSizeFactor = 1.05f;
+			float minuteSecondSizeFactor = 1f;
 			float millisecondsSizeFactor = 1.05f;
 
 			// use this to move things towards eachother
@@ -81,22 +87,22 @@ public class Timer : MonoBehaviour
 			millisecondsRT.sizeDelta = new Vector2(milliseconds.textBounds.size.x* millisecondsSizeFactor, millisecondsRT.sizeDelta.y);
 
 			float minutesSecondsPos = (minutesSeconds.textBounds.size.x - totalWidth) / 2f;
-			minutesSecondsRT.anchoredPosition = new Vector2(minutesSecondsPos + squishOffset, minutesSecondsRT.anchoredPosition.y);
+			minutesSecondsRT.anchoredPosition = new Vector2(minutesSecondsPos + squishOffset, 2);
 
 			float millisecondsPos = (minutesSecondsRT.sizeDelta.x + millisecondsRT.sizeDelta.x) / 2f + minutesSecondsRT.anchoredPosition.x;
 			millisecondsRT.anchoredPosition = new Vector2(millisecondsPos - squishOffset, millisecondsRT.anchoredPosition.y);
 			minutesSeconds.alignment = TextAlignmentOptions.MidlineRight;
 
 			// add space for one extra letter - otherwise when we overflow next time, the textsize is measured incorrectly
-			Vector2 overflowSpace = Vector2.right * minuteSecondSingleLetterSize * minuteSecondSizeFactor;
+			Vector2 overflowSpace = Vector2.right * msShowingSpace;
 			minutesSecondsRT.sizeDelta += overflowSpace;
 			minutesSecondsRT.anchoredPosition -= overflowSpace / 2f;
 		}
 		else {
 			minutesSecondsRT.sizeDelta = new Vector2(maxWidth, rt.sizeDelta.y);
-			minutesSecondsRT.anchoredPosition = Vector2.zero;
+			minutesSecondsRT.anchoredPosition = new Vector2(-6, -6);
 			minutesSeconds.alignment = TextAlignmentOptions.Center;
-			minutesSeconds.fontSize = 200;
+			minutesSeconds.fontSize = 240;
 		}
 	}
 }

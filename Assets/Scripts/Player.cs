@@ -34,6 +34,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Vector3 lastFrameVelocity;
 	private float velocityXSmoothing;
 
+	public bool IsJumping => jumpFramesRemaining > 0;
 	private int jumpFramesRemaining = 0;
 	private float jumpHeight;
 

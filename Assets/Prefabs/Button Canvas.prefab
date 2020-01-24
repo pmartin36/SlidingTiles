@@ -208,8 +208,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -88, y: 0}
-  m_SizeDelta: {x: 700, y: 406}
+  m_AnchoredPosition: {x: -88, y: -6}
+  m_SizeDelta: {x: 700, y: 390}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6624083115333138260
 CanvasRenderer:
@@ -239,11 +239,10 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 0:00
+  m_text: <mspace=120>0</mspace>:<mspace=120>00</mspace>
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 98c15d29b6051b641ab89ab4877a3645, type: 2}
-  m_sharedMaterial: {fileID: 21813418332541508, guid: 98c15d29b6051b641ab89ab4877a3645,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5f1bd0ff48f5cec46863a3a10e2baa28, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: dd5d5d3884434434aaac6108d164876a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -268,8 +267,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 165
-  m_fontSizeBase: 165
+  m_fontSize: 200
+  m_fontSizeBase: 200
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -984,7 +983,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 181, y: -20}
+  m_AnchoredPosition: {x: 171, y: -46}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1584077665638770201
@@ -1017,9 +1016,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: .000
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 98c15d29b6051b641ab89ab4877a3645, type: 2}
-  m_sharedMaterial: {fileID: 21813418332541508, guid: 98c15d29b6051b641ab89ab4877a3645,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5f1bd0ff48f5cec46863a3a10e2baa28, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: dd5d5d3884434434aaac6108d164876a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1044,8 +1042,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 84
-  m_fontSizeBase: 84
+  m_fontSize: 90
+  m_fontSizeBase: 90
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

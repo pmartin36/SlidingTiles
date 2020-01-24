@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,7 @@ public enum WinTypeAction {
 public abstract class WinType : MonoBehaviour {
 	public WinScreenStar[] Stars;
 	public Image Background;
+	public TMP_Text ElapsedTime;
 
 	[Range(0,1)]
 	public float PercentAnimated;
@@ -34,7 +36,7 @@ public abstract class WinType : MonoBehaviour {
 		frontPanelImage = frontPanel.GetComponent<Image>();
 	}
 
-	public virtual void Run(int stars, int availableStars = 3, Action<WinTypeAction> callback = null) {
+	public virtual void Run(float elapsedTime, int stars, int availableStars = 3, Action<WinTypeAction> callback = null) {
 		frontPanel.gameObject.SetActive(true);
 		for (int i = 0; i < Stars.Length; i++) {
 			if (stars > i) {
@@ -47,6 +49,13 @@ public abstract class WinType : MonoBehaviour {
 				Stars[i].gameObject.SetActive(false);
 			}
 		}
+
+		int minutes = Mathf.FloorToInt(elapsedTime / 60f);
+		int intSeconds = Mathf.FloorToInt(elapsedTime);
+		int seconds = intSeconds % 60;
+		float ms = elapsedTime - intSeconds;
+		ElapsedTime.text = $"{minutes:0}:{seconds:00}<sub>{ms:.000}</sub>";
+
 		OnActionSelected = callback;
 	}
 

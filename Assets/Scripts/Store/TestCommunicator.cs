@@ -18,9 +18,8 @@ public class TestCommunicator : StoreCommunicator {
 		Debug.Log(json);
 	}
 
-	public override bool TryLoadSaveData(out string jsonString) {
-		jsonString = "{ test: {} }";
-		Debug.Log("Trying to load saved data");
+	public override bool TryLoadSaveData(Action<string> callback) {
+		callback("");
 		return false;
 	}
 

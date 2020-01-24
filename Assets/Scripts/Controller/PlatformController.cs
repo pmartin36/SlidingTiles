@@ -17,7 +17,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
         Parent = transform.parent.GetComponent<Tile>();
 
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
-		sr.material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
+		// sr.material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
 		size = (sr.size * transform.lossyScale).Rotate(transform.eulerAngles.z);
 	}
 
@@ -47,6 +47,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			}
 
 			if (passenger.moveBeforePlatform == beforeMovePlatform) {
+				var player = passenger.transform.gameObject.GetComponent<Player>();
 				passengerDictionary[passenger.transform].Move(passenger.velocity, passenger.standingOnPlatform);
 			}
 

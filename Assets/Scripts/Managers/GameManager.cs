@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
+using Newtonsoft.Json;
 
 public class GameManager : Singleton<GameManager> {
 
@@ -48,13 +50,7 @@ public class GameManager : Singleton<GameManager> {
 
 		IsMobilePlatform = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
 		StoreCommunicator = StoreCommunicator.StoreCommunicatorFactory();
-		bool retrievedData = StoreCommunicator.TryLoadSaveData(out string jsonString);
-		if(retrievedData) {
-			SaveData = JsonUtility.FromJson<SaveData>(jsonString);
-		}
-		else {
-			SaveData = new SaveData();
-		}
+		Load();
 
 		AdManager = new AdvertisementManager();
 	}
@@ -173,7 +169,7 @@ public class GameManager : Singleton<GameManager> {
 		}
 	}
 
-	public void SetHighestUnlockedLevel(int level) {
+	public void SaveLevelCompleteData(int level) {
 		SaveData.HighestUnlockedLevel = Mathf.Max(level, HighestUnlockedLevel);
 		Save();
 	}
@@ -192,7 +188,29 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public void Save() {
-		string json = JsonUtility.ToJson(SaveData);
+		SaveData.SaveTime = DateTime.UtcNow;
+		string json = JsonConvert.SerializeObject(SaveData);
 		StoreCommunicator.AddSaveData(json);
+
+		string path = Path.Combine(Application.persistentDataPath, "data.json");
+		File.WriteAllText(path, json);
+	}
+
+	public void Load() {
+		string path = Path.Combine(Application.persistentDataPath, "data.json");
+		if(File.Exists(path)) {
+			string json = File.ReadAllText(path);
+			SaveData = JsonConvert.DeserializeObject<SaveData>(json);
+		}
+		else {
+			SaveData = new SaveData();
+		}
+
+		StoreCommunicator.TryLoadSaveData((string result) => {
+			SaveData sd = JsonConvert.DeserializeObject<SaveData>(result);
+			if(sd != null && SaveData.SaveTime.Ticks - sd.SaveTime.Ticks < 60) {
+				SaveData = sd;
+			}
+		});
 	}
 }
