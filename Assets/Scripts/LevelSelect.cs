@@ -20,6 +20,8 @@ public class LevelSelect : MenuCopyComponent
 	private int highestUnlockedLevel;
 	private MenuManager menuManager;
 
+	private LevelData[,] levelData;
+
 	void Awake() {
 		float tileWidth = 150;
 		WorldSelectedTilePosition = new Vector2(2.5f * tileWidth, 1.5f * tileWidth);
@@ -56,6 +58,7 @@ public class LevelSelect : MenuCopyComponent
 		int highest = GameManager.Instance.HighestUnlockedLevel;
 		SceneHelpers.GetWorldAndLevelFromBuildIndex(highest, out highestUnlockedWorld, out highestUnlockedLevel);
 
+		levelData = GameManager.Instance.SaveData.LevelData;
 		NumberedLevelButtons = GetComponentsInChildren<NumberedLevelSelectButton>().OrderBy(g => g.name).ToArray(); // 1 - 12
 		for(int i = 0; i < NumberedLevelButtons.Length; i++) {
 			NumberedLevelSelectButton b = NumberedLevelButtons[i];
@@ -90,8 +93,9 @@ public class LevelSelect : MenuCopyComponent
 				// what is usually #12 is used as a flex tile to fill the spot of the world selected
 				if(b.Number == 12) {
 					if (WorldSelected < 11) {
+						int stars = levelData[WorldSelected - 1, WorldSelected - 1].MaxStarsCollected;
 						b.SetStayHidden(false);
-						b.SetButtonInfo(LevelSelectPosition(WorldSelected), WorldSelected, worldFullyUnlocked || WorldSelected <= highestUnlockedLevel, false);
+						b.SetButtonInfo(LevelSelectPosition(WorldSelected), WorldSelected, worldFullyUnlocked || WorldSelected <= highestUnlockedLevel, false, stars);
 					}
 					else {
 						// only 10 levels, don't need to show if level 11 is selected
@@ -103,18 +107,25 @@ public class LevelSelect : MenuCopyComponent
 					b.SetStayHidden(true);
 				}
 				else {
+					int stars = levelData[WorldSelected - 1, b.Number - 1].MaxStarsCollected;
 					b.SetStayHidden(false);
-					b.SetButtonInfo(LevelSelectPosition(b.Number), b.Number, worldFullyUnlocked || b.Number <= highestUnlockedLevel, false);
+					b.SetButtonInfo(LevelSelectPosition(b.Number), b.Number, worldFullyUnlocked || b.Number <= highestUnlockedLevel, false, stars);
   				}
 			}	
 		}
 		else {
+			int len = levelData.GetLength(1);
+			int minStars = 4;
+			for(int i = 0; i < len; i++)
+				minStars = Mathf.Min(minStars, levelData[b.Number-1, i].MaxStarsCollected);
+
 			b.SetStayHidden(false); // worlds are never hidden
 			b.SetButtonInfo(
 				position:	WorldSelectPosition(b.Number), 
 				num:		b.Number, 
 				unlocked:	b.Number <= highestUnlockedWorld,
-				paywalled:	b.Number > GameManager.Instance.HighestOwnedWorld
+				paywalled:	b.Number > GameManager.Instance.HighestOwnedWorld,
+				stars: minStars
 			);
 		}
 	}
@@ -129,6 +140,7 @@ public class LevelSelect : MenuCopyComponent
 				Debug.Log($"TAKE ME TO THE STORE TO BUY WORLD {button.Number}!");
 			}
 			else {
+				levelData = GameManager.Instance.SaveData.LevelData;
 				CopyManager.OnLevelChange(button.Number);
 
 				(this.MirroredComponent as LevelSelect).OnLevelSelectNoAction(button.MirroredComponent as NumberedLevelSelectButton);
@@ -161,6 +173,7 @@ public class LevelSelect : MenuCopyComponent
 		// hide back button
 		Back.SetHidden(true);
 
+		levelData = GameManager.Instance.SaveData.LevelData;
 		foreach (NumberedLevelSelectButton b in NumberedLevelButtons) {
 			b.TempNumber = null;
 

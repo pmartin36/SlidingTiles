@@ -25,6 +25,7 @@ public class LevelManager : ContextManager {
 	protected Timer Timer;
 	protected bool TimerRunning;
 	protected float ElapsedTime;
+	protected TimeInfo timeInfo;
 
 	public GameObject LevelObjectContainer;
 
@@ -235,6 +236,9 @@ public class LevelManager : ContextManager {
 
 		// don't save data for tutorial levels
 		if(world > 0 && level > 0) {
+			timeInfo = new TimeInfo();
+			timeInfo.Time = ElapsedTime;
+
 			LevelData ld = GameManager.Instance.SaveData.LevelData[world-1, level-1];
 			if(collectedStars > ld.MaxStarsCollected) {
 				ld.MaxStarsCollected = collectedStars;
@@ -242,11 +246,13 @@ public class LevelManager : ContextManager {
 			if(collectedStars < 3) {
 				if(ld.AnyStarCompletionTime < 0 || ElapsedTime < ld.AnyStarCompletionTime) {
 					ld.AnyStarCompletionTime = ElapsedTime;
+					timeInfo.Record = true;
 				}
 			}
 			else {
 				if (ld.ThreeStarCompletionTime < 0 || ElapsedTime < ld.ThreeStarCompletionTime) {
 					ld.ThreeStarCompletionTime = ElapsedTime;
+					timeInfo.Record = true;
 				}
 			}
 		}
@@ -261,7 +267,7 @@ public class LevelManager : ContextManager {
 			SelectedTile = null;
 		}
 		grabPoint = new Vector2(1000, 1000);
-		winType.Run(ElapsedTime, collectedStars, RespawnManager.Stars.Length, ActionSelected);
+		winType.Run(timeInfo, collectedStars, RespawnManager.Stars.Length, ActionSelected);
 
 		cts = new CancellationTokenSource();
 		GameManager.Instance.AsyncLoadScene(SceneHelpers.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);

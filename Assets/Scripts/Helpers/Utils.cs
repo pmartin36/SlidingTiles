@@ -76,3 +76,13 @@ public struct Vector3Int {
 		return $"({x}, {y}, {z})";
 	}
 }
+
+public struct TimeInfo {
+	public float Time { get; set; }
+	public bool Record { get; set; }
+
+	public TimeInfo(bool record, float time) : this() {
+		Record = record;
+		Time = time;
+	}
+}

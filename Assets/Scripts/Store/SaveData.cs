@@ -14,9 +14,10 @@ public class SaveData {
 	public float MusicVolume;
 	public float FxVolume;
 	public bool ShowMilliseconds;
+	public bool HasComparedWithFriends;
 	public LevelData[,] LevelData;
 
-	public SaveData(int highestUnlockedLevel, int highestOwnedWorld, int lastPlayedWorld, bool adsRemoved, float musicVolume, float fxVolume, bool showms, LevelData[,] ld) {
+	public SaveData(int highestUnlockedLevel, int highestOwnedWorld, int lastPlayedWorld, bool adsRemoved, float musicVolume, float fxVolume, bool showms, LevelData[,] ld, bool hasComparedWithFriends) {
 		HighestUnlockedLevel = highestUnlockedLevel;
 		HighestOwnedWorld = highestOwnedWorld;
 		LastPlayedWorld = lastPlayedWorld;
@@ -47,8 +48,8 @@ public class SaveData {
 		SaveTime = DateTime.UtcNow;
 	}
 
-	public SaveData() : this(2, 4, 0, false, 1f, 1f, false, null) {}
-	// public SaveData() : this(40, 2, 3, false, 1f, 1f, true, null) { } // only for testing
+	public SaveData() : this(2, 4, 0, false, 1f, 1f, false, null, false) {}
+	// public SaveData() : this(40, 2, 3, false, 1f, 1f, true, null, false) { } // only for testing
 }
 
 [Serializable]

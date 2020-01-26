@@ -10,6 +10,7 @@ public class NumberedLevelSelectButton : LevelSelectButton
 
 	public Image Lock;
 	public Image Money;
+	public RawImage[] Stars;
 	public bool Unlocked { get; private set; }
 	public bool Paywalled { get; private set; }
 
@@ -19,7 +20,7 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		text.text = num.ToString();
 	}
 
-	public void SetButtonInfo(Vector2 position, int num, bool unlocked, bool paywalled) {
+	public void SetButtonInfo(Vector2 position, int num, bool unlocked, bool paywalled, int stars = 0) {
 		text.text = num.ToString();
 		SetPosition(position);
 		if(num != Number) {
@@ -32,6 +33,11 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		Color c = text.color;
 		c.a = unlocked ? 1 : 0.5f;
 		text.color = c;
+
+		for(int i = 0; i < 3; i++) {
+			RawImage star = Stars[i];
+			star.gameObject.SetActive(i < stars);
+		}
 	}
 
 	public void SetUnlocked(bool unlocked) {

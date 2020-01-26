@@ -130,9 +130,22 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		// swap player direction only when it starts moving the other way, otherwise it swaps rapidly when smushed between two objects
 		if (amountMoved.sqrMagnitude > 0.001f && transform.localScale.x * amountMoved.x < 0) {
-			Vector3 localScale = transform.localScale;
-			localScale.x *= -1f;
-			transform.localScale = localScale;
+			bool executeSwap = true;
+			// if collider if offset, verify that when we swap direction, we're not putting the collider inside another collider
+			if(Mathf.Abs(controller.collider.offset.x) > 0.001f) {
+				var hit = Physics2D.OverlapBox(
+					(Vector2)transform.position - Vector2.right * transform.lossyScale.x * controller.collider.offset.x,
+					transform.lossyScale * controller.collider.size - (2 * 0.015f) * Vector2.one,
+					0,
+					controller.collisionMask
+				);
+				executeSwap = hit == null;
+			}
+			if(executeSwap) {
+				Vector3 localScale = transform.localScale;
+				localScale.x *= -1f;
+				transform.localScale = localScale;
+			}
 		}
 
 		lastFrameVelocity = velocity;
