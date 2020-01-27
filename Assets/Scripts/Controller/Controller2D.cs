@@ -56,10 +56,11 @@ public class Controller2D : RaycastController {
 		return moveAmount;
 	}
 
-	public bool ShouldEntityJump(Vector2 moveAmount, out float jumpHeight, bool standingOnPlatform = false) {
+	public bool ShouldEntityJump(Vector2 moveAmount, out float jumpHeight, out float distanceFromObstacle, bool standingOnPlatform = false) {
 		UpdateRaycastOrigins();
 
 		jumpHeight = -1f;
+		distanceFromObstacle = 1000f;
 		if (Mathf.Abs(moveAmount.x) < skinWidth) {
 			return false;
 		}
@@ -89,6 +90,7 @@ public class Controller2D : RaycastController {
 
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 				if (slopeAngle > maxSlopeAngle) {
+					distanceFromObstacle = Mathf.Min(distanceFromObstacle, hit.distance - skinWidth);
 					hasHitBlockingObject = true;
 				}
 

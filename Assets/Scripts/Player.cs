@@ -72,7 +72,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		bool isJumping = false;
 		if(jumpFramesRemaining <= 0) {
 			if(controller.collisions.below) {
-				isJumping = controller.ShouldEntityJump(velocity * Time.deltaTime, out float heightToJump);
+				isJumping = controller.ShouldEntityJump(velocity * Time.deltaTime, out float heightToJump, out float distanceToObstacle);
 				if(isJumping) {
 					jumpHeight = heightToJump / 5f;
 					jumpFramesRemaining = 4;

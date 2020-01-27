@@ -89,6 +89,7 @@ public abstract class WinType : MonoBehaviour {
 			frontPanelImage.material.SetFloat("_AnimationPercent", PercentAnimated);
 		}
 		RecordTime.fontMaterial.SetFloat("_TexLerp", NewRecordLerp);
+		RecordTime.fontMaterial.SetFloat("_UnderlayDilate", 1-NewRecordLerp);
 	}
 
 	public void ShowLeaderboard() {
