@@ -19,15 +19,18 @@ public class Controller2D : RaycastController {
 		extraMove = diff;
 	}
 
-	public Vector2 Move(Vector2 moveAmount, bool jumping = false, bool standingOnPlatform = false, bool fromEvent = false) {
+	public Vector2 Move(Vector2 moveAmount, bool standingOnPlatform = false) {
 		moveAmount += extraMove;
 		extraMove = Vector2.zero;
 		UpdateRaycastOrigins();
 
+		if(moveAmount.y > 0.1f && collisions.moveAmountOld.y < 0) {
+			Debug.Log(moveAmount.y);
+		}
+
 		CollisionInfo old = new CollisionInfo(collisions);
 		collisions.Reset ();
 		collisions.moveAmountOld = moveAmount;
-		collisions.jumping = jumping;
 
 		if (moveAmount.y < 0) {
 			DescendSlope(ref moveAmount);
@@ -48,15 +51,10 @@ public class Controller2D : RaycastController {
 			collisions.below = true;
 		}
 
-		if(fromEvent) {
-			Debug.Log($"Old: {collisions.moveAmountOld}, Actual: {moveAmount}"); 
-			collisions = old;
-		}
-
 		return moveAmount;
 	}
 
-	public bool ShouldEntityJump(Vector2 moveAmount, out float jumpHeight, out float distanceFromObstacle, bool standingOnPlatform = false) {
+	public bool CheckForJumpableObjects(Vector2 moveAmount, out float jumpHeight, out float distanceFromObstacle, bool standingOnPlatform = false) {
 		UpdateRaycastOrigins();
 
 		jumpHeight = -1f;
@@ -66,7 +64,7 @@ public class Controller2D : RaycastController {
 		}
 
 		float directionX = collisions.faceDir;
-		float rayLength = Mathf.Abs(moveAmount.x * 5) + skinWidth;
+		float rayLength = Mathf.Abs(moveAmount.x) + skinWidth;
 		bool hasHitBlockingObject = false;
 
 		for (int i = 0; i < horizontalRayCount; i++) {
@@ -141,11 +139,6 @@ public class Controller2D : RaycastController {
 					}
 					ClimbSlope(ref moveAmount, slopeAngle, hit.normal);
 					moveAmount.x += distanceToSlopeStart * directionX;
-				}
-
-
-				if(collisions.jumping && i < canJumpUpIndex) {
-					continue;
 				}
 
 				if (!collisions.climbingSlope || slopeAngle > maxSlopeAngle) {
@@ -323,8 +316,6 @@ public class Controller2D : RaycastController {
 		public int faceDir;
 		public bool fallingThroughPlatform;
 
-		public bool jumping;
-
 		public HashSet<GameObject> collisionsBelow;
 		public HashSet<Platform> collisionsBelowOld;
 
@@ -341,7 +332,6 @@ public class Controller2D : RaycastController {
 			slopeNormal = info.slopeNormal;
 			moveAmountOld = info.moveAmountOld;
 			faceDir = info.faceDir;
-			jumping = info.jumping;
 			fallingThroughPlatform = info.fallingThroughPlatform;
 
 			collisionsBelow = info.collisionsBelow != null ? new HashSet<GameObject>(info.collisionsBelow) : new HashSet<GameObject>();

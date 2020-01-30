@@ -34,10 +34,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Vector3 lastFrameVelocity;
 	private float velocityXSmoothing;
 
-	public bool IsJumping => jumpFramesRemaining > 0;
-	private int jumpFramesRemaining = 0;
-	private float jumpHeight;
-
 	private Controller2D controller;
 	private SpriteRenderer lights;
 
@@ -67,38 +63,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	void Update() {
 		CalculateVelocity();
-
-		Vector3 addedJumpVelocity = Vector2.zero;
-		bool isJumping = false;
-		if(jumpFramesRemaining <= 0) {
-			if(controller.collisions.below) {
-				isJumping = controller.ShouldEntityJump(velocity * Time.deltaTime, out float heightToJump, out float distanceToObstacle);
-				if(isJumping) {
-					jumpHeight = heightToJump / 5f;
-					jumpFramesRemaining = 4;
-					addedJumpVelocity = Vector3.up * (jumpHeight) * -Mathf.Sign(gravity);
-				}
-			}
-			
-		}
-		else {
-			addedJumpVelocity = Vector3.up * (jumpHeight) * -Mathf.Sign(gravity);
-			isJumping = true;
-			jumpFramesRemaining--;
-		}
-
-		// if jumping, ignore gravity
-		if(isJumping) {
-			velocity.y -= gravity * Time.deltaTime;
-		}
+		DetermineJump(ref velocity);
 
 		// actually perform movement
-		Vector2 amountMoved = controller.Move (velocity * Time.deltaTime + addedJumpVelocity, isJumping);
-
-		//if we hit something above while jumping, stop jumping
-		if(isJumping && controller.collisions.above) {
-			jumpFramesRemaining = 0;
-		}
+		Vector2 amountMoved = controller.Move (velocity * Time.deltaTime);
 
 		if (controller.collisions.above || controller.collisions.below) {
 			if (controller.collisions.slidingDownMaxSlope) {
@@ -121,10 +89,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			}
 		}
 
-		if(
-			!isJumping 
-			&& ((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left))
-		) {
+		if((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left)) {
 			moveDirection *= -1f;
 		}
 
@@ -153,6 +118,51 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	void LateUpdate() {
 
+	}
+
+	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
+	public void DetermineJump(ref Vector3 move, bool fromExternalSource = false) {
+		// don't jump if move amount is an opposite direction of velocity
+		float sign = Mathf.Sign(move.x);
+		float gravityDirection = Mathf.Sign(gravity);
+		if (sign * Mathf.Sign(velocity.x) < 0) {
+			return;
+		}
+
+		if (controller.collisions.below && velocity.y < -gravityDirection) {
+			float absX = Mathf.Abs(velocity.x);
+			float minDistanceCanJumpFrom = absX * 0.015f * 8f;
+			float maxDistanceCanJumpFrom = absX * 0.015f * 10f;
+			float jumpRange = maxDistanceCanJumpFrom - minDistanceCanJumpFrom;
+
+			Vector2 castLength = (move + 9 * velocity) * 0.015f;
+			bool hitJumpableObject = controller.CheckForJumpableObjects(castLength, out float heightToJump, out float distanceToObstacle);
+			if (hitJumpableObject) {
+				//if we're starting this frame inside a valid jump range
+				bool hitInValidRange = distanceToObstacle > minDistanceCanJumpFrom && distanceToObstacle < maxDistanceCanJumpFrom;
+
+				// if we're starting this frame further than the valid jump range, and ending PAST the valid jump range
+				float diffFromMaxJump = distanceToObstacle - maxDistanceCanJumpFrom;
+				bool willPassoverValidRange = (diffFromMaxJump >= 0) && (move.x * Time.deltaTime >= diffFromMaxJump + jumpRange);
+				if(hitInValidRange || willPassoverValidRange) {
+					Debug.Log($"Doing it at velocity: {velocity.y}, time: {Time.deltaTime}");
+
+					velocity.y = (heightToJump * 10 * -gravityDirection - gravity * Time.deltaTime);
+					velocity.y *= 0.015f / Time.deltaTime; // since jump is an impulse, remove deltaTime from the equation for consistency
+
+					if (willPassoverValidRange) {
+						if(fromExternalSource) {
+							move = (Vector3.right * sign * diffFromMaxJump) / Time.deltaTime;
+						}
+					}
+					else {
+						if (fromExternalSource) {
+							move = Vector3.zero;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public void Spring(Vector2 direction) {
