@@ -78,13 +78,13 @@ public class Tile : MonoBehaviour
 		this.initialMovable = this.Movable;
 	}
 
-	public virtual void Update() {
+	public virtual void FixedUpdate() {
 		LevelManager lm = GameManager.Instance.LevelManager;
 		if(lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
 			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
 			Vector3 moveAmount = position - transform.localPosition;
 
-			float distToMove = Time.deltaTime * SpeedCap;
+			float distToMove = Time.fixedDeltaTime * SpeedCap;
 			if (distToMove < moveAmount.magnitude) {
 				moveAmount = moveAmount.normalized * distToMove;
 			}
@@ -101,7 +101,7 @@ public class Tile : MonoBehaviour
 		}
 		// try centering selected tiles that are close to being centered
 		else if (Selected && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
-			float distToMove = Time.deltaTime * SpeedCap;
+			float distToMove = Time.fixedDeltaTime * SpeedCap;
 			Vector3 moveAmount;
 			if (distToMove > transform.localPosition.magnitude) {
 				moveAmount = -transform.localPosition;
@@ -214,7 +214,7 @@ public class Tile : MonoBehaviour
 		if(Movable) {
 			Vector2 position = mouseMoveSinceSelection + (this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x;
 			bool centered = Centered;
-			float deltaTimeSpeedCap = SpeedCap * Time.deltaTime;
+			float deltaTimeSpeedCap = SpeedCap * Time.fixedDeltaTime;
 
 			if(!centered) {
 				Vector2 normalized = new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;

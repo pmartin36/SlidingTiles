@@ -37,9 +37,7 @@ public class TutorialTile : Tile
 		return returnValue;
 	}
 
-	public override void Update() {
-		base.Update();
-		
+	public void Update() {
 		bool isPlayerInside = IsPlayerOnTile();
 		if(isPlayerInside ^ playerInside) {
 			playerInside = isPlayerInside;

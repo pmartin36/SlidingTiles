@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, ISpringable, ISpeedChangable {
@@ -61,16 +62,22 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	public void SetRespawnManager(RespawnManager m) => RespawnManager = m;
 
-	void Update() {
+	void FixedUpdate() {
 		CalculateVelocity();
-		DetermineJump(ref velocity);
+
+		// dont include gravity in jump calculations
+		velocity.y -= gravity * Time.fixedDeltaTime;
+		bool jumping = DetermineJump(velocity * Time.fixedDeltaTime, out var modifiedMove);
+		if(!jumping) {
+			velocity.y += gravity * Time.fixedDeltaTime;
+		}
 
 		// actually perform movement
-		Vector2 amountMoved = controller.Move (velocity * Time.deltaTime);
+		Vector2 amountMoved = controller.Move (velocity * Time.fixedDeltaTime);
 
 		if (controller.collisions.above || controller.collisions.below) {
 			if (controller.collisions.slidingDownMaxSlope) {
-				velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
+				velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
 			} else {
 				velocity.y = 0;
 
@@ -121,21 +128,23 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
-	public void DetermineJump(ref Vector3 move, bool fromExternalSource = false) {
+	public bool DetermineJump(Vector3 move, out ValueTuple<bool, Vector3> modifiedMove) {
+		modifiedMove = (false, Vector3.zero);
+		
 		// don't jump if move amount is an opposite direction of velocity
 		float sign = Mathf.Sign(move.x);
 		float gravityDirection = Mathf.Sign(gravity);
 		if (sign * Mathf.Sign(velocity.x) < 0) {
-			return;
+			return false;
 		}
 
 		if (controller.collisions.below && velocity.y < -gravityDirection) {
 			float absX = Mathf.Abs(velocity.x);
-			float minDistanceCanJumpFrom = absX * 0.015f * 8f;
-			float maxDistanceCanJumpFrom = absX * 0.015f * 10f;
+			float minDistanceCanJumpFrom = absX * Time.fixedDeltaTime * 8f;
+			float maxDistanceCanJumpFrom = absX * Time.fixedDeltaTime * 10f;
 			float jumpRange = maxDistanceCanJumpFrom - minDistanceCanJumpFrom;
 
-			Vector2 castLength = (move + 9 * velocity) * 0.015f;
+			Vector2 castLength = move + 9 * velocity * Time.fixedDeltaTime;
 			bool hitJumpableObject = controller.CheckForJumpableObjects(castLength, out float heightToJump, out float distanceToObstacle);
 			if (hitJumpableObject) {
 				//if we're starting this frame inside a valid jump range
@@ -143,26 +152,30 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 				// if we're starting this frame further than the valid jump range, and ending PAST the valid jump range
 				float diffFromMaxJump = distanceToObstacle - maxDistanceCanJumpFrom;
-				bool willPassoverValidRange = (diffFromMaxJump >= 0) && (move.x * Time.deltaTime >= diffFromMaxJump + jumpRange);
+				bool willPassoverValidRange = (diffFromMaxJump >= 0) && (move.x >= diffFromMaxJump + jumpRange);
 				if(hitInValidRange || willPassoverValidRange) {
-					Debug.Log($"Doing it at velocity: {velocity.y}, time: {Time.deltaTime}");
+					velocity.y = Mathf.Max(heightToJump + 0.1f, 0.98f) * 10 * -gravityDirection; // 0.1f is a little buffer, max is because the baby jumps would end too early
 
-					velocity.y = (heightToJump * 10 * -gravityDirection - gravity * Time.deltaTime);
-					velocity.y *= 0.015f / Time.deltaTime; // since jump is an impulse, remove deltaTime from the equation for consistency
-
+					modifiedMove.Item1 = true;
 					if (willPassoverValidRange) {
-						if(fromExternalSource) {
-							move = (Vector3.right * sign * diffFromMaxJump) / Time.deltaTime;
-						}
+						modifiedMove.Item2 = new Vector3((sign * diffFromMaxJump), 0);
 					}
-					else {
-						if (fromExternalSource) {
-							move = Vector3.zero;
-						}
+
+					// DEBUG
+					float pct = (distanceToObstacle - modifiedMove.Item2.x - minDistanceCanJumpFrom) / (maxDistanceCanJumpFrom - minDistanceCanJumpFrom);
+					string str = $"Doing it at velocity: {velocity.y:.00}, height: {heightToJump}, pct: {pct}";
+					if(modifiedMove.Item1) {
+						str += $", excessMove: {modifiedMove.Item2.x:0.0}";
 					}
+					Debug.Log(str);
+					// END DEBUG
+
+					return true;
 				}
 			}
 		}
+
+		return false;
 	}
 
 	public void Spring(Vector2 direction) {
@@ -201,7 +214,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		if(temporarySpeed.HasValue) {
 			targetVelocity = temporarySpeed.Value;
 			smooth = 0.25f;
-			temporarySpeedTimer -= Time.deltaTime;
+			temporarySpeedTimer -= Time.fixedDeltaTime;
 			if(temporarySpeedTimer <= 0) {
 				temporarySpeed = null;
 			}
@@ -209,7 +222,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		velocity = new Vector2(
 			Mathf.SmoothDamp (Mathf.Abs(velocity.x), targetVelocity, ref velocityXSmoothing, smooth) * moveDirection,
-			velocity.y + gravity * Time.deltaTime
+			velocity.y + gravity * Time.fixedDeltaTime
 		);
 	}
 

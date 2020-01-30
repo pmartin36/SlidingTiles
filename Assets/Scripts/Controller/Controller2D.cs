@@ -24,10 +24,6 @@ public class Controller2D : RaycastController {
 		extraMove = Vector2.zero;
 		UpdateRaycastOrigins();
 
-		if(moveAmount.y > 0.1f && collisions.moveAmountOld.y < 0) {
-			Debug.Log(moveAmount.y);
-		}
-
 		CollisionInfo old = new CollisionInfo(collisions);
 		collisions.Reset ();
 		collisions.moveAmountOld = moveAmount;
