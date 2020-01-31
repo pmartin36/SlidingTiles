@@ -1,6 +1,6 @@
 # The 16 Spaces
 
-## Status: 
+## Status
   _In Progress_ (Started Jul 2019)  
   **Target Release**: 2-JUN-2020  
   **Current Backlog**: https://trello.com/b/vZDZYaG4/tilespaces
