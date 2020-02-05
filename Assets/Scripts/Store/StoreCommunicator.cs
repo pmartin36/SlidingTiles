@@ -40,4 +40,6 @@ public abstract class StoreCommunicator {
 	// these will actually return something at some point
 	public abstract void GetLeaderboard(int leaderboardType); 
 	public abstract void GetPurchases();
+
+	public abstract void GoToStore();
 }

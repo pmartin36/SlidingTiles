@@ -1093,6 +1093,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win Screen Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1198,11 +1203,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
     - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -7962,12 +7962,12 @@ PrefabInstance:
     - target: {fileID: 2300834580857512373, guid: a4443ec0f57373942a39a5afd44922c2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 32.3
+      value: 26.4
       objectReference: {fileID: 0}
     - target: {fileID: 2300834580857512373, guid: a4443ec0f57373942a39a5afd44922c2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 29.71
+      value: 1.06
       objectReference: {fileID: 0}
     - target: {fileID: 2300834580857512373, guid: a4443ec0f57373942a39a5afd44922c2,
         type: 3}

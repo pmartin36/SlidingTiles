@@ -31,6 +31,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private float gravity;
 	private float maxJumpVelocity;
 	private float minJumpVelocity;
+	[SerializeField]
 	private Vector3 velocity;
 	private Vector3 lastFrameVelocity;
 	private float velocityXSmoothing;
@@ -81,18 +82,32 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			} else {
 				velocity.y = 0;
 
-				//// little screen shake
-				//float absLastY = Mathf.Abs(lastFrameVelocity.y);
-				//float sign = Mathf.Sign(lastFrameVelocity.y);
-				//if (absLastY > 40f) {
-				//	float a = absLastY / 175f;
-				//	CameraManager.Instance.CameraController.Shake(
-				//		1f,
-				//		a * 0.3f,
-				//		Vector2.up * sign * a,
-				//		Vector2.down * sign * a * 0.9f
-				//	);
-				//}
+				
+				float absLastY = Mathf.Abs(lastFrameVelocity.y);
+				float sign = Mathf.Sign(lastFrameVelocity.y);
+				// 1 tile fall, 30ish
+				// 2 tile fall, 40ish
+				// 3 tile fall, 50ish
+				if (absLastY > 10f) {
+					float absV = Mathf.Abs(velocity.x);
+					float lerp = Mathf.Clamp01((absLastY - 25f) / 25f) * 6;
+					float newV = Mathf.Max(0, absV - lerp);
+
+					velocity.x = newV;
+					velocityXSmoothing = newV;
+
+					if(lerp > 3) {
+						StartCoroutine(Vibrate());
+					}
+
+					// little screen shake
+					//CameraManager.Instance.CameraController.Shake(
+					//	1f,
+					//	a * 0.3f,
+					//	Vector2.up * sign * a,
+					//	Vector2.down * sign * a * 0.9f
+					//);
+				}
 			}
 		}
 
@@ -210,7 +225,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	void CalculateVelocity() {
 		float targetVelocity = moveSpeed;
-		float smooth = 0.5f;
+		float smooth = 1.2f;
 		if(temporarySpeed.HasValue) {
 			targetVelocity = temporarySpeed.Value;
 			smooth = 0.25f;
@@ -269,6 +284,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		if (collision.gameObject.scene != this.gameObject.scene) return;
 
 		if (collision.CompareTag("Reset")) {
+			StartCoroutine(Vibrate(new WaitForSeconds(0.1f)));
 			SetAlive(false);
 		}
 		if (collision.CompareTag("Flag")) { 
@@ -322,5 +338,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		animator.SetBool("Won", true); //start animation for reaching flag
 		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
+	}
+
+	private IEnumerator Vibrate(YieldInstruction yieldinstruction = null) {
+		Vibration.VibratePop();
+		yield return yieldinstruction;
+		Vibration.VibratePeek();
 	}
 }

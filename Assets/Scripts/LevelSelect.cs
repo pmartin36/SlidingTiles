@@ -76,6 +76,9 @@ public class LevelSelect : MenuCopyComponent
 				false);
 			Back.transform.localScale = Vector3.one;
 		}
+		else {
+			Back.SetHidden(true, null, true);
+		}
 
     }
 

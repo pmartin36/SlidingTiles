@@ -18,7 +18,7 @@ public abstract class WinType : MonoBehaviour {
 	public TMP_Text ElapsedTime;
 	public TMP_Text RecordTime;
 
-	public GameObject ComparePrompt;
+	private ConditionalWinScreenPopup[] ConditionalPopups;
 
 	[Range(0, 1)]
 	public float NewRecordLerp;
@@ -45,6 +45,7 @@ public abstract class WinType : MonoBehaviour {
 		anim = GetComponent<Animator>();
 		frontPanelImage = frontPanel.GetComponent<Image>();
 		leaderboard = frontPanel.GetComponentInChildren<Leaderboard>(true);
+		ConditionalPopups = GetComponentsInChildren<ConditionalWinScreenPopup>(true);
 	}
 
 	public virtual void Run(TimeInfo timeInfo, int stars, int availableStars = 3, Action<WinTypeAction> callback = null) {
@@ -95,14 +96,31 @@ public abstract class WinType : MonoBehaviour {
 	public void ShowLeaderboard() {
 		GameManager.Instance.SaveData.HasComparedWithFriends = true;
 		GameManager.Instance.Save();
-		ComparePrompt.SetActive(false);
+		foreach(var c in ConditionalPopups) {
+			if(c.PopupType == WinScreenPopup.Compare)
+				c.gameObject.SetActive(false);
+		}
+
 		leaderboard.gameObject.SetActive(true);
 	}
 
+	public void RateClicked() {
+		GameManager.Instance.SaveData.HasClickedToRate = true;
+		GameManager.Instance.Save();
+		foreach (var c in ConditionalPopups) {
+			if (c.PopupType == WinScreenPopup.Rate)
+				c.gameObject.SetActive(false);
+		}
+
+		GameManager.Instance.StoreCommunicator.GoToStore();
+	}
+
 	public void OnShowComplete() {
-		int level = SceneHelpers.GetLevelFromBuildIndex(SceneHelpers.GetCurrentLevelBuildIndex());
-		if(level > 0 && level % 5 == 0) {
-			ComparePrompt.SetActive(!GameManager.Instance.SaveData.HasComparedWithFriends && anim.GetFloat("direction") > 0);
+		var (world, level) = SceneHelpers.GetWorldAndLevelFromBuildIndex(SceneHelpers.GetCurrentLevelBuildIndex());
+		if(anim.GetFloat("direction") > 0) {
+			foreach (var c in ConditionalPopups) {
+				c.gameObject.SetActive(c.ShouldShow(world, level));
+			}
 		}
 	}
 

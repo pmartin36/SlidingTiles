@@ -34,4 +34,8 @@ public class TestCommunicator : StoreCommunicator {
 	public override void GetPurchases() {
 		throw new NotImplementedException();
 	}
+
+	public override void GoToStore() {
+		throw new NotImplementedException();
+	}
 }

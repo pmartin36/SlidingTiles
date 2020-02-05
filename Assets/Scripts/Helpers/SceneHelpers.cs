@@ -11,6 +11,8 @@ public static class SceneHelpers {
 	public static readonly int LoadSceneBuildIndex = 2;
 	public static readonly int TutorialLevelStart = 3;
 
+	public static int SceneCount => SceneManager.sceneCountInBuildSettings;
+
 	public static int GetNextLevelBuildIndex() {
 		return GetCurrentLevelBuildIndex() + 1;
 	}
@@ -49,6 +51,9 @@ public static class SceneHelpers {
 	public static void GetWorldAndLevelFromBuildIndex(int index, out int world, out int level) {
 		world = GetWorldFromBuildIndex(index);
 		level = GetLevelFromBuildIndex(index);
+	}
+	public static ValueTuple<int, int> GetWorldAndLevelFromBuildIndex(int index) {
+		return (GetWorldFromBuildIndex(index), GetLevelFromBuildIndex(index));
 	}
 }
 

@@ -15,9 +15,10 @@ public class SaveData {
 	public float FxVolume;
 	public bool ShowMilliseconds;
 	public bool HasComparedWithFriends;
+	public bool HasClickedToRate;
 	public LevelData[,] LevelData;
 
-	public SaveData(int highestUnlockedLevel, int highestOwnedWorld, int lastPlayedWorld, bool adsRemoved, float musicVolume, float fxVolume, bool showms, LevelData[,] ld, bool hasComparedWithFriends) {
+	public SaveData(int highestUnlockedLevel, int highestOwnedWorld, int lastPlayedWorld, bool adsRemoved, float musicVolume, float fxVolume, bool showms, LevelData[,] ld, bool hasComparedWithFriends, bool hasClickedToRate) {
 		HighestUnlockedLevel = highestUnlockedLevel;
 		HighestOwnedWorld = highestOwnedWorld;
 		LastPlayedWorld = lastPlayedWorld;
@@ -25,6 +26,7 @@ public class SaveData {
 		MusicVolume = musicVolume;
 		FxVolume = fxVolume;
 		ShowMilliseconds = showms;
+		HasClickedToRate = hasClickedToRate;
 
 		// 12 worlds, 10 levels per world
 		const int worlds = 12;
@@ -48,8 +50,8 @@ public class SaveData {
 		SaveTime = DateTime.UtcNow;
 	}
 
-	public SaveData() : this(2, 4, 0, false, 1f, 1f, false, null, false) {}
-	// public SaveData() : this(40, 2, 3, false, 1f, 1f, true, null, false) { } // only for testing
+	public SaveData() : this(2, 4, 0, false, 1f, 1f, false, null, false, false) {}
+	// public SaveData() : this(40, 2, 3, false, 1f, 1f, true, null, false, false) { } // only for testing
 }
 
 [Serializable]

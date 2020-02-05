@@ -270,7 +270,15 @@ public class LevelManager : ContextManager {
 		winType.Run(timeInfo, collectedStars, RespawnManager.Stars.Length, ActionSelected);
 
 		cts = new CancellationTokenSource();
-		GameManager.Instance.AsyncLoadScene(SceneHelpers.GetNextLevelBuildIndex(), StartCoroutine(WaitActionSelected()), cts, null, false);
+
+		var bi = SceneHelpers.GetNextLevelBuildIndex();
+		if(bi < SceneHelpers.SceneCount) {
+			GameManager.Instance.AsyncLoadScene(bi, StartCoroutine(WaitActionSelected()), cts, null, false);
+		}
+		else {
+			GameManager.Instance.SaveData.LastPlayedWorld = 0;
+		}
+		
 	}
 
 	public void ActionSelected(WinTypeAction w) {
@@ -291,24 +299,34 @@ public class LevelManager : ContextManager {
 				Reset(false);
 				break;
 			case WinTypeAction.LevelSelect:
-				GameManager.Instance.LoadScene(
-					SceneHelpers.MenuBuildIndex,
-					StartCoroutine(winType.WhenTilesOffScreen()),
-					() => GameManager.Instance.MenuManager.OpenLevelSelect(false)
-				);
+				GoToLevelSelect();
 				break;
 			case WinTypeAction.Next:
-				GameManager.Instance.ShowAd();
+				var bi = SceneHelpers.GetNextLevelBuildIndex();
+				if (bi < SceneHelpers.SceneCount) {
+					GameManager.Instance.ShowAd();
 
-				// hide objects in the current level so that as the wintype animation is playing, we see the next level
-				HideLevel();
+					// hide objects in the current level so that as the wintype animation is playing, we see the next level
+					HideLevel();
 
-				// once the tiles are offscreen, we can finally unload the level
-				StartCoroutine(winType.WhenTilesOffScreen(() => {
-					GameManager.Instance.UnloadScene(currentScene, null);
-				}));
+					// once the tiles are offscreen, we can finally unload the level
+					StartCoroutine(winType.WhenTilesOffScreen(() => {
+						GameManager.Instance.UnloadScene(currentScene, null);
+					}));
+				}
+				else {
+					GoToLevelSelect();
+				}
 				break;
 		}
+	}
+
+	public void GoToLevelSelect() {
+		GameManager.Instance.LoadScene(
+			SceneHelpers.MenuBuildIndex,
+			StartCoroutine(winType.WhenTilesOffScreen()),
+			() => GameManager.Instance.MenuManager.OpenLevelSelect(true)
+		);
 	}
 
 	public IEnumerator WaitActionSelected() {

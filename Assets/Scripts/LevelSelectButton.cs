@@ -32,13 +32,16 @@ public class LevelSelectButton : MenuImageSpriteCopy
 		rectTransform.anchoredPosition = position;
 	}
 
-	public void SetHidden(bool hide, System.Action callback = null) {
+	public void SetHidden(bool hide, System.Action callback = null, bool instant = false) {
 		Interactable = false;
 		OnHideShowCallback = callback;
 
+		int start = hide ? 1 : 0;
+		if(instant) start = 1 - start;
+
 		anim.SetBool("hidden", hide);
 		anim.SetFloat("dir", hide ? -1 : 1);
-		anim.Play("showLevelSelectButton", -1, hide ? 1 : 0);
+		anim.Play("showLevelSelectButton", -1, start);
 	}
 
 	public virtual void SetStayHidden(bool stayHidden) {

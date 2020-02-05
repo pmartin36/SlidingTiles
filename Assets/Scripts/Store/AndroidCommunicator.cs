@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class AndroidCommunicator : StoreCommunicator {
 	public override void AddAchievement(string name) {
@@ -32,5 +33,9 @@ public class AndroidCommunicator : StoreCommunicator {
 
 	public override void GetPurchases() {
 		throw new NotImplementedException();
+	}
+
+	public override void GoToStore() {
+		Application.OpenURL("market://details?id=com.MadeByMoonlight.The16Spaces");
 	}
 }

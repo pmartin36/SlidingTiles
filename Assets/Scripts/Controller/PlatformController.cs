@@ -47,10 +47,16 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			}
 
 			if (passenger.moveBeforePlatform == beforeMovePlatform) {
-				var player = passenger.transform.gameObject.GetComponent<Player>();
-				Vector3 v = passenger.velocity / Time.deltaTime;
-				player.DetermineJump(passenger.velocity, out var modifiedVelocity);
-				passengerDictionary[passenger.transform].Move((modifiedVelocity.Item1 ? modifiedVelocity.Item2 : passenger.velocity), passenger.standingOnPlatform);
+				Vector3 vel = passenger.velocity;
+				if (Mathf.Abs(passenger.velocity.x) > 0.001f) {
+					var player = passenger.transform.gameObject.GetComponent<Player>();
+					Vector3 v = passenger.velocity / Time.deltaTime;
+					player.DetermineJump(passenger.velocity, out var modifiedVelocity);
+					if(modifiedVelocity.Item1) {
+						vel = modifiedVelocity.Item2;
+					}
+				}
+				passengerDictionary[passenger.transform].Move(vel, passenger.standingOnPlatform);
 			}
 
 			this.gameObject.layer = layer;

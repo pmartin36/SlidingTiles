@@ -33,4 +33,8 @@ public class SteamCommunicator : StoreCommunicator {
 	public override void GetPurchases() {
 		throw new NotImplementedException();
 	}
+
+	public override void GoToStore() {
+		throw new NotImplementedException();
+	}
 }
