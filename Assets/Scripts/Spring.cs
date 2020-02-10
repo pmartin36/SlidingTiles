@@ -17,10 +17,26 @@ public class Spring : MonoBehaviour
 	}
 
 	public void OnTriggerEnter2D(Collider2D collision) {
+		ExecuteSpring(collision);
+	}
+
+	public void OnTriggerStay2D(Collider2D collision) {
+		ExecuteSpring(collision);
+	}
+
+	public void ExecuteSpring(Collider2D collision) {
 		if (collision.gameObject.scene != this.gameObject.scene) return;
 
 		ISpringable s = collision.GetComponent<ISpringable>();
-		if( s != null ) {
+		if (s != null) {
+			if(s.Vx > 0) {
+				if(collision.bounds.max.x < transform.position.x) return;
+			}
+			else {
+				if (collision.bounds.min.x > transform.position.x) return;
+			}
+
+
 			s.Spring(direction);
 			Sprung();
 		}

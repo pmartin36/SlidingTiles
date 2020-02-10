@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class NumberedLevelSelectButton : LevelSelectButton
@@ -56,8 +57,17 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		Interactable = Unlocked;
 	}
 
-	public void SetSlidePosition(Vector2 position, bool interactableAtEnd) {
+	public void SetSlidePosition(Vector2 position, bool interactableAtEnd, System.Action actionAtEnd = null) {
+		
 		StartCoroutine(SlideToPosition(position, interactableAtEnd));
+		if (actionAtEnd != null && interactableAtEnd) {
+			SetOnClick(actionAtEnd);
+		}
+	}
+
+	public void SetOnClick(System.Action action) {
+		button.onClick.RemoveAllListeners();
+		button.onClick.AddListener(delegate { action(); });
 	}
 
 	public override void SetStayHidden(bool stayHidden) {

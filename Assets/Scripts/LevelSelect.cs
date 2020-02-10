@@ -69,11 +69,16 @@ public class LevelSelect : MenuCopyComponent
 		Back.Init();
 
 		if(LevelSelectOpen) {
-			NumberedLevelButtons[WorldSelected - 1].SetButtonInfo(
+			NumberedLevelSelectButton b = NumberedLevelButtons[WorldSelected - 1];
+			b.SetButtonInfo(
 				WorldSelectedTilePosition, 
 				WorldSelected, 
 				true, 
 				false);
+			//if(SelectedWorldComplete) {
+			//	b.Interactable = true;
+			//	b.SetOnClick( SwitchToWorldCompleteScene );
+			//}
 			Back.transform.localScale = Vector3.one;
 		}
 		else {
@@ -182,7 +187,11 @@ public class LevelSelect : MenuCopyComponent
 
 			if (prevSelected == b.Number) {
 				// move button back to original position
-				b.SetSlidePosition(WorldSelectPosition(b.Number), true);
+				b.SetSlidePosition(
+					WorldSelectPosition(b.Number), 
+					true
+					// () => ButtonSelected(b)
+				);
 			}
 			else {
 				b.SetHidden(true, () => {
@@ -199,7 +208,13 @@ public class LevelSelect : MenuCopyComponent
 		WorldSelected = button.Number;
 
 		// move button to S position
-		button.SetSlidePosition(WorldSelectedTilePosition, false);
+		// if the world is complete, allow it to be clickable to display world complete info
+		button.SetSlidePosition(
+			WorldSelectedTilePosition,
+			false
+			// SelectedWorldComplete, 
+			// SwitchToWorldCompleteScene
+		);
 
 		// move all other buttons to their position
 		foreach (NumberedLevelSelectButton b in NumberedLevelButtons) {
@@ -212,6 +227,27 @@ public class LevelSelect : MenuCopyComponent
 			}
 		}
 	}
+
+	public bool SelectedWorldComplete {
+		get {
+			int len = levelData.GetLength(1);
+			bool worldComplete = true;
+			for (int i = 0; i < len; i++) {
+				LevelData ld = GameManager.Instance.SaveData.LevelData[WorldSelected - 1, i];
+				if (ld.MaxStarsCollected < 0) {
+					worldComplete = false;
+					break;
+				}
+			}
+			return worldComplete;
+		}
+	}
+
+	public System.Action SwitchToWorldCompleteScene => 
+		() => GameManager.Instance.LoadScene(
+			SceneHelpers.WorldCompleteBuildIndex,
+			null,
+			() => (GameManager.Instance.ContextManager as WorldCompleteManager).HideContinue());
 
 	/// <summary>
 	/// Get the position on the template for the ith level on the level select screen

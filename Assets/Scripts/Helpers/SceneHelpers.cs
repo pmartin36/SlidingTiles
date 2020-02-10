@@ -9,7 +9,8 @@ public static class SceneHelpers {
 	public static readonly int SplashBuildIndex = 0;
 	public static readonly int MenuBuildIndex = 1;
 	public static readonly int LoadSceneBuildIndex = 2;
-	public static readonly int TutorialLevelStart = 3;
+	public static readonly int WorldCompleteBuildIndex = 3;
+	public static readonly int TutorialLevelStart = 4;
 
 	public static int SceneCount => SceneManager.sceneCountInBuildSettings;
 

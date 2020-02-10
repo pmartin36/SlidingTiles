@@ -271,9 +271,18 @@ public class LevelManager : ContextManager {
 
 		cts = new CancellationTokenSource();
 
-		var bi = SceneHelpers.GetNextLevelBuildIndex();
-		if(bi < SceneHelpers.SceneCount) {
-			GameManager.Instance.AsyncLoadScene(bi, StartCoroutine(WaitActionSelected()), cts, null, false);
+		int current_bi = SceneHelpers.GetCurrentLevelBuildIndex();
+		int current_bi_world = SceneHelpers.GetWorldFromBuildIndex(current_bi);
+		int next_bi = SceneHelpers.GetNextLevelBuildIndex();
+		int next_bi_world = SceneHelpers.GetWorldFromBuildIndex(next_bi);
+		if (current_bi_world > 0 && current_bi_world < next_bi_world) {
+			next_bi = SceneHelpers.WorldCompleteBuildIndex;
+		}
+
+		// TODO: this if/else can be removed once we've guaranteed that every world has 10 levels
+		// and replaced with just the statement inside the IF
+		if (next_bi < SceneHelpers.SceneCount) {
+			GameManager.Instance.AsyncLoadScene(next_bi, StartCoroutine(WaitActionSelected()), cts, null, false);
 		}
 		else {
 			GameManager.Instance.SaveData.LastPlayedWorld = 0;
@@ -302,8 +311,12 @@ public class LevelManager : ContextManager {
 				GoToLevelSelect();
 				break;
 			case WinTypeAction.Next:
-				var bi = SceneHelpers.GetNextLevelBuildIndex();
-				if (bi < SceneHelpers.SceneCount) {
+				// TODO: All this logic can be removed once we've guaranteed that every world has 10 levels 
+				int current_bi = SceneHelpers.GetCurrentLevelBuildIndex();
+				int current_bi_world = SceneHelpers.GetWorldFromBuildIndex(current_bi);
+				int next_bi = SceneHelpers.GetNextLevelBuildIndex();
+				int next_bi_world = SceneHelpers.GetWorldFromBuildIndex(next_bi);
+				if (next_bi < SceneHelpers.SceneCount || (current_bi_world > 0 && current_bi_world < next_bi_world)) {
 					GameManager.Instance.ShowAd();
 
 					// hide objects in the current level so that as the wintype animation is playing, we see the next level

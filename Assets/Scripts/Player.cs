@@ -24,7 +24,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public Vector3 Direction => new Vector3(moveDirection, Mathf.Sign(gravity));
 	private float accelerationTimeAirborne = .2f;
 	private float accelerationTimeGrounded = .1f;
-	private float moveSpeed = 6;
+	private float moveSpeed = 9;
 	private float? temporarySpeed;
 	private float temporarySpeedTimer;
 
@@ -44,6 +44,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	private RespawnManager RespawnManager;
 	private Animator animator;
+
+	private bool Won { get; set; }
 
 	void Awake() {
 		controller = GetComponent<Controller2D>();
@@ -90,7 +92,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 				// 3 tile fall, 50ish
 				if (absLastY > 10f) {
 					float absV = Mathf.Abs(velocity.x);
-					float lerp = Mathf.Clamp01((absLastY - 25f) / 25f) * 6;
+					float lerp = Mathf.Clamp01((absLastY - 25f) / 25f) * moveSpeed;
 					float newV = Mathf.Max(0, absV - lerp);
 
 					velocity.x = newV;
@@ -139,7 +141,9 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	void LateUpdate() {
-
+		if(!Won) {
+			lights.color = Alive ? Color.green : Color.red;
+		}
 	}
 
 	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
@@ -307,12 +311,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		transform.position = RespawnManager.PlayerSpawnPosition;
 		transform.localScale = Vector2.one * 1.2f;
 
-		lights.color = alive ? Color.green : Color.red;
-
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;
-		animator.SetBool("Won", false);
+		Won = false;
+		animator.SetBool("Won", Won);
 	}
 
 	public void OnDestroy() {
@@ -335,7 +338,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
 		yield return new WaitUntil(() => controller.collisions.below); // wait for the player to hit the ground
-		animator.SetBool("Won", true); //start animation for reaching flag
+		Won = true;
+		animator.SetBool("Won", Won); //start animation for reaching flag
 		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
 	}

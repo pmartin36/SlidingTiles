@@ -53,6 +53,18 @@ public abstract class Utils {
 		}
 		loopAction(t / timeToComplete);
 	}
+
+	public static string SplitTime(float inputTime, bool includeMS) {
+		int minutes = Mathf.FloorToInt(inputTime / 60f);
+		int intSeconds = Mathf.FloorToInt(inputTime);
+		int seconds = intSeconds % 60;
+		float ms = inputTime - intSeconds;
+		string time = $"{minutes:0}:{seconds:00}";
+		if(includeMS) {
+			time += $"<sub>{ms:.000}</sub>";
+		}
+		return time;
+	}
 }
 
 

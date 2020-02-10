@@ -65,11 +65,7 @@ public abstract class WinType : MonoBehaviour {
 		RecordTime.gameObject.SetActive(timeInfo.Record);
 
 		float elapsedTime = timeInfo.Time;
-		int minutes = Mathf.FloorToInt(elapsedTime / 60f);
-		int intSeconds = Mathf.FloorToInt(elapsedTime);
-		int seconds = intSeconds % 60;
-		float ms = elapsedTime - intSeconds;
-		ElapsedTime.text = $"{minutes:0}:{seconds:00}<sub>{ms:.000}</sub>";
+		ElapsedTime.text = Utils.SplitTime(elapsedTime, true);
 
 		OnActionSelected = callback;
 	}
