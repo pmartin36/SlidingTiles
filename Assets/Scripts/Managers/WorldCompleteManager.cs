@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 
-public class WorldCompleteManager : ContextManager
+public class WorldCompleteManager : ContextManager, IRequireResources
 {
 	private int World;
 	public TMP_Text WorldText;
@@ -11,6 +13,9 @@ public class WorldCompleteManager : ContextManager
 	public TMP_Text AnyStarTime;
 	public TMP_Text ThreeStarTime;
 	public GameObject BottomButtons;
+	public Image Background;
+
+	public bool Loaded { get; set; } = false;
 
 	public override void HandleInput(InputPackage p) {
 		
@@ -18,8 +23,13 @@ public class WorldCompleteManager : ContextManager
 
 	public override void Awake() {
 		base.Awake();
-
 		World = GameManager.Instance.SaveData.LastPlayedWorld;
+		Addressables.LoadAssetAsync<CopyObject>($"World{World}/Background").Completed +=
+			(obj) => {
+				Background.material = obj.Result.Material;
+				Loaded = true;
+			};
+
 		LevelData[,] levelData = GameManager.Instance.SaveData.LevelData;
 
 		int len = levelData.GetLength(1);
@@ -57,7 +67,11 @@ public class WorldCompleteManager : ContextManager
 	}
 
 	public void GoToMenu() {
-		GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex);
+		GameManager.Instance.LoadScene(
+			SceneHelpers.MenuBuildIndex,
+			null,
+			() => GameManager.Instance.MenuManager.OpenLevelSelect(true)
+		);
 	}
 
 	public void Continue() {
@@ -66,6 +80,6 @@ public class WorldCompleteManager : ContextManager
 
 	public void HideContinue() {
 		BottomButtons.SetActive(false);
-		WorldText.GetComponent<RectTransform>().anchoredPosition -= Vector2.down * 40;
+		WorldText.GetComponent<RectTransform>().anchoredPosition += Vector2.down * 60;
 	}
 }

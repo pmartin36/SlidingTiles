@@ -57,16 +57,15 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		Interactable = Unlocked;
 	}
 
-	public void SetSlidePosition(Vector2 position, bool interactableAtEnd, System.Action actionAtEnd = null) {
-		
+	public void SetSlidePosition(Vector2 position, bool interactableAtEnd, System.Action newOnClickAction = null) {
 		StartCoroutine(SlideToPosition(position, interactableAtEnd));
-		if (actionAtEnd != null && interactableAtEnd) {
-			SetOnClick(actionAtEnd);
+		if (newOnClickAction != null && interactableAtEnd) {
+			SetOnClick(newOnClickAction);
 		}
 	}
 
 	public void SetOnClick(System.Action action) {
-		button.onClick.RemoveAllListeners();
+		button.onClick = new Button.ButtonClickedEvent();
 		button.onClick.AddListener(delegate { action(); });
 	}
 

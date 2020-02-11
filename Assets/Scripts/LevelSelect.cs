@@ -75,10 +75,10 @@ public class LevelSelect : MenuCopyComponent
 				WorldSelected, 
 				true, 
 				false);
-			//if(SelectedWorldComplete) {
-			//	b.Interactable = true;
-			//	b.SetOnClick( SwitchToWorldCompleteScene );
-			//}
+			if (SelectedWorldComplete) {
+				b.Interactable = true;
+				b.SetOnClick(SwitchToWorldCompleteScene);
+			}
 			Back.transform.localScale = Vector3.one;
 		}
 		else {
@@ -189,8 +189,8 @@ public class LevelSelect : MenuCopyComponent
 				// move button back to original position
 				b.SetSlidePosition(
 					WorldSelectPosition(b.Number), 
-					true
-					// () => ButtonSelected(b)
+					true,
+					() => ButtonSelected(b)
 				);
 			}
 			else {
@@ -211,9 +211,8 @@ public class LevelSelect : MenuCopyComponent
 		// if the world is complete, allow it to be clickable to display world complete info
 		button.SetSlidePosition(
 			WorldSelectedTilePosition,
-			false
-			// SelectedWorldComplete, 
-			// SwitchToWorldCompleteScene
+			SelectedWorldComplete, 
+			SwitchToWorldCompleteScene
 		);
 
 		// move all other buttons to their position
@@ -244,10 +243,16 @@ public class LevelSelect : MenuCopyComponent
 	}
 
 	public System.Action SwitchToWorldCompleteScene => 
-		() => GameManager.Instance.LoadScene(
-			SceneHelpers.WorldCompleteBuildIndex,
-			null,
-			() => (GameManager.Instance.ContextManager as WorldCompleteManager).HideContinue());
+		() => {
+			GameManager.Instance.SaveData.LastPlayedWorld = WorldSelected;
+			GameManager.Instance.LoadScene(
+				SceneHelpers.WorldCompleteBuildIndex,
+				null,
+				() => {
+					WorldCompleteManager wcm = (GameManager.Instance.ContextManager as WorldCompleteManager);
+					wcm.HideContinue();
+				});
+		};
 
 	/// <summary>
 	/// Get the position on the template for the ith level on the level select screen
