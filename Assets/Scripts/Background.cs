@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class Background : MonoBehaviour
 {
-    void Start() {
-		Sprite s = GetComponent<SpriteRenderer>().sprite;
+	public SpriteRenderer SpriteRenderer { get; private set; }
+
+	private void Awake() {
+		SpriteRenderer = GetComponent<SpriteRenderer>();
+	}
+
+	void Start() {
+		Sprite s = SpriteRenderer.sprite;
 		Bounds spriteBounds = s.bounds;
 
 		Camera camera = CameraManager.Instance.Camera;

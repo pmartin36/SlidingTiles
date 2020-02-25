@@ -16,12 +16,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	public bool Alive { get; private set; }
 
-	public float Vx {
-		get {
-			return moveSpeed * moveDirection;
-		}
-	}
+	public float Vx => moveSpeed * moveDirection;
+	public bool Grounded => controller.collisions.below;
 	public Vector3 Direction => new Vector3(moveDirection, Mathf.Sign(gravity));
+
 	private float accelerationTimeAirborne = .2f;
 	private float accelerationTimeGrounded = .1f;
 	private float moveSpeed = 9;

@@ -13,7 +13,10 @@ public abstract class Utils {
 	}
 
 	public static Vector3 AngleToVector(float angle) {
-		return new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle)).normalized;
+		return new Vector2(
+			Mathf.Cos(Mathf.Deg2Rad * angle), 
+			Mathf.Sin(Mathf.Deg2Rad * angle)
+		).normalized;
 	}
 
 	public static float xyToAngle(float x, float y) {

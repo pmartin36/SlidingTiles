@@ -37,6 +37,11 @@ public class LevelManager : ContextManager {
 
 	public bool SnapAfterDeselected;
 
+	// gif stuff, please comment me out on release
+	[Header("Gif Stuff")]
+	public bool ShowFingerprint;
+	private Fingerprint Fingerprint; 
+
 	public override void Awake() {
 		base.Awake();
 		bool parsed = Int32.TryParse(gameObject.scene.name.Split('-')[0], out int world);
@@ -99,6 +104,14 @@ public class LevelManager : ContextManager {
 						grabPoint = p.MousePositionWorldSpace;
 						SelectedTile.Select(true);
 					}
+
+					#if UNITY_EDITOR
+						if(ShowFingerprint) {
+							Fingerprint = GetComponentInChildren<Fingerprint>(true);
+							Fingerprint.gameObject.SetActive(true);
+							Fingerprint.transform.position = p.MousePositionWorldSpace;
+						}
+					#endif
 				}
 				else if(SelectedTile != null) {
 					float scale = SelectedTile.transform.lossyScale.x;
@@ -108,7 +121,6 @@ public class LevelManager : ContextManager {
 
 					if(changedTilespaces) {
 						if(SelectedTile.Space.Sticky) {
-							SelectedTile.SetImmobile();
 							SelectedTile = null;
 						}
 						else {
@@ -138,6 +150,11 @@ public class LevelManager : ContextManager {
 				else {
 					Preview.Show(false, position);
 				}
+
+				#if UNITY_EDITOR
+					if(Fingerprint != null)
+						Fingerprint.transform.position = p.MousePositionWorldSpace;
+				#endif
 			}
 			else if (!p.Touchdown && p.TouchdownChange) {
 				Preview.Show(false);
@@ -145,6 +162,10 @@ public class LevelManager : ContextManager {
 					SelectedTile.Select(false);
 					SelectedTile = null;
 				}
+				#if UNITY_EDITOR
+					if (Fingerprint != null)
+						Fingerprint.gameObject.SetActive(false);
+				#endif
 			}
 		}
 	}

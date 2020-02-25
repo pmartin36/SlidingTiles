@@ -66,8 +66,6 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-				
-                // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
 				float len = length((i.uv) * 2 - 1);
 				fixed4 noise = (tex2D(_Noise, i.uv) * 2 - 1) ;

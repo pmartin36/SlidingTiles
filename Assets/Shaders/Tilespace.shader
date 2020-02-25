@@ -5,7 +5,7 @@
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color", Color) = (1,1,1,1)
 		[MaterialToggle] _Sticky("Sticky", Float) = 0
-		_StickyAlpha("StickyAlpha", Float) = 1
+		_StickyAlpha("StickyAlpha", Range(0,1)) = 1
     }
     SubShader
     {

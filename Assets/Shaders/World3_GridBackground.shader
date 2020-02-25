@@ -73,7 +73,7 @@
 				float4 col = lerp(i.primaryColor, i.secondaryColor, noise);
 				col.a = main.a;
 
-				col.rgb *= (1 + main * _ImageColorAdditionFactor);
+				col.rgb *= (1 + (main.rgb - 0.5) * 2 * _ImageColorAdditionFactor);
 
 				return col;
             }

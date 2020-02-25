@@ -104,5 +104,7 @@ public static class GeneralHelpers {
 [Serializable]
 public class Movable {
 	public bool Value;
+	public Movable(bool v) => Value = v;
 	public static implicit operator bool(Movable m) => m.Value;
+	public static implicit operator Movable(bool m) => new Movable(m);
 }

@@ -5,8 +5,9 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, IRequireResources
 {
+	public bool Loaded { get; set; }
 	public const float BaseThreshold = 0.15f;
 	private const float BaseThresholdSquared = BaseThreshold * BaseThreshold;
 
@@ -14,7 +15,7 @@ public class Tile : MonoBehaviour
 
 	public Tilespace Space { get; set; }
 
-	public bool Movable;
+	public Movable Movable;
 
 	public bool Selected { get; set; }
 	public Vector2 PositionWhenSelected { get; set; }
@@ -48,18 +49,19 @@ public class Tile : MonoBehaviour
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
 
-		if(Movable && UnselectedMaterial != spriteRenderer.material) {
-			UnselectedMaterial = spriteRenderer.material;
-		}
-		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld) {
-			Debug.Log($"{LoadedMaterialWorld}  {GameManager.Instance.LastPlayedWorld}");
+		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld && Movable) {
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
 		
+			UnselectedMaterial = spriteRenderer.sharedMaterial;
 			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
-				(obj) => SelectedMaterial = obj.Result;
-
-			Addressables.LoadAssetAsync<Material>($"World{LoadedMaterialWorld}/Level_ImmobileTile").Completed +=
-				(obj) => ImmobileMaterial = obj.Result;
+				(obj) =>
+					{
+						SelectedMaterial = obj.Result;
+						Loaded = true;
+					};
+		}
+		else {
+			Loaded = true;
 		}
 
 		//if (!Movable) {
@@ -125,12 +127,7 @@ public class Tile : MonoBehaviour
 		if (Selected) {
 			PositionWhenSelected = transform.position;
 		}
-		spriteRenderer.sharedMaterial = 
-			Movable  
-				? Selected 
-					? SelectedMaterial 
-					: UnselectedMaterial
-				: ImmobileMaterial;
+		spriteRenderer.sharedMaterial = Selected ? SelectedMaterial : UnselectedMaterial;
 	}
 
 	public void CompleteMove(Tilespace space) {
@@ -149,20 +146,25 @@ public class Tile : MonoBehaviour
 			c.Postmove(ref globalMoveAmount);
 		}
 
+		bool changedTilespaces = false;
+
 		float mag = transform.localPosition.magnitude;
-		if(mag > BaseThreshold) {
-			if (mag > 1 - BaseThreshold) {
-				// snap to next spot
-				Tilespace next = Space.GetNeighborInDirection(d);		
-				if(Space.Tile == this) {
-					Space.Tile = null;
-				}
-			
-				next.SetChildTile(this);
-				return true;
-			}	
+		if (mag > 1 - BaseThreshold) {
+			// snap to next spot
+			Tilespace next = Space.GetNeighborInDirection(d);		
+			if(Space.Tile == this) {
+				Space.Tile = null;
+			}
+
+			next.SetChildTile(this);
+			changedTilespaces = true;
 		}
-		return false;
+
+		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {
+			this.SetMovable(false);
+		}
+
+		return changedTilespaces;
 	}
 
 	public bool CanMoveTo(ref Vector3 moveAmount, HashSet<Tile> tilesToMove, Direction d) {
@@ -217,31 +219,37 @@ public class Tile : MonoBehaviour
 			float deltaTimeSpeedCap = SpeedCap * Time.fixedDeltaTime;
 
 			if(!centered) {
-				Vector2 normalized = new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
-				var pNorm = position * normalized;
-				float pNormMag = pNorm.magnitude;
+				if(transform.localPosition.magnitude < BaseThresholdSquared) {
+					transform.localPosition = Vector3.zero;
+					centered = true;
+				}
+				else {
+					Vector2 normalized = new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
+					var pNorm = position * normalized;
+					float pNormMag = pNorm.magnitude;
 
-				Vector2 orthogonalVector = (position - pNorm);
-				float orthogonalVectorMag = orthogonalVector.magnitude;
+					Vector2 orthogonalVector = (position - pNorm);
+					float orthogonalVectorMag = orthogonalVector.magnitude;
 
-				// if the direction orthogonal to the movement direction is larger, 
-				// we'll assume player is trying to change direction and center the tile
-				if (pNormMag < 1 
-					&& orthogonalVectorMag > pNormMag
-					&& orthogonalVectorMag > deltaTimeSpeedCap 
-					&& orthogonalVectorMag > BaseThreshold * 2) {
-					if((1 - pNormMag) < BaseThreshold * 2) {
-						position = normalized;
-					}
-					else if(pNormMag < BaseThreshold * 2) {
-						position = Vector2.zero;
+					// if the direction orthogonal to the movement direction is larger, 
+					// we'll assume player is trying to change direction and center the tile
+					if (pNormMag < 1 
+						&& orthogonalVectorMag > pNormMag
+						&& orthogonalVectorMag > deltaTimeSpeedCap 
+						&& orthogonalVectorMag > BaseThreshold * 2) {
+						if((1 - pNormMag) < BaseThreshold * 2) {
+							position = normalized;
+						}
+						else if(pNormMag < BaseThreshold * 2) {
+							position = Vector2.zero;
+						}
+						else {
+							position = pNorm;
+						}
 					}
 					else {
 						position = pNorm;
 					}
-				}
-				else {
-					position = pNorm;
 				}
 			}
 
@@ -302,15 +310,46 @@ public class Tile : MonoBehaviour
 	public void Reset() {
 		transform.parent = initialTilespace.transform;
 		this.Space = initialTilespace;
-		this.Movable = initialMovable;
+		SetMovable(initialMovable, false);
 		transform.localPosition = Vector2.zero;
 	}
 
-	public void SetImmobile() {
-		Movable = false;
-		if(Selected) {
-			Select(false);
+	public void SetMovable(bool movable, bool animate = true) {
+		Movable = movable;
+		if(!movable) {
+			if (Selected) {
+				Select(false);
+			}
+
+			StopCoroutine(SetImmobileAnimation());
+			if(animate) {
+				StartCoroutine(SetImmobileAnimation());
+			}
+			else {
+				SetMobileShaderValue(0f);
+			}
 		}
+		else {
+			SetMobileShaderValue(1f);
+		}
+	}
+
+	private void SetMobileShaderValue(float v, Material m = null) {
+		m = m ?? new Material(spriteRenderer.sharedMaterial);
+		m.SetFloat("_Mobile", v);
+		spriteRenderer.sharedMaterial = m;
+	}
+
+	private IEnumerator SetImmobileAnimation() {
+		float t = 0;
+		float animationTime = 0.25f;
+		Material m = new Material(spriteRenderer.sharedMaterial);
+		while(t < animationTime) {
+			SetMobileShaderValue(1 - t / animationTime, m);
+			t += Time.deltaTime;
+			yield return null;
+		}
+		SetMobileShaderValue(0, m);
 	}
 
 	public bool IsPlayerOnTile() => Physics2D.OverlapBox(transform.position, transform.lossyScale, 0, playerMask) != null;

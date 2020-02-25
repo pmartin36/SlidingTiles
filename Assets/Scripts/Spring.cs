@@ -28,7 +28,7 @@ public class Spring : MonoBehaviour
 		if (collision.gameObject.scene != this.gameObject.scene) return;
 
 		ISpringable s = collision.GetComponent<ISpringable>();
-		if (s != null) {
+		if (s != null && s.Grounded) {
 			if(s.Vx > 0) {
 				if(collision.bounds.max.x < transform.position.x) return;
 			}
