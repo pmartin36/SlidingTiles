@@ -32,8 +32,15 @@ public class Timer : MonoBehaviour
 		SetTimer(0);
 		minutesSeconds.ForceMeshUpdate();
 		milliseconds.ForceMeshUpdate();
+
 		showMilliseconds = GameManager.Instance.SaveData.ShowMilliseconds;
 		SetMillisecondsEnabled(showMilliseconds);
+
+		if(!showMilliseconds) {
+			foreach(Transform t in transform) {
+				t.gameObject.SetActive(false);
+			}
+		}
     }
 
 	public void SetTimer(float _seconds) {

@@ -81,9 +81,9 @@ public class Gust : MonoBehaviour
 		CurveTime = -offsetTime;
 		active = true;
 
-		Debug.Log(d);
-		Debug.Log(SpeedModifier);
-		Debug.Log(AmplitudeModifier);
-		Debug.Log(StartPosition);
+		//Debug.Log(d);
+		//Debug.Log(SpeedModifier);
+		//Debug.Log(AmplitudeModifier);
+		//Debug.Log(StartPosition);
 	}
 }

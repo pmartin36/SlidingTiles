@@ -37,12 +37,22 @@ public class Wind : MonoBehaviour
 		GenerateNewGusts(true);
 	}
 
+	public void SetStrength(float strength, bool clampbottom = true) {
+		float val = strength;
+		val = Mathf.Clamp(strength, clampbottom ? 0.1f : 0.0f, 0.2f);
+		foreach (var m in background.SpriteRenderer.sharedMaterials) {
+			m.SetFloat("_WindStrength", val);
+		}
+	}
+
 	private void SetProperties() {
 		Direction = Random.value * 360f;
 		Strength = 0.15f + Random.value * 0.05f;
 
-		background.SpriteRenderer.sharedMaterial.SetFloat("_WindDirectionAngle", ((180f + Direction) % 360f) * Mathf.Deg2Rad);
-		background.SpriteRenderer.sharedMaterial.SetFloat("_WindStrength", Mathf.Clamp(Strength, 0, 0.2f));
+		foreach(var m in background.SpriteRenderer.sharedMaterials) {
+			m.SetFloat("_WindDirectionAngle", ((180f + Direction) % 360f) * Mathf.Deg2Rad);
+		}
+		SetStrength(Strength);
 	}
 
 	public void GustCompleted() {
@@ -82,7 +92,7 @@ public class Wind : MonoBehaviour
 		float time = 0;
 		while(time < timeBetweenWind) {
 			float str = Mathf.Lerp(Strength, 0, time / timeBetweenWind);
-			background.SpriteRenderer.sharedMaterial.SetFloat("_WindStrength", str * 2);
+			SetStrength(str, false);
 			time += Time.deltaTime;
 			yield return null;
 		}
@@ -93,10 +103,10 @@ public class Wind : MonoBehaviour
 		time = 0;
 		while (time < 1f) {
 			float str = Mathf.Lerp(0, Strength, time);
-			background.SpriteRenderer.sharedMaterial.SetFloat("_WindStrength", str * 2);
+			SetStrength(str, false);
 			time += Time.deltaTime;
 			yield return null;
 		}
-		background.SpriteRenderer.sharedMaterial.SetFloat("_WindStrength", Strength * 2);
+		SetStrength(Strength);
 	}
 }

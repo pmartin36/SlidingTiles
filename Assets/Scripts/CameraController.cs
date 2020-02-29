@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
 
     protected void Awake() {
 		Camera = GetComponent<Camera>();
+		Camera.depthTextureMode = DepthTextureMode.Depth;
 		centeredPosition = transform.position;
     }
 

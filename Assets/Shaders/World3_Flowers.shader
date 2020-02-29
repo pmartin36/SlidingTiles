@@ -1,102 +1,25 @@
-Shader "SlidingTiles/World3_Grass"
+Shader "SlidingTiles/World3_Flowers"
 {
     Properties
     {
 		_MainTex("Texture", 2D) = "white" {}
 
-		[Header(Background)]
-		_Noise("Noise", 2D) = "white" {}
-		_PrimaryColor("Primary Background Color", Color) = (1,1,1,1)
-		_SecondaryColor("Secondary Background Color", Color) = (1,1,1,1)
+		_Size("Size", Range(1, 50)) = 20
+
+		[Header(Wind)]
+		_WindDirectionAngle("Wind Direction", Range(0, 6.28)) = 0
+		_WindFrequency("Wind Frequency", float) = 0.05
+		_WindStrength("Wind Strength", Float) = 1
     }
 
     SubShader
     {
 		Tags
 		{
-			"RenderType" = "Opqaue"
-			"Queue"="Geometry"
+			"RenderType" = "Transparent"
+			"Queue"="Transparent"
 		}
 
-		Pass
-		{
-			ZWrite Off
-			ZTest Off
-
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-
-			#include "UnityCG.cginc"
-			#include "CommonFunctions.cginc"
-
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
-			float4 _PrimaryColor;
-			float4 _SecondaryColor;
-			sampler2D _Noise;
-
-			struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-				float4 color: COLOR;
-			};
-
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				float2 screenPos: TEXCOORD1;
-				float4 vertex : SV_POSITION;
-				fixed4 primaryColor : COLOR0;
-				fixed4 secondaryColor : COLOR1;
-			};
-
-			v2f vert(appdata v)
-			{
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				o.primaryColor = v.color * _PrimaryColor;
-				o.secondaryColor = v.color * _SecondaryColor;
-				o.screenPos = ComputeScreenPos(o.vertex);
-				return o;
-			}
-
-			float4 frag(v2f i) : SV_Target
-			{
-				float grass_start = 0.275;
-
-				float n = N21(i.uv);
-				float darkness = max(n, frac(n*183.2));
-				darkness = tex2D(_Noise, i.uv ).r * 0.7 + 0.3 * darkness;
-				float value = lerp(0.4, 0.75, smoothstep(0.35, 1.4, darkness));
-
-				float3 grass_primary = rgb2hsv(i.primaryColor);
-				grass_primary.z = value - 0.075;
-				grass_primary = hsv2rgb(grass_primary);
-
-				float3 grass_secondary = rgb2hsv(i.secondaryColor);
-				grass_secondary.z = value;
-				grass_secondary = hsv2rgb(grass_secondary);
-
-				float noise = tex2D(_Noise, i.uv).r * 0.6;
-				noise += tex2D(_Noise, i.uv * 5).r * 0.2;
-
-				float3 tertiary = float3(0.75, 0.63, 0.45);
-				float3 darkTertiary = float3(0.35, 0.21, 0.02) * 1.5;
-				float3 dirt = lerp(darkTertiary, tertiary, smoothstep(0, grass_start, noise-0.15));
-
-				float grassLerp = smoothstep(grass_start, 0.7, noise);
-				float3 grass = lerp(grass_primary, grass_secondary, grassLerp);
-
-				float3 val = lerp(dirt, grass, smoothstep(grass_start-0.05, grass_start+0.05, noise));
-
-				return float4(val,1);
-			}
-			ENDCG
-		}
-		/*
 		Pass
 		{
 			Blend SrcAlpha OneMinusSrcAlpha
@@ -141,7 +64,7 @@ Shader "SlidingTiles/World3_Grass"
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				float xScale = length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x));
-				o.screenToTexScale = (_MainTex_TexelSize.zw * xScale) / _ScreenParams.xy / 3.5;
+				o.screenToTexScale = (_MainTex_TexelSize.zw * xScale) / _ScreenParams.xy / 14;
 				o.texScale = _MainTex_TexelSize.y / _MainTex_TexelSize.xy;
 				return o;
 			}
@@ -162,12 +85,12 @@ Shader "SlidingTiles/World3_Grass"
 				sampleuv = ((sampleuv * 2 - 1) * i.screenToTexScale + 1) / 2;
 				float depth = tex2D(_CameraDepthTexture, sampleuv).r;
 
-				// float4 debug = float4(0, 0, 0, 1);
-				// if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
-				// debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
-				// debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
-				// debug.g = depth;	
-				// return debug;
+				/*float4 debug = float4(0, 0, 0, 1);
+				if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
+				debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
+				debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
+				debug.g = depth;	
+				return debug;*/
 
 				// how much will the wind move the flower position
 				float2 windDirection = normalize(float2(cos(_WindDirectionAngle), sin(_WindDirectionAngle)));
@@ -218,12 +141,11 @@ Shader "SlidingTiles/World3_Grass"
 				float noFlower = step(0.5, frac(random * 321.3)) * step(depth, 0.5); // 50% of spaces missing flowers, anything with flower center covered should not show
 				float4 col = float4(color, allColor * noFlower);
 
-				//if (guv.x > 0.48 || guv.y > 0.48) col = float4(1, 0, 0, 1);
+				// if (guv.x > 0.48 || guv.y > 0.48) col = float4(1, 0, 0, 1);
 
 				return col;
 			}
 			ENDCG
 		}
-		*/
     }	
 }

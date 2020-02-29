@@ -17,7 +17,7 @@
 		{
 			Cull Off
 			Blend SrcAlpha OneMinusSrcAlpha
-			ZWrite Off
+			ZWrite On
 
 			CGPROGRAM
 			#pragma vertex vert

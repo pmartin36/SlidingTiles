@@ -19,7 +19,6 @@
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZTest Always
 			ZWrite Off
-			Cull Off
 
             CGPROGRAM	
             #pragma vertex vert
@@ -80,4 +79,5 @@
             ENDCG
         }
     }
+	Fallback "Diffuse"
 }
