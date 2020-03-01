@@ -3153,6 +3153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelObjectContainer: {fileID: 1853636628}
   SnapAfterDeselected: 0
+  ShowFingerprint: 0
 --- !u!4 &1693928946
 Transform:
   m_ObjectHideFlags: 0
@@ -3759,6 +3760,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5977441461876754986, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5977441461876754986, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 856132473892189394, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_Camera
@@ -3769,32 +3780,7 @@ PrefabInstance:
       propertyPath: m_RenderMode
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8730444990690296925, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -88
-      objectReference: {fileID: 0}
-    - target: {fileID: 3247695231144024825, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -36
-      objectReference: {fileID: 0}
-    - target: {fileID: 3247695231144024825, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 3247695231144024825, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 204
-      objectReference: {fileID: 0}
     - target: {fileID: 5814786753432757794, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043057060690085550, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -3809,6 +3795,16 @@ PrefabInstance:
       propertyPath: ResetButton
       value: 
       objectReference: {fileID: 1364382610}
+    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143917185637852929, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4694315261080261140, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_havePropertiesChanged

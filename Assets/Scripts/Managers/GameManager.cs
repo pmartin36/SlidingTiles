@@ -184,7 +184,7 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public void SetShowMilliseconds(bool val) {
-		SaveData.ShowMilliseconds = val;
+		SaveData.ShowTimer = val;
 	}
 
 	public void Save() {

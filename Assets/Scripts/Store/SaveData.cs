@@ -13,7 +13,7 @@ public class SaveData {
 	public bool AdsRemoved;
 	public float MusicVolume;
 	public float FxVolume;
-	public bool ShowMilliseconds;
+	public bool ShowTimer;
 	public bool HasComparedWithFriends;
 	public bool HasClickedToRate;
 	public LevelData[,] LevelData;
@@ -25,7 +25,7 @@ public class SaveData {
 		AdsRemoved = adsRemoved;
 		MusicVolume = musicVolume;
 		FxVolume = fxVolume;
-		ShowMilliseconds = showms;
+		ShowTimer = showms;
 		HasClickedToRate = hasClickedToRate;
 
 		// 12 worlds, 10 levels per world

@@ -22,7 +22,7 @@ public class LevelManager : ContextManager {
 
 	protected CancellationTokenSource cts;
 
-	protected Timer Timer;
+	protected LevelInfoUI LevelInfo;
 	protected bool TimerRunning;
 	protected float ElapsedTime;
 	protected TimeInfo timeInfo;
@@ -72,8 +72,8 @@ public class LevelManager : ContextManager {
 		Player = GameObject.FindObjectsOfType<Player>().First(g => g.gameObject.scene == this.gameObject.scene);
 		Player.aliveChanged += PlayerAliveChange;
 
-		Timer = FindObjectsOfType<Timer>().First(g => g.gameObject.scene == this.gameObject.scene);
-		Timer.SetTimer(ElapsedTime);
+		LevelInfo = FindObjectsOfType<LevelInfoUI>().First(g => g.gameObject.scene == this.gameObject.scene);
+		LevelInfo.SetTimer(ElapsedTime);
 
 		StartCoroutine(RunTimer());
 		CreateRespawnManager();
@@ -103,6 +103,8 @@ public class LevelManager : ContextManager {
 						SelectedTile = t;
 						grabPoint = p.MousePositionWorldSpace;
 						SelectedTile.Select(true);
+
+						Vibration.VibratePop();
 					}
 
 					#if UNITY_EDITOR
@@ -203,7 +205,7 @@ public class LevelManager : ContextManager {
 		
 		TimerRunning = false;
 		ElapsedTime = 0;
-		Timer.SetTimer(ElapsedTime);
+		LevelInfo.SetTimer(ElapsedTime);
 
 		SetPause(false);
 
@@ -245,7 +247,7 @@ public class LevelManager : ContextManager {
 	public void HideLevel() {
 		LevelObjectContainer.SetActive(false);
 		RespawnManager.ActionButtons.gameObject.SetActive(false);
-		Timer.gameObject.SetActive(false);
+		LevelInfo.gameObject.SetActive(false);
 	}
 
 	public void PlayerWin(GoalFlag gf) {
@@ -373,7 +375,7 @@ public class LevelManager : ContextManager {
 		while(true) {
 			if (TimerRunning && !Won) {
 				ElapsedTime += deltaT;
-				Timer.SetTimer(ElapsedTime);
+				LevelInfo.SetTimer(ElapsedTime);
 			}
 			yield return t;
 		}
