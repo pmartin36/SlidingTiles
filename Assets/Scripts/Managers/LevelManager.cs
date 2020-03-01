@@ -93,13 +93,13 @@ public class LevelManager : ContextManager {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
-					Tile t = Physics2D.OverlapCircleAll(p.MousePositionWorldSpace, 7.5f, tileMask)
+					Tile t = Physics2D.OverlapCircleAll(p.MousePositionWorldSpace, 3f, tileMask) // roughly 1/3 of a tile of tap tolerance
 										.Select(g => g.GetComponent<Tile>())
 										.Where(g => g != null && g.Movable)
 										.OrderBy(g => Vector2.Distance(p.MousePositionWorldSpace, g.transform.position))
 										.FirstOrDefault();
 
-					if (t != null && t.Movable) {
+					if (t != null) {
 						SelectedTile = t;
 						grabPoint = p.MousePositionWorldSpace;
 						SelectedTile.Select(true);
@@ -192,9 +192,16 @@ public class LevelManager : ContextManager {
 		}
 	}
 
-	public virtual void Reset(bool fromButton) {
-		if(!fromButton) {
+	public virtual void Reset(bool fromRightSideButton) {
+		if(!fromRightSideButton) {
 			winType.Hide();
+			StartCoroutine(winType.WhenTilesOffScreen(() => {
+				Won = false;
+				winType.Reset();
+			}));
+		}
+		else if(Won) {
+			return;
 		}
 		AcceptingInputs = true;
 		collectedStars = 0;
@@ -208,11 +215,6 @@ public class LevelManager : ContextManager {
 		LevelInfo.SetTimer(ElapsedTime);
 
 		SetPause(false);
-
-		StartCoroutine(winType.WhenTilesOffScreen(() => {
-			Won = false;
-			winType.Reset();
-		}));	
 	}
 
 	public void StartTimer() {
@@ -252,7 +254,7 @@ public class LevelManager : ContextManager {
 
 	public void PlayerWin(GoalFlag gf) {
 		goalFlag = gf;
-		Won = true;	
+		Won = true;
 
 		int bi = SceneHelpers.GetCurrentLevelBuildIndex();
 		SceneHelpers.GetWorldAndLevelFromBuildIndex(bi, out int world, out int level);
@@ -331,7 +333,7 @@ public class LevelManager : ContextManager {
 				Reset(false);
 				break;
 			case WinTypeAction.LevelSelect:
-				GoToLevelSelect();
+				GoToLevelSelect(false);
 				break;
 			case WinTypeAction.Next:
 				// TODO: All this logic can be removed once we've guaranteed that every world has 10 levels 
@@ -351,18 +353,28 @@ public class LevelManager : ContextManager {
 					}));
 				}
 				else {
-					GoToLevelSelect();
+					GoToLevelSelect(false);
 				}
 				break;
 		}
 	}
 
-	public void GoToLevelSelect() {
-		GameManager.Instance.LoadScene(
-			SceneHelpers.MenuBuildIndex,
-			StartCoroutine(winType.WhenTilesOffScreen()),
-			() => GameManager.Instance.MenuManager.OpenLevelSelect(true)
-		);
+	public void GoToLevelSelect(bool fromRightSideButton) {
+		if(fromRightSideButton) {
+			if(Won) {
+				return;
+			}
+			else {
+				GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex);
+			}
+		}
+		else {
+			GameManager.Instance.LoadScene(
+				SceneHelpers.MenuBuildIndex,
+				StartCoroutine(winType.WhenTilesOffScreen()),
+				() => GameManager.Instance.MenuManager.OpenLevelSelect(true)
+			);
+		}
 	}
 
 	public IEnumerator WaitActionSelected() {

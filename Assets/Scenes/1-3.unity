@@ -1632,7 +1632,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1456777118}
+    m_TransformParent: {fileID: 1597783297}
     m_Modifications:
     - target: {fileID: 6300114290318550575, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
@@ -3243,16 +3243,16 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 50331647
       objectReference: {fileID: 0}
-    - target: {fileID: 5675921555796371971, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: RecordTime
-      value: 
-      objectReference: {fileID: 289015041}
     - target: {fileID: 7856298136429560452, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5675921555796371971, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: RecordTime
+      value: 
+      objectReference: {fileID: 289015041}
     - target: {fileID: 6463358458382071433, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_IsActive
@@ -3836,6 +3836,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelObjectContainer: {fileID: 1823513431}
   SnapAfterDeselected: 0
+  ShowFingerprint: 0
 --- !u!4 &1693928946
 Transform:
   m_ObjectHideFlags: 0
@@ -4687,7 +4688,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 525891911}
+    m_TransformParent: {fileID: 453231639}
     m_Modifications:
     - target: {fileID: 6300114290318550575, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}

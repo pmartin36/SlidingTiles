@@ -18,7 +18,7 @@ public class TutorialManager : LevelManager
 	private Animator anim;
 	private float lastTimeScale;
 
-	private bool playerEnteredTile, pressed;
+	private bool playerEnteredTile, pressed, hasMovedFromCenter;
 	private bool PlayerEnteredTile {
 		get => playerEnteredTile;
 		set {
@@ -34,14 +34,20 @@ public class TutorialManager : LevelManager
 			pressed = value;
 		}
 	}
+	private bool HasMovedFromCenter {
+		get => hasMovedFromCenter;
+		set
+		{
+			anim.SetBool("HasMovedFromCenter", value);
+			hasMovedFromCenter = value;
+		}
+	}
 
 	public override void Start() {
 		base.Start();
 		anim = GetComponent<Animator>();
 		FingerTrail = Finger.GetComponentInChildren<TrailRenderer>(true);
 		FingerRectTransform = Finger.GetComponent<RectTransform>();
-
-		AcceptingInputs = false;
 
 		string sn = gameObject.scene.name;
 		int tutorialNumber = int.Parse(sn.Substring(sn.Length - 1));
@@ -50,15 +56,21 @@ public class TutorialManager : LevelManager
 		TutorialTile.TutorialInit(
 			() => Pressed = true,
 			() => {
-				GameManager.Instance.SetTimescale(1f, 0.05f);
-				Finger.gameObject.SetActive(false);
+				if (!HasMovedFromCenter) {
+					GameManager.Instance.SetTimescale(1f, 0.05f);
+					Finger.gameObject.SetActive(false);
+
+					HasMovedFromCenter = true;
+				}
 			},
 			(entered) => {
-				if(entered) {
-					GameManager.Instance.SetTimescale(0.05f, 0.05f);
-				}
-				else {
-					GameManager.Instance.SetTimescale(1f, 0.05f);
+				if(!HasMovedFromCenter) {
+					if(entered) {
+						GameManager.Instance.SetTimescale(0.05f, 0.05f);
+					}
+					else {
+						GameManager.Instance.SetTimescale(1f, 0.05f);
+					}
 				}
 			}
 		);
@@ -89,9 +101,11 @@ public class TutorialManager : LevelManager
 		RespawnManager = new RespawnManager(gameObject.scene, Player);
 	}
 
-	public override void Reset(bool fromButton) {
-		base.Reset(fromButton);
-		ResetAnimation();
+	public override void Reset(bool fromRightSideButton) {
+		base.Reset(fromRightSideButton);
+		if(!(fromRightSideButton && Won)) {
+			ResetAnimation();
+		}
 	}
 
 	public override void PlayPauseButtonClicked() {
@@ -106,7 +120,6 @@ public class TutorialManager : LevelManager
 	}
 
 	public void ReachedTile() {
-		AcceptingInputs = true;
 		anim.SetBool("AtStartingTile", true);
 		FingerTrail.enabled = true;
 	}
@@ -123,8 +136,8 @@ public class TutorialManager : LevelManager
 		lastTimeScale = 1f;
 		PlayerEnteredTile = false;
 		Pressed = false;
+		HasMovedFromCenter = false;
 		anim.SetBool("AtStartingTile", false);
-		AcceptingInputs = false;
 		FingerTrail.enabled = false;
 		FingerTrail.gameObject.SetActive(false);
 		Finger.gameObject.SetActive(true);

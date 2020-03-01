@@ -15,7 +15,8 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public Button ResetButton;
-	public GameObject SpawnButton;
+	public Button SpawnButton;
+	public Button MenuButton;
 	private Image SpawnHighlightBorder;
 	private Image SpawnButtonImage;
 	public float SpawnHighlightBorderRadius;
@@ -23,11 +24,10 @@ public class ActionButtons : MonoBehaviour
 	public Sprite PlaySprite;
 	public Sprite PauseSprite;
 
-
 	public void Awake() {
-		Image[] images = SpawnButton.GetComponentsInChildren<Image>();
-		SpawnHighlightBorder = images.First(g => g.transform.parent == SpawnButton.transform);
-		SpawnButtonImage = images.First(g => g.transform.parent != SpawnButton.transform);
+		Image[] images = SpawnButton.transform.parent.GetComponentsInChildren<Image>();
+		SpawnHighlightBorder = images.First(g => g.transform.parent != SpawnButton.transform);
+		SpawnButtonImage = images.First(g => g.transform.parent == SpawnButton.transform);
 	}
 
 	public void PlayPauseButtonClicked() {
@@ -52,6 +52,12 @@ public class ActionButtons : MonoBehaviour
 	}
 
 	public void Menu() {
-		GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex);
+		GameManager.Instance.LevelManager.GoToLevelSelect(true);
+	}
+
+	public void SetInteractable(bool interactable) {
+		ResetButton.interactable = interactable;
+		SpawnButton.interactable = interactable;
+		MenuButton.interactable = interactable;
 	}
 }
