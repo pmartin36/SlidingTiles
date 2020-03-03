@@ -89,7 +89,7 @@ public class LevelManager : ContextManager {
 
 	// called every frame from context manager
 	public override void HandleInput(InputPackage p) {
-		if(!Won && !Paused) {
+		if(!Won) {
 			if(p.Touchdown) { 
 				if(p.TouchdownChange) {
 					// clicked
@@ -223,27 +223,12 @@ public class LevelManager : ContextManager {
 	}
 
 	public void SetPause(bool pause) {
+		if(!pause && !Player.CanUnpause()) {
+			return;
+		}
 		Paused = pause;
 		RespawnManager.ActionButtons.Pause(!Player.Alive || pause);
-		if (Paused) {
-			Pause();
-		}
-		else {
-			Unpause();
-		}
-	}
-
-	protected virtual void Pause() {
-		Preview.Show(false);
-		if (SelectedTile != null) {
-			SelectedTile.Select(false);
-			SelectedTile = null;
-		}
-		GameManager.Instance.SetTimescale(0.00001f);
-	}
-
-	protected virtual void Unpause() {
-		GameManager.Instance.SetTimescale(1f);
+		Player.SetPaused(pause);
 	}
 
 	public void HideLevel() {

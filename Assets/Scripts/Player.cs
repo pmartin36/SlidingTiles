@@ -15,6 +15,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public float timeToJumpApex = .4f;
 
 	public bool Alive { get; private set; }
+	public bool Paused { get; set; }
 
 	public float Vx => moveSpeed * moveDirection;
 	public bool Grounded => controller.collisions.below;
@@ -64,78 +65,80 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public void SetRespawnManager(RespawnManager m) => RespawnManager = m;
 
 	void FixedUpdate() {
-		CalculateVelocity();
+		if(!Paused) {
+			CalculateVelocity();
 
-		// dont include gravity in jump calculations
-		velocity.y -= gravity * Time.fixedDeltaTime;
-		bool jumping = DetermineJump(velocity * Time.fixedDeltaTime, out var modifiedMove);
-		if(!jumping) {
-			velocity.y += gravity * Time.fixedDeltaTime;
-		}
+			// dont include gravity in jump calculations
+			velocity.y -= gravity * Time.fixedDeltaTime;
+			bool jumping = DetermineJump(velocity * Time.fixedDeltaTime, out var modifiedMove);
+			if(!jumping) {
+				velocity.y += gravity * Time.fixedDeltaTime;
+			}
 
-		// actually perform movement
-		Vector2 amountMoved = controller.Move (velocity * Time.fixedDeltaTime);
+			// actually perform movement
+			Vector2 amountMoved = controller.Move (velocity * Time.fixedDeltaTime);
 
-		if (controller.collisions.above || controller.collisions.below) {
-			if (controller.collisions.slidingDownMaxSlope) {
-				velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
-			} else {
-				velocity.y = 0;
+			if (controller.collisions.above || controller.collisions.below) {
+				if (controller.collisions.slidingDownMaxSlope) {
+					velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
+				} else {
+					velocity.y = 0;
 
 				
-				float absLastY = Mathf.Abs(lastFrameVelocity.y);
-				float sign = Mathf.Sign(lastFrameVelocity.y);
-				// 1 tile fall, 30ish
-				// 2 tile fall, 40ish
-				// 3 tile fall, 50ish
-				if (absLastY > 10f) {
-					float absV = Mathf.Abs(velocity.x);
-					float lerp = Mathf.Clamp01((absLastY - 25f) / 25f) * moveSpeed;
-					float newV = Mathf.Max(0, absV - lerp);
+					float absLastY = Mathf.Abs(lastFrameVelocity.y);
+					float sign = Mathf.Sign(lastFrameVelocity.y);
+					// 1 tile fall, 30ish
+					// 2 tile fall, 40ish
+					// 3 tile fall, 50ish
+					if (absLastY > 10f) {
+						float absV = Mathf.Abs(velocity.x);
+						float lerp = Mathf.Clamp01((absLastY - 25f) / 25f) * moveSpeed;
+						float newV = Mathf.Max(0, absV - lerp);
 
-					velocity.x = newV;
-					velocityXSmoothing = newV;
+						velocity.x = newV;
+						velocityXSmoothing = newV;
 
-					if(lerp > 3) {
-						StartCoroutine(Vibrate());
+						if(lerp > 3) {
+							StartCoroutine(Vibrate());
+						}
+
+						// little screen shake
+						//CameraManager.Instance.CameraController.Shake(
+						//	1f,
+						//	a * 0.3f,
+						//	Vector2.up * sign * a,
+						//	Vector2.down * sign * a * 0.9f
+						//);
 					}
-
-					// little screen shake
-					//CameraManager.Instance.CameraController.Shake(
-					//	1f,
-					//	a * 0.3f,
-					//	Vector2.up * sign * a,
-					//	Vector2.down * sign * a * 0.9f
-					//);
 				}
 			}
-		}
 
-		if((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left)) {
-			moveDirection *= -1f;
-		}
-
-		// swap player direction only when it starts moving the other way, otherwise it swaps rapidly when smushed between two objects
-		if (amountMoved.sqrMagnitude > 0.001f && transform.localScale.x * amountMoved.x < 0) {
-			bool executeSwap = true;
-			// if collider if offset, verify that when we swap direction, we're not putting the collider inside another collider
-			if(Mathf.Abs(controller.collider.offset.x) > 0.001f) {
-				var hit = Physics2D.OverlapBox(
-					(Vector2)transform.position - Vector2.right * transform.lossyScale.x * controller.collider.offset.x,
-					transform.lossyScale * controller.collider.size - (2 * 0.015f) * Vector2.one,
-					0,
-					controller.collisionMask
-				);
-				executeSwap = hit == null;
+			if((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left)) {
+				moveDirection *= -1f;
 			}
-			if(executeSwap) {
-				Vector3 localScale = transform.localScale;
-				localScale.x *= -1f;
-				transform.localScale = localScale;
-			}
-		}
 
-		lastFrameVelocity = velocity;
+			// swap player direction only when it starts moving the other way, otherwise it swaps rapidly when smushed between two objects
+			if (amountMoved.sqrMagnitude > 0.001f && transform.localScale.x * amountMoved.x < 0) {
+				bool executeSwap = true;
+				// if collider if offset, verify that when we swap direction, we're not putting the collider inside another collider
+				if(Mathf.Abs(controller.collider.offset.x) > 0.001f) {
+					var hit = Physics2D.OverlapBox(
+						(Vector2)transform.position - Vector2.right * transform.lossyScale.x * controller.collider.offset.x,
+						transform.lossyScale * controller.collider.size - (2 * 0.015f) * Vector2.one,
+						0,
+						controller.collisionMask
+					);
+					executeSwap = hit == null;
+				}
+				if(executeSwap) {
+					Vector3 localScale = transform.localScale;
+					localScale.x *= -1f;
+					transform.localScale = localScale;
+				}
+			}
+
+			lastFrameVelocity = velocity;
+		}
 	}
 
 	void LateUpdate() {
@@ -332,6 +335,28 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		temporarySpeedTimer = 1f;
 	}
 
+	public bool CanUnpause() {
+		float skinWidth = 0.03f;
+		Vector2 positiveLossyScale = transform.lossyScale * new Vector2(Mathf.Sign(transform.lossyScale.x), Mathf.Sign(transform.lossyScale.y));
+		Collider2D hit = Physics2D.OverlapBox(
+			(Vector2)transform.position + controller.collider.offset * positiveLossyScale,
+			controller.collider.size * positiveLossyScale - new Vector2(2, 10) * skinWidth,
+			transform.eulerAngles.z,
+			controller.collisionMask
+		);
+		if(hit) {
+			StopCoroutine(UnpauseFailed());
+			StartCoroutine(UnpauseFailed());
+			return false;
+		}
+		return true;
+	}
+
+	public void SetPaused(bool paused) {
+		this.controller.collider.enabled = !paused && Alive;
+		Paused = paused;
+	}
+
 	private IEnumerator FlagReached(GoalFlag flag) {
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
@@ -340,6 +365,20 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		animator.SetBool("Won", Won); //start animation for reaching flag
 		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
+	}
+
+	private IEnumerator UnpauseFailed() {
+		float time = 0f;
+		float animationTime = 0.5f;
+		SpriteRenderer sr = GetComponent<SpriteRenderer>();
+		Color start = Color.red;
+		Color end = Color.white;
+		while (time < animationTime) {
+			sr.color = Color.Lerp(start, end, time / animationTime);
+			time += Time.deltaTime;
+			yield return null;
+		}
+		sr.color = end;
 	}
 
 	private IEnumerator Vibrate(YieldInstruction yieldinstruction = null) {

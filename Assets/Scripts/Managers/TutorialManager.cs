@@ -88,14 +88,14 @@ public class TutorialManager : LevelManager
 		}
 	}
 
-	protected override void Pause() {
-		lastTimeScale = Time.timeScale;
-		base.Pause();
-	}
+	//protected override void Pause() {
+	//	lastTimeScale = Time.timeScale;
+	//	base.Pause();
+	//}
 
-	protected override void Unpause() {
-		GameManager.Instance.SetTimescale(lastTimeScale);
-	}
+	//protected override void Unpause() {
+	//	GameManager.Instance.SetTimescale(lastTimeScale);
+	//}
 
 	public override void CreateRespawnManager() {
 		RespawnManager = new RespawnManager(gameObject.scene, Player);
