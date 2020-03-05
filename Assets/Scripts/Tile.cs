@@ -19,8 +19,10 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public bool Selected { get; set; }
 	public Vector2 PositionWhenSelected { get; set; }
+	public Vector2 ResidualVelocity { get; set; }
 
 	public bool Centered { get => transform.localPosition.sqrMagnitude < 0.000002f; } // (skinWidth / scale)^2 
+	public Vector2 NormalizedPosition => new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
 
 	private LayerMask tileMask;
 	protected LayerMask playerMask;
@@ -82,7 +84,27 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public virtual void FixedUpdate() {
 		LevelManager lm = GameManager.Instance.LevelManager;
-		if(lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
+		if(ResidualVelocity.sqrMagnitude > 0.1f) {
+			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
+			Vector2 moveDirection = ResidualVelocity.normalized;
+			Direction direction = GetDirectionFromPosition(ref moveDirection);
+			Vector3 moveAmount = ResidualVelocity * Time.fixedDeltaTime;
+			Vector2 position = moveAmount + transform.localPosition;
+
+
+			//if (Vector2.Dot(position, transform.localPosition) < 0) {
+			//	moveAmount = -(Vector2)transform.localPosition;
+			//}
+			//if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
+			//	foreach (Tile t in tilesToMove) {
+			//		t.Move(moveAmount, direction);
+			//	}
+			//}
+
+
+			TryMoveToPosition(position, moveAmount, true);
+		}
+		else if(lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
 			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
 			Vector3 moveAmount = position - transform.localPosition;
 
@@ -122,10 +144,17 @@ public class Tile : MonoBehaviour, IRequireResources
 		}
 	}
 
+	public virtual void SetResidualVelocity(Vector2 avgVelocity) {
+		if(avgVelocity.sqrMagnitude > 1.5f) {
+			ResidualVelocity = SpeedCap * avgVelocity.normalized;
+		}
+	}
+
 	public virtual void Select(bool select) {
 		Selected = select;
 		if (Selected) {
 			PositionWhenSelected = transform.position;
+			ResidualVelocity = Vector2.zero;
 		}
 		spriteRenderer.sharedMaterial = Selected ? SelectedMaterial : UnselectedMaterial;
 	}
@@ -212,9 +241,12 @@ public class Tile : MonoBehaviour, IRequireResources
 		return false;
 	}
 
-	public bool TryMove(Vector2 mouseMoveSinceSelection, Vector2 delta) {
+	public Vector2 GetPositionFromInput(Vector2 mouseMoveSinceSelection) {
+		return mouseMoveSinceSelection + (this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x;
+	}
+
+	public bool TryMoveToPosition(Vector2 position, Vector2 delta, bool fromResidual = false) {
 		if(Movable) {
-			Vector2 position = mouseMoveSinceSelection + (this.PositionWhenSelected - (Vector2)Space.transform.position) / transform.lossyScale.x;
 			bool centered = Centered;
 			float deltaTimeSpeedCap = SpeedCap * Time.fixedDeltaTime;
 
@@ -224,7 +256,7 @@ public class Tile : MonoBehaviour, IRequireResources
 					centered = true;
 				}
 				else {
-					Vector2 normalized = new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
+					Vector2 normalized = NormalizedPosition;
 					var pNorm = position * normalized;
 					float pNormMag = pNorm.magnitude;
 
@@ -255,39 +287,60 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			Direction direction = GetDirectionFromPosition(ref position);
 			
-			if(!centered && transform.localPosition.magnitude < BaseThreshold) {
-				position = transform.localPosition.normalized * Mathf.Min(transform.localPosition.magnitude, BaseThreshold - 0.001f);
-			}
-			else if(centered && position.magnitude < BaseThreshold) {
-				return false;	
+
+			if (!fromResidual) {
+				if (!centered && transform.localPosition.magnitude < BaseThreshold && Vector2.Dot(position, transform.localPosition) > 0) {
+					position = transform.localPosition.normalized * Mathf.Min(transform.localPosition.magnitude, BaseThreshold - 0.001f);
+				}
+				else if (centered && position.magnitude < BaseThreshold) {
+					return false;
+				}
 			}
 
-			// limit movement
-			Vector3 move = (position - (Vector2)transform.localPosition);
-			if (centered && position.magnitude > BaseThreshold) {
-				position = (BaseThreshold + 0.001f) * position.normalized;
-			}
-			else if (move.magnitude > deltaTimeSpeedCap) {
-				position = transform.localPosition + move.normalized * deltaTimeSpeedCap;
+			Vector3 moveAmount = position - (Vector2)transform.localPosition;
+			float magBeforeLimiting = position.magnitude;
+			// limit speed to max movement speed
+			if (moveAmount.magnitude > deltaTimeSpeedCap) {
+				moveAmount = moveAmount.normalized * deltaTimeSpeedCap;
+				position = transform.localPosition + moveAmount;
 			}
 
+			// make sure we escape base threshold when uncentering
 			float mag = position.magnitude;
+			if (centered && magBeforeLimiting > BaseThreshold) {
+				mag = Mathf.Max(BaseThreshold + 0.001f, position.magnitude);
+				position = mag * position.normalized;
+			}
+
+			// if we're going up to the border, make sure we don't overshoot
+			if (!centered && Space.GetNeighborInDirection(direction) == null && Vector2.Dot(transform.localPosition, position) < 0) {
+				mag = 0f;
+				position = Vector2.zero;
+			}
+
 			if(position.magnitude >= 1) {
 				position = position.normalized;
 			}
 
+			moveAmount = position - (Vector2)transform.localPosition;
 			bool moved = false;
 			float scale = transform.lossyScale.x;
-			Vector3 moveAmount = position - (Vector2)transform.localPosition;
-
 			HashSet<Tile> tilesToMove = new HashSet<Tile>();
-						
-			if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
+			bool canMove = CanMoveTo(ref moveAmount, tilesToMove, direction);
+			if (canMove) {
 				moved = this.Move(moveAmount, direction);
 				foreach (Tile t in tilesToMove) {
 					var tMoveAmount = moveAmount;
 					t.Move(tMoveAmount, direction);
+					if(fromResidual) {
+						t.ResidualVelocity = this.ResidualVelocity;
+					}
 				}
+			}
+
+			// if movement is off by 90 degrees, it's changed direction from the residual velocity - throw it out
+			if(!canMove || Mathf.Abs(Vector2.Dot(direction.Value, ResidualVelocity)) < 0.25f) {
+				ResidualVelocity = Vector2.zero;
 			}
 			return moved;
 		}

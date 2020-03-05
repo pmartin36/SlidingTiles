@@ -13,6 +13,7 @@ public class LevelManager : ContextManager {
 	protected LayerMask tileMask;
 	protected Vector3 grabPoint;
 	protected Vector3 grabReleasePoint;
+	protected Vector3 grabMovingVelocityAverage;
 
 	protected WinType winType;
 	protected int collectedStars;
@@ -105,6 +106,8 @@ public class LevelManager : ContextManager {
 						SelectedTile.Select(true);
 
 						Vibration.VibratePop();
+
+						grabMovingVelocityAverage = Vector2.zero;
 					}
 
 					#if UNITY_EDITOR
@@ -116,10 +119,12 @@ public class LevelManager : ContextManager {
 					#endif
 				}
 				else if(SelectedTile != null) {
+					grabMovingVelocityAverage = p.MousePositionWorldSpaceDelta * 0.1f + grabMovingVelocityAverage * 0.9f;
+
 					float scale = SelectedTile.transform.lossyScale.x;
 					Vector2 moveAmount = (p.MousePositionWorldSpace - grabPoint) / scale;
 					Tilespace tileBeforeMove = SelectedTile.Space;
-					bool changedTilespaces = SelectedTile.TryMove(moveAmount, p.MousePositionWorldSpaceDelta);
+					bool changedTilespaces = SelectedTile.TryMoveToPosition(SelectedTile.GetPositionFromInput(moveAmount), p.MousePositionWorldSpaceDelta);
 
 					if(changedTilespaces) {
 						if(SelectedTile.Space.Sticky) {
@@ -161,11 +166,19 @@ public class LevelManager : ContextManager {
 			else if (!p.Touchdown && p.TouchdownChange) {
 				Preview.Show(false);
 				if (SelectedTile != null) {
+					Vector2 avgOnRelease = grabMovingVelocityAverage;
+					if(!SelectedTile.Centered) {
+						avgOnRelease *= SelectedTile.NormalizedPosition;
+					}
+					Debug.Log(avgOnRelease);
+
+					SelectedTile.SetResidualVelocity(avgOnRelease);
 					SelectedTile.Select(false);
 					SelectedTile = null;
 				}
+
 				#if UNITY_EDITOR
-					if (Fingerprint != null)
+				if (Fingerprint != null)
 						Fingerprint.gameObject.SetActive(false);
 				#endif
 			}
