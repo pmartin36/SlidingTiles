@@ -10,6 +10,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	public bool Loaded { get; set; }
 	public const float BaseThreshold = 0.15f;
 	private const float BaseThresholdSquared = BaseThreshold * BaseThreshold;
+	private bool movedThisFrame;
 
 	private const float SpeedCap = 4f;
 
@@ -84,14 +85,15 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public virtual void FixedUpdate() {
 		LevelManager lm = GameManager.Instance.LevelManager;
-		if(ResidualVelocity.sqrMagnitude > 0.1f) {
-			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
-			Vector2 moveDirection = ResidualVelocity.normalized;
-			Direction direction = GetDirectionFromPosition(ref moveDirection);
+		if(!movedThisFrame && ResidualVelocity.sqrMagnitude > 0.001f) {
 			Vector3 moveAmount = ResidualVelocity * Time.fixedDeltaTime;
 			Vector2 position = moveAmount + transform.localPosition;
+			TryMoveToPosition(position, moveAmount, true);
 
 
+			//HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
+			//Vector2 moveDirection = ResidualVelocity.normalized;
+			//Direction direction = GetDirectionFromPosition(ref moveDirection);
 			//if (Vector2.Dot(position, transform.localPosition) < 0) {
 			//	moveAmount = -(Vector2)transform.localPosition;
 			//}
@@ -100,11 +102,9 @@ public class Tile : MonoBehaviour, IRequireResources
 			//		t.Move(moveAmount, direction);
 			//	}
 			//}
-
-
-			TryMoveToPosition(position, moveAmount, true);
 		}
-		else if(lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
+
+		if (!movedThisFrame && lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
 			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
 			Vector3 moveAmount = position - transform.localPosition;
 
@@ -121,16 +121,12 @@ public class Tile : MonoBehaviour, IRequireResources
 					t.Move(moveAmount, direction);
 				}
 			}
-			return;
 		}
 		// try centering selected tiles that are close to being centered
 		else if (Selected && transform.localPosition.sqrMagnitude <= BaseThresholdSquared) {
 			float distToMove = Time.fixedDeltaTime * SpeedCap;
-			Vector3 moveAmount;
-			if (distToMove > transform.localPosition.magnitude) {
-				moveAmount = -transform.localPosition;
-			}
-			else {
+			Vector3 moveAmount = -transform.localPosition;
+			if (distToMove < transform.localPosition.magnitude) {
 				moveAmount = -transform.localPosition.normalized * distToMove;
 			}
 
@@ -142,6 +138,8 @@ public class Tile : MonoBehaviour, IRequireResources
 				}
 			}
 		}
+
+		movedThisFrame = false;
 	}
 
 	public virtual void SetResidualVelocity(Vector2 avgVelocity) {
@@ -165,6 +163,11 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public virtual bool Move(Vector3 moveAmount, Direction d) {
+		// if we're going up to the border, make sure we don't overshoot
+		if (!Centered && Space.GetNeighborInDirection(d) == null && Vector2.Dot(transform.localPosition, transform.localPosition + moveAmount) < 0) {
+			moveAmount = -transform.localPosition;
+		}
+
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 
 		foreach (PlatformController c in childPlatforms) {
@@ -192,7 +195,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {
 			this.SetMovable(false);
 		}
-
+		movedThisFrame = true;
 		return changedTilespaces;
 	}
 
@@ -202,16 +205,16 @@ public class Tile : MonoBehaviour, IRequireResources
 		if(validTilespace || goingTowardCenter) {
 			Vector3 DebugOriginalMoveAmount = new Vector2(moveAmount.x, moveAmount.y);
 			Vector2 size = Mathf.Abs(moveAmount.x) > 0.0001f 
-				? new Vector2(moveAmount.magnitude * 0.5f, transform.lossyScale.x * 0.90f)
-				: new Vector2(transform.lossyScale.x * 0.90f, moveAmount.magnitude * 0.5f);
+				? new Vector2(moveAmount.magnitude * 0.5f, 0.90f) * transform.lossyScale.x
+				: new Vector2(0.90f, moveAmount.magnitude * 0.5f) * transform.lossyScale.x;
 			Collider2D[] collisions = 
 				Physics2D.OverlapBoxAll(
-					this.transform.position + moveAmount.normalized * (transform.lossyScale.x + moveAmount.magnitude + 0.001f) * 0.5f,
+					this.transform.position + moveAmount.normalized * ((1 + moveAmount.magnitude) * transform.lossyScale.x * 0.5f),
 					size, 
 					0,
 					tileMask)
 					.Where(r => r.gameObject != this.gameObject).ToArray();
-
+			Debug.DrawRay(this.transform.position, moveAmount.normalized * ((transform.lossyScale.x + 0.001f) * 0.5f + moveAmount.magnitude * transform.lossyScale.x), Color.white);
 			Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 			foreach (PlatformController p in childPlatforms) {
 				p.CheckBlocking(ref globalMoveAmount, tilesToMove);
@@ -312,25 +315,19 @@ public class Tile : MonoBehaviour, IRequireResources
 				position = mag * position.normalized;
 			}
 
-			// if we're going up to the border, make sure we don't overshoot
-			if (!centered && Space.GetNeighborInDirection(direction) == null && Vector2.Dot(transform.localPosition, position) < 0) {
-				mag = 0f;
-				position = Vector2.zero;
-			}
-
 			if(position.magnitude >= 1) {
 				position = position.normalized;
 			}
 
+			HashSet<Tile> tilesToMove = new HashSet<Tile>();
 			moveAmount = position - (Vector2)transform.localPosition;
 			bool moved = false;
-			float scale = transform.lossyScale.x;
-			HashSet<Tile> tilesToMove = new HashSet<Tile>();
+
 			bool canMove = CanMoveTo(ref moveAmount, tilesToMove, direction);
 			if (canMove) {
 				moved = this.Move(moveAmount, direction);
 				foreach (Tile t in tilesToMove) {
-					var tMoveAmount = moveAmount;
+					var tMoveAmount = position - (Vector2)t.transform.localPosition;
 					t.Move(tMoveAmount, direction);
 					if(fromResidual) {
 						t.ResidualVelocity = this.ResidualVelocity;
