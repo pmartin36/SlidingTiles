@@ -185,8 +185,8 @@ public class LevelManager : ContextManager {
 		}
 	}
 
-	public void AddStar() {
-		collectedStars++;
+	public int AddStar() {
+		return ++collectedStars;
 	}
 
 	public virtual void PlayPauseButtonClicked() {

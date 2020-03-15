@@ -35,6 +35,9 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Vector3 lastFrameVelocity;
 	private float velocityXSmoothing;
 
+	private Vector3 lastFramePosition;
+	private Vector3 lastFramePositionDelta;
+
 	private Controller2D controller;
 	private SpriteRenderer lights;
 
@@ -43,6 +46,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	private RespawnManager RespawnManager;
 	private Animator animator;
+	private AudioSource audio;
 
 	private bool Won { get; set; }
 
@@ -50,6 +54,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		controller = GetComponent<Controller2D>();
 		lights = GetComponentsInChildren<SpriteRenderer>().First(s => s.gameObject != this.gameObject);
 		animator = GetComponent<Animator>();
+		audio = GetComponent<AudioSource>();
 	}
 
 	void Start() {
@@ -57,6 +62,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
 		moveDirection = 1f;	
+		lastFramePosition = transform.position;
 		// player is set inactive in the respawn manager,
 		// when switching to next level, we don't initialize LevelManager/RespawnManager 
 		// until after the current scene is unloaded (see case WinTypeAction.Next)
@@ -145,6 +151,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		if(!Won) {
 			lights.color = Alive ? Color.green : Color.red;
 		}
+		lastFramePositionDelta = this.transform.position - lastFramePosition;
+		lastFramePosition = this.transform.position;
 	}
 
 	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
@@ -297,7 +305,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			StartCoroutine(FlagReached(collision.GetComponent<GoalFlag>()));
 		}
 		else if(collision.CompareTag("Star")) {
-			collision.GetComponent<Star>().Collected();
+			collision.GetComponent<Star>().Collected(lastFramePositionDelta);
 		}	
 	}
 
@@ -357,14 +365,44 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		Paused = paused;
 	}
 
+	public void PlayWalkSound() {
+		float freq = 0.8f + 0.4f * UnityEngine.Random.value;
+		float volume = 0.2f + 0.1f * UnityEngine.Random.value;
+		PlaySound(freq, volume);
+	}
+
+	public void PlaySound(float volume, float frequency) {
+		audio.volume = volume * GameManager.Instance.SaveData.FxVolume;
+		audio.pitch = frequency;
+		audio.Play();
+	}
+
 	private IEnumerator FlagReached(GoalFlag flag) {
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
+
+		//play fireworks
+		float t = 0f;
+		while (t < 0.5f) {
+			flag.SetAudioVolume(t);
+			t += Time.deltaTime;
+			yield return null;
+		}
 		yield return new WaitUntil(() => controller.collisions.below); // wait for the player to hit the ground
+
 		Won = true;
 		animator.SetBool("Won", Won); //start animation for reaching flag
 		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
+
+		// silence fireworks
+		t = 0f;
+		while (t < 2f) {
+			float sm = Mathf.SmoothStep(0.5f, 0f, t / 2f);
+			flag.SetAudioVolume(sm);
+			t += Time.deltaTime;
+			yield return null;
+		}
 	}
 
 	private IEnumerator UnpauseFailed() {

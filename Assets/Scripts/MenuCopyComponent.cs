@@ -38,29 +38,29 @@ public abstract class KeyedMenuCopyComponent : MenuCopyComponent, IRequireResour
 		if(world > 0) {
 			if (lm.World != world) {
 				lm.World = world;
-				Addressables.LoadAssetAsync<CopyObject>($"World{world}/{Key.ToString()}").Completed +=
+				Addressables.LoadAssetAsync<ScriptableObject>($"World{world}/{Key.ToString()}").Completed +=
 					(obj) =>  {
-						SetMaterial(obj.Result, world);
+						SetPropertiesFromObject(obj.Result, world);
 						lm.CopyObject = obj.Result;
 						Loaded = true;
 					};
 			}
 			else {
-				SetMaterial(lm.CopyObject, world);
+				SetPropertiesFromObject(lm.CopyObject, world);
 			}
 		}
 		else {
 			Loaded = true;
 		}
 	}
-	public abstract void SetMaterial(CopyObject m, int world);
+	public abstract void SetPropertiesFromObject(ScriptableObject m, int world);
 }
 
 public struct LevelMaterial {
 	public int World { get; set; }
-	public CopyObject CopyObject { get; set; }
+	public ScriptableObject CopyObject { get; set; }
 
-	public LevelMaterial(int world, CopyObject co) : this() {
+	public LevelMaterial(int world, ScriptableObject co) : this() {
 		World = world;
 		CopyObject = co;
 	}

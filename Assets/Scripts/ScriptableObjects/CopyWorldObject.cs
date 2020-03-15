@@ -12,6 +12,7 @@ public class CopyWorldObject : ScriptableObject {
 	public CopyObject Grid;
 	public CopyObject Tile;
 	public CopyObject TileText;
+	public CopyMusicObject Music;
 }
 
 

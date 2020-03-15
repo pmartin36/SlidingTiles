@@ -28,14 +28,17 @@ public class Tile : MonoBehaviour, IRequireResources
 	private LayerMask tileMask;
 	protected LayerMask playerMask;
 	private SpriteRenderer spriteRenderer;
+	private AudioSource audio;
 
 	private PlatformController[] childPlatforms;
 
-	private Vector3 lastFrameVelocity;
 	private Vector3 lastFramePosition;
+	private float movingVelocityAverage;
+	// private static List<int> audibleTiles = new List<int>();
 
 	private bool initialMovable;
 	private Tilespace initialTilespace;
+	public int ID => initialTilespace.Position.y * 4 + initialTilespace.Position.x;
 
 	private static int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
@@ -51,6 +54,8 @@ public class Tile : MonoBehaviour, IRequireResources
 	private void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
+
+		audio = GetComponent<AudioSource>();
 
 		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld && Movable) {
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
@@ -73,8 +78,6 @@ public class Tile : MonoBehaviour, IRequireResources
 
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;
-		lastFrameVelocity = Vector3.zero;	
-
 	}
 
 	public void Init(Tilespace t) {
@@ -140,6 +143,33 @@ public class Tile : MonoBehaviour, IRequireResources
 		}
 
 		movedThisFrame = false;
+	}
+
+	public void LateUpdate() {
+		if(Movable) {
+			Vector2 diff = (transform.position - lastFramePosition) / transform.localScale.x;
+			movingVelocityAverage = 0.25f * diff.magnitude +  movingVelocityAverage * 0.75f;
+			if(movingVelocityAverage < 0.001f) {
+				if (audio.enabled) {
+					audio.enabled = false;
+				}
+			}
+			else {
+				if (!audio.enabled) {
+					audio.enabled = true;
+					audio.time = audio.clip.length * Random.value;
+				}
+
+				// 0.9 is basically max speed
+				// 0.01 is barely moving
+				float v = Mathf.InverseLerp(-0.2f, 0.4f, movingVelocityAverage);
+				audio.volume = Mathf.Lerp(0.0f, Selected ? 0.65f : 0.5f, v) * GameManager.Instance.SaveData.FxVolume;
+				
+				//float p = Mathf.InverseLerp(0f, 0.6f, movingVelocityAverage);
+				//audio.pitch = Mathf.Lerp(0.8f, 1f, movingVelocityAverage);
+			}
+			lastFramePosition = transform.position;
+		}
 	}
 
 	public virtual void SetResidualVelocity(Vector2 avgVelocity) {

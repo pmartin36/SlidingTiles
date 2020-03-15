@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class LevelSelect : MenuCopyComponent
 {
+	public static float CameraWipeTime = 0.5f;
+
 	public MenuCopyManager CopyManager;
 	public LevelSelectButton Back;
 	public NumberedLevelSelectButton[] NumberedLevelButtons;
@@ -271,7 +273,7 @@ public class LevelSelect : MenuCopyComponent
 	private IEnumerator CameraWipe(float target) {
 		float time = 0;
 		float start = 1 - target;
-		float animationTime = 0.5f;
+		float animationTime = CameraWipeTime;
 		//yield return new WaitForSeconds(0.25f);
 		while (time < animationTime) {
 			float v = Mathf.Lerp(start, target, time / animationTime);

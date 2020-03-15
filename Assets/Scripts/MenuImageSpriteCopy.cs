@@ -10,13 +10,13 @@ public class MenuImageSpriteCopy : KeyedMenuCopyComponent {
 		base.Start();
 	}
 
-	public override void SetMaterial(CopyObject m, int world) {
+	public override void SetPropertiesFromObject(ScriptableObject m, int world) {
 		if(image == null) {
 			image = GetComponent<Image>();
 		}
-		image.material = m.Material;
 
 		CopyImageObject copyObject = m as CopyImageObject;
+		image.material = copyObject.Material;
 		if (copyObject != null) {
 			image.sprite = copyObject.Sprite;
 			image.color = copyObject.Color;

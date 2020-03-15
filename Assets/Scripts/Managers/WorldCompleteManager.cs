@@ -75,7 +75,9 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	}
 
 	public void Continue() {
-		GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(World+1, 1));
+		int nextWorld = World+1;
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(nextWorld);
+		GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1));
 	}
 
 	public void HideContinue() {
