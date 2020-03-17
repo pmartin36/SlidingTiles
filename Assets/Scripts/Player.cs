@@ -392,7 +392,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		Won = true;
 		animator.SetBool("Won", Won); //start animation for reaching flag
-		yield return new WaitForSeconds(1f); // let player enjoy animation for a second
+		yield return new WaitForSeconds(2f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
 
 		// silence fireworks
