@@ -9,6 +9,7 @@ public class CanvasManager : MonoBehaviour
 			c.worldCamera = CameraManager.Instance.Camera;
 			if (!c.CompareTag("WinType")) {
 				c.renderMode = RenderMode.WorldSpace;
+				c.transform.localPosition = Vector3.zero;
 			}
 		}
     }

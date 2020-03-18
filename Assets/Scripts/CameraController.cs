@@ -34,7 +34,7 @@ public class CameraController : MonoBehaviour
 		}
 
 		offset = Vector3.Lerp(offset, targetOffset, shakeSpeed);
-		transform.position = centeredPosition + offset;
+		//transform.position = centeredPosition + offset;
 
 		if ( pctDuration < 1 && Vector2.Distance(offset, targetOffset) < 0.1f ) {
 			if(shakeOffsets != null && shakeOffsets.Count > 0) {
