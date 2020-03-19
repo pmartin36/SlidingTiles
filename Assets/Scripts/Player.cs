@@ -39,7 +39,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Vector3 lastFramePositionDelta;
 
 	private Controller2D controller;
-	private SpriteRenderer lights;
 
 	private float moveDirection;
 	private Vector3 spawnPosition;
@@ -52,7 +51,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	void Awake() {
 		controller = GetComponent<Controller2D>();
-		lights = GetComponentsInChildren<SpriteRenderer>().First(s => s.gameObject != this.gameObject);
 		animator = GetComponent<Animator>();
 		audio = GetComponent<AudioSource>();
 	}
@@ -148,11 +146,22 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	void LateUpdate() {
-		if(!Won) {
-			lights.color = Alive ? Color.green : Color.red;
-		}
 		lastFramePositionDelta = this.transform.position - lastFramePosition;
 		lastFramePosition = this.transform.position;
+	}
+
+	void Update() {
+		if (Alive) {
+			if(Paused) {
+				animator.SetFloat("Speed", 0f);
+			}
+			else {
+				float vxAbs = Mathf.Abs(velocity.x);
+				float inv = Mathf.InverseLerp(0f, 15f, vxAbs);
+				animator.SetFloat("Speed", Mathf.Lerp(0.15f, 2f, inv));
+			}
+		}
+		animator.SetBool("Grounded", Grounded);
 	}
 
 	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
@@ -325,6 +334,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		velocity = Vector2.zero;
 		Won = false;
 		animator.SetBool("Won", Won);
+		animator.SetFloat("Speed", 0f);
+		animator.SetBool("Alive", alive);
 	}
 
 	public void OnDestroy() {
@@ -380,6 +391,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private IEnumerator FlagReached(GoalFlag flag) {
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
+		animator.SetBool("Won", true); //start animation for reaching flag
 
 		//play fireworks
 		float t = 0f;
@@ -391,7 +403,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		yield return new WaitUntil(() => controller.collisions.below); // wait for the player to hit the ground
 
 		Won = true;
-		animator.SetBool("Won", Won); //start animation for reaching flag
 		yield return new WaitForSeconds(2f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
 
