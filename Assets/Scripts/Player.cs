@@ -10,10 +10,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public event System.EventHandler<bool> aliveChanged;
 	public static event System.EventHandler<float> gravityDirectionChanged;
 
-    public float maxJumpHeight = 4;
-	public float minJumpHeight = 1;
-	public float timeToJumpApex = .4f;
-
 	public bool Alive { get; private set; }
 	public bool Paused { get; set; }
 
@@ -21,15 +17,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public bool Grounded => controller.collisions.below;
 	public Vector3 Direction => new Vector3(moveDirection, Mathf.Sign(gravity));
 
-	private float accelerationTimeAirborne = .2f;
-	private float accelerationTimeGrounded = .1f;
 	private float moveSpeed = 9;
 	private float? temporarySpeed;
 	private float temporarySpeedTimer;
 
 	private float gravity;
 	private float maxJumpVelocity;
-	private float minJumpVelocity;
 	[SerializeField]
 	private Vector3 velocity;
 	private Vector3 lastFrameVelocity;
@@ -47,18 +40,32 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private Animator animator;
 	private AudioSource audio;
 
+	private ParticleSystem footfallParticles;
+	private ParticleSystem heavyLandParticles;
+
+	public AudioClip WalkSoundClip;
+	public AudioClip LandSoundClip;
+
 	private bool Won { get; set; }
 
 	void Awake() {
 		controller = GetComponent<Controller2D>();
 		animator = GetComponent<Animator>();
 		audio = GetComponent<AudioSource>();
+
+		var ps = GetComponentsInChildren<ParticleSystem>();
+		footfallParticles = ps.First(p => p.name == "footfallParticles");
+		footfallParticles.Stop();
+		heavyLandParticles = ps.First(p => p.name == "heavyLandParticles");
+		heavyLandParticles.Stop();
 	}
 
 	void Start() {
+		float timeToJumpApex = 0.4f;
+		float maxJumpHeight = 4;
+
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
-		minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
 		moveDirection = 1f;	
 		lastFramePosition = transform.position;
 		// player is set inactive in the respawn manager,
@@ -85,26 +92,32 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			if (controller.collisions.above || controller.collisions.below) {
 				if (controller.collisions.slidingDownMaxSlope) {
 					velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
-				} else {
+				}
+				else {
 					velocity.y = 0;
 
-				
-					float absLastY = Mathf.Abs(lastFrameVelocity.y);
+					float vy = Mathf.Abs(lastFrameVelocity.y);
 					float sign = Mathf.Sign(lastFrameVelocity.y);
 					// 1 tile fall, 30ish
 					// 2 tile fall, 40ish
 					// 3 tile fall, 50ish
-					if (absLastY > 10f) {
+					if (vy > 10f) {
 						float absV = Mathf.Abs(velocity.x);
-						float lerp = Mathf.Clamp01((absLastY - 25f) / 25f) * moveSpeed;
+						float raw = Mathf.Clamp01((vy - 25f) / 25f);
+						float lerp = raw * moveSpeed;
 						float newV = Mathf.Max(0, absV - lerp);
 
 						velocity.x = newV;
-						velocityXSmoothing = newV;
 
 						if(lerp > 3) {
 							StartCoroutine(Vibrate());
 						}
+
+						heavyLandParticles.Play();
+						if (audio.clip != LandSoundClip) {
+							audio.clip = LandSoundClip;
+						}
+						PlaySound(Mathf.Lerp(0.25f, 1.5f, raw), Mathf.Lerp(1, 0.9f, raw));
 
 						// little screen shake
 						//CameraManager.Instance.CameraController.Shake(
@@ -153,15 +166,17 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	void Update() {
 		if (Alive) {
 			if(Paused) {
-				animator.SetFloat("Speed", 0f);
+				animator.SetFloat("Vx", 0f);
+				animator.SetFloat("Vx", 0f);
 			}
 			else {
 				float vxAbs = Mathf.Abs(velocity.x);
 				float inv = Mathf.InverseLerp(0f, 15f, vxAbs);
-				animator.SetFloat("Speed", Mathf.Lerp(0.15f, 2f, inv));
+				animator.SetFloat("Vx", Mathf.Lerp(0.15f, 1.6f, inv));
 			}
 		}
 		animator.SetBool("Grounded", Grounded);
+		animator.SetFloat("Vy", velocity.y);
 	}
 
 	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
@@ -334,7 +349,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		velocity = Vector2.zero;
 		Won = false;
 		animator.SetBool("Won", Won);
-		animator.SetFloat("Speed", 0f);
+		animator.SetFloat("Vx", 0f);
 		animator.SetBool("Alive", alive);
 	}
 
@@ -376,10 +391,20 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		Paused = paused;
 	}
 
-	public void PlayWalkSound() {
-		float freq = 0.8f + 0.4f * UnityEngine.Random.value;
-		float volume = 0.2f + 0.1f * UnityEngine.Random.value;
-		PlaySound(freq, volume);
+	public void JumpLanding() {
+		
+	}
+
+	public void Footfall() {
+		var vx = Mathf.Abs(this.velocity.x);
+		footfallParticles.Play();
+
+		float freq = 1f + 0.1f * UnityEngine.Random.value;
+		float volume = 0.3f + 0.2f * UnityEngine.Random.value;
+		if(audio.clip != WalkSoundClip) {
+			audio.clip = WalkSoundClip;
+		}
+		PlaySound(volume, freq);
 	}
 
 	public void PlaySound(float volume, float frequency) {
