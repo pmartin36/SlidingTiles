@@ -27,8 +27,8 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private LayerMask tileMask;
 	protected LayerMask playerMask;
-	private SpriteRenderer spriteRenderer;
-	private AudioSource audio;
+	protected SpriteRenderer spriteRenderer;
+	protected AudioSource audio;
 
 	private PlatformController[] childPlatforms;
 
@@ -47,13 +47,14 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private static AsyncOperationHandle<Material> OnImmobileMaterialLoad;
 
-	private void Awake() {
+	protected void Awake() {
 		playerMask = 1 << LayerMask.NameToLayer("Player");
 	}
 
-	private void Start() {
+	protected virtual void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer.sortingOrder = -this.Space.Position.y;
 
 		audio = GetComponent<AudioSource>();
 
@@ -220,6 +221,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			next.SetChildTile(this);
 			changedTilespaces = true;
+			spriteRenderer.sortingOrder = -this.Space.Position.y;
 		}
 
 		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {

@@ -21,6 +21,10 @@ public class TutorialTile : Tile
 		OnPlayerEnteredOrLeft = onplayer;
 	}
 
+	protected override void Start() {
+		base.Start();
+	}
+
 	public override void Select(bool select) {
 		base.Select(select);
 		if(Selected) {

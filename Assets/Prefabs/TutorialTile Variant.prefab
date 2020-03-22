@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0622886c73c933e4584301c9fd677090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Movable: 1
-  SelectedMaterial: {fileID: 2100000, guid: d98822863fb900344b2609a09e6ec9c4, type: 2}
+  Movable:
+    Value: 0
 --- !u!1001 &4269846321203863636
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -113,7 +113,7 @@ PrefabInstance:
     - target: {fileID: 6300114290318550575, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: m_Name
-      value: TutorialTile
+      value: TutorialTile Variant
       objectReference: {fileID: 0}
     - target: {fileID: 6300114290318550575, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
@@ -177,6 +177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
+    - {fileID: 3811466736544847549, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
 --- !u!1 &7795460518094363856 stripped
 GameObject:
