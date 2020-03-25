@@ -62,7 +62,10 @@
             {		
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-				float immobileContrast = 0.5 * (1 - _Mobile);
+				fixed4 col_immobile = tex2D(_ImmobileTex, i.uv);
+				float immobileContrast = 0.1 * (1 - _Mobile);
+
+				col = lerp(col_immobile, col, _Mobile);
 				col = pow(col, 1 + immobileContrast) * i.color; //increase contrast
 				return col;
             }

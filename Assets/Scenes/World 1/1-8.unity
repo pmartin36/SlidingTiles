@@ -156,7 +156,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -412,10 +412,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 3b7786ace3e5aef45b05ed7efc6ff47d, type: 2}
+      objectReference: {fileID: 876678523}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3811466736544847549, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: Movable.Value
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -877,7 +888,7 @@ Transform:
   m_GameObject: {fileID: 436947731}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 15, y: 15.156, z: 0}
-  m_LocalScale: {x: 5, y: 5.04, z: 1}
+  m_LocalScale: {x: 10, y: 10.08, z: 1}
   m_Children: []
   m_Father: {fileID: 829443428}
   m_RootOrder: 0
@@ -919,7 +930,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 98243621e1ce4fb49b0953e50d00a061, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5d040d8a357d69d49bf16f2b5c390a02, type: 3}
   m_Color: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1018,6 +1029,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 9189909}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -1664,6 +1681,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 3b7786ace3e5aef45b05ed7efc6ff47d, type: 2}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -2020,6 +2043,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2120742857}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -2134,6 +2163,96 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &876678523
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: World1_NormalTile
+  m_Shader: {fileID: 4800000, guid: eed789148cc953043baa231a667f6aa6, type: 3}
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ImmobileTex:
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - PixelSnap: 0
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _EnableExternalAlpha: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mobile: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _ImmobileColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MobileColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &880908391 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2949566637206040673, guid: ea40b52421d56974eaecaa0bf229a16a,
@@ -2222,6 +2341,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 3b7786ace3e5aef45b05ed7efc6ff47d, type: 2}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -2881,6 +3006,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 1656837893}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -3027,7 +3158,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -3234,6 +3365,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 1963541248}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -3923,6 +4060,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 3b7786ace3e5aef45b05ed7efc6ff47d, type: 2}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -4087,6 +4230,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 1918214163}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -4186,6 +4335,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 1313853930}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -4247,7 +4402,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -4557,6 +4712,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 3b7786ace3e5aef45b05ed7efc6ff47d, type: 2}
+    - target: {fileID: 4737748049846724473, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7f44ce44629f7174fa040fefad525742,
+        type: 3}
     - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable
@@ -4857,7 +5018,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -4953,7 +5114,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -5139,7 +5300,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: a501ba5979ef8bc408b861cfa5b478f3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5627a52051be4e24ea0c0ac44f207c09, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:

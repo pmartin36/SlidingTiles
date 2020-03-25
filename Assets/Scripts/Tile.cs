@@ -90,9 +90,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	public virtual void FixedUpdate() {
 		LevelManager lm = GameManager.Instance.LevelManager;
 		if(!movedThisFrame && ResidualVelocity.sqrMagnitude > 0.001f) {
-			Vector3 moveAmount = ResidualVelocity * Time.fixedDeltaTime;
-			Vector2 position = moveAmount + transform.localPosition;
-			TryMoveToPosition(position, moveAmount, true);
+			ResidualMove();
 
 
 			//HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
@@ -176,7 +174,14 @@ public class Tile : MonoBehaviour, IRequireResources
 	public virtual void SetResidualVelocity(Vector2 avgVelocity) {
 		if(avgVelocity.sqrMagnitude > 1.5f) {
 			ResidualVelocity = SpeedCap * avgVelocity.normalized;
+			ResidualMove();
 		}
+	}
+
+	public void ResidualMove() {
+		Vector3 moveAmount = ResidualVelocity * Time.fixedDeltaTime;
+		Vector2 position = moveAmount + transform.localPosition;
+		TryMoveToPosition(position, moveAmount, true);
 	}
 
 	public virtual void Select(bool select) {

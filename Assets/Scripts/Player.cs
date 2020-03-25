@@ -46,6 +46,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public AudioClip WalkSoundClip;
 	public AudioClip LandSoundClip;
 
+	public Animator PortraitAnimator;
+
 	private bool Won { get; set; }
 
 	void Awake() {
@@ -166,17 +168,16 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	void Update() {
 		if (Alive) {
 			if(Paused) {
-				animator.SetFloat("Vx", 0f);
-				animator.SetFloat("Vx", 0f);
+				SetAnimationFloat("Vx", 0f);
 			}
 			else {
 				float vxAbs = Mathf.Abs(velocity.x);
 				float inv = Mathf.InverseLerp(0f, 15f, vxAbs);
-				animator.SetFloat("Vx", Mathf.Lerp(0.15f, 1.6f, inv));
+				SetAnimationFloat("Vx", Mathf.Lerp(0.15f, 1.6f, inv));
 			}
 		}
-		animator.SetBool("Grounded", Grounded);
-		animator.SetFloat("Vy", velocity.y);
+		SetAnimationBool("Grounded", Grounded);
+		SetAnimationFloat("Vy", velocity.y);
 	}
 
 	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
@@ -348,9 +349,9 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		ChangeGravityDirection(-1f);
 		velocity = Vector2.zero;
 		Won = false;
-		animator.SetBool("Won", Won);
-		animator.SetFloat("Vx", 0f);
-		animator.SetBool("Alive", alive);
+		SetAnimationBool("Won", Won);
+		SetAnimationFloat("Vx", 0f);
+		SetAnimationBool("Alive", alive);
 	}
 
 	public void OnDestroy() {
@@ -413,10 +414,20 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		audio.Play();
 	}
 
+	private void SetAnimationBool(string key, bool value) {
+		animator.SetBool(key, value);
+		PortraitAnimator.SetBool(key, value);
+	}
+
+	private void SetAnimationFloat(string key, float value) {
+		animator.SetFloat(key, value);
+		PortraitAnimator.SetFloat(key, value);
+	}
+
 	private IEnumerator FlagReached(GoalFlag flag) {
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
-		animator.SetBool("Won", true); //start animation for reaching flag
+		SetAnimationBool("Won", true); //start animation for reaching flag
 
 		//play fireworks
 		float t = 0f;
