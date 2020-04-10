@@ -5,15 +5,21 @@ using UnityEngine;
 public class Spring : MonoBehaviour
 {
 	private Animator animator;
+	private AudioSource audio;
 	private Vector2 direction;
 
     void Start() {
 		animator = GetComponent<Animator>();
+		audio = GetComponent<AudioSource>();
 		direction = Utils.AngleToVector(transform.rotation.eulerAngles.z).Rotate(90);
 	}
 
     public void Sprung() {
 		animator.Play("spring");
+	}
+
+	public void PlaySound() {
+		audio.Play();
 	}
 
 	public void OnTriggerEnter2D(Collider2D collision) {

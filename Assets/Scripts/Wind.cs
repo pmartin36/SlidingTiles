@@ -55,14 +55,15 @@ public class Wind : MonoBehaviour
 		SetStrength(Strength);
 	}
 
-	public void GustCompleted() {
+	public bool GustCompleted() {
 		GustsCompleted++;
 		if(GustsCompleted % Gusts.Length == 0) {
-			GenerateNewGusts();
+			return GenerateNewGusts();
 		}
+		return false;
 	}
 
-	public void GenerateNewGusts(bool skipChange = false) {
+	public bool GenerateNewGusts(bool skipChange = false) {
 		if (GustsCompleted >= NextDirectionChangeGustAmount) {
 			NextDirectionChangeGustAmount += 2 * Gusts.Length;
 			if(skipChange) {
@@ -72,10 +73,9 @@ public class Wind : MonoBehaviour
 			else {
 				StartCoroutine(ChangeWindDirection());
 			}
+			return true;
 		}
-		else {
-			SetGusts();
-		}
+		return false;
 	}
 
 	private void SetGusts() {
@@ -83,12 +83,12 @@ public class Wind : MonoBehaviour
 			Gust g = Gusts[i];
 			float offset = (float)i / Gusts.Length;
 			float gustOffset = offset * i + Random.value * offset * 0.8f;
-			g.SetProperties(gustOffset);
+			g.SetProperties(i);
 		}
 	}
 
 	private IEnumerator ChangeWindDirection() {
-		float timeBetweenWind = Random.value  * 5f;
+		float timeBetweenWind = 1f + Random.value * 2f;
 		float time = 0;
 		while(time < timeBetweenWind) {
 			float str = Mathf.Lerp(Strength, 0, time / timeBetweenWind);

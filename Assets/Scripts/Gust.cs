@@ -14,11 +14,18 @@ public class Gust : MonoBehaviour
 	private Vector3 StartPosition;
 
 	private TrailRenderer tr;
+
+	private Vector2 DirectionVector;
 	private Quaternion WindDirection;
 
-	private bool active = false;
+	private float tOffset;
 
-    void Start() {
+	private int timesCompleted = 0;
+	private bool active => timesCompleted < 2;
+	private float completionTime => 1f + tr.time * SpeedModifier;
+
+
+	void Start() {
 		wind = GetComponentInParent<Wind>();
 		tr = GetComponent<TrailRenderer>();
 
@@ -31,41 +38,40 @@ public class Gust : MonoBehaviour
 
 			// get latest from Wind
 			float t = CurveTime * SpeedModifier;
-			if(t > 1.5f + tr.time*SpeedModifier) {
-				active = false;
+			if(t > completionTime) {
 				wind.GustCompleted();
+				timesCompleted++;
+				if(active) {
+					ResetPosition();
+					CurveTime = 0f;
+				}
 			}
 
-			Vector3 movement = WindDirection * new Vector3(XCurve.Evaluate(t) * 2 * wind.Radius, wind.Y.Evaluate(t) * AmplitudeModifier, 0);
+			Vector3 movement = WindDirection * new Vector3(XCurve.Evaluate(t) * 2 * wind.Radius, wind.Y.Evaluate(t+tOffset) * AmplitudeModifier, 0);
 			transform.position = StartPosition + movement;	
 		}
 
 		CurveTime += Time.deltaTime;
 	}
 
-	public void SetProperties(float offsetTime) {
-		Vector2 d = Utils.AngleToVector(wind.Direction);
-		WindDirection = Quaternion.Euler(0,0,wind.Direction);
-		SpeedModifier = wind.Strength;
-		AmplitudeModifier = (20f + 10f * Random.value) * Mathf.Sign(Random.value - 0.5f);
-
+	public void ResetPosition() {
 		tr.enabled = false;
-		float absX = Mathf.Abs(d.x);
-		float absY = Mathf.Abs(d.y);
-		if (absX > absY) {
-			StartPosition = wind.CameraBounds.center + new Vector3(
-				wind.Radius * Mathf.Sign(-d.x), 
-				(Random.value * 0.7f + absY) * wind.CameraBounds.size.y * Mathf.Sign(-d.y)
-			);
-		}
-		else {
-			StartPosition = wind.CameraBounds.center + new Vector3(
-				(Random.value * 0.7f + absX) * wind.CameraBounds.size.x * Mathf.Sign(-d.x), 
-				wind.Radius * Mathf.Sign(-d.y)
-			);
-		}
+		float absX = Mathf.Abs(DirectionVector.x);
+		float absY = Mathf.Abs(DirectionVector.y);
+		float angle = WindDirection.eulerAngles.z + (Random.value * 60f - 30f);
+		StartPosition = wind.CameraBounds.center - Utils.AngleToVector(angle) * wind.Radius;
 		transform.position = StartPosition;
 		tr.Clear();
+	}
+
+	public void SetProperties(int i) {
+		DirectionVector = Utils.AngleToVector(wind.Direction);
+		WindDirection = Quaternion.Euler(0,0,wind.Direction);
+		SpeedModifier = wind.Strength * 1.25f;
+		AmplitudeModifier = (20f + 10f * Random.value);// * Mathf.Sign(Random.value - 0.5f);
+		tOffset = Random.value;
+
+		ResetPosition();
 
 		XCurve = wind.X;
 		//XCurve = new AnimationCurve(Wind.X.keys);
@@ -78,9 +84,10 @@ public class Gust : MonoBehaviour
 		//XCurve.MoveKey(2, f2);
 		//XCurve.MoveKey(1, f1);
 
-		CurveTime = -offsetTime;
-		active = true;
+		CurveTime = -i * completionTime;
+		timesCompleted = 0;
 
+		Debug.Log(CurveTime);
 		//Debug.Log(d);
 		//Debug.Log(SpeedModifier);
 		//Debug.Log(AmplitudeModifier);

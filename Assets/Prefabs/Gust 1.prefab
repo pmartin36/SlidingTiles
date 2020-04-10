@@ -70,7 +70,7 @@ TrailRenderer:
   m_SortingLayerID: -1516291007
   m_SortingLayer: 5
   m_SortingOrder: -1
-  m_Time: 1.5
+  m_Time: 2
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -80,14 +80,14 @@ TrailRenderer:
       - serializedVersion: 3
         time: 0
         value: 0.012046814
-        inSlope: 12.0520735
-        outSlope: 12.0520735
+        inSlope: 5.971244
+        outSlope: 5.971244
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.20194018
+        outWeight: 0.118715085
       - serializedVersion: 3
-        time: 0.15
+        time: 0.4
         value: 1
         inSlope: 0.74368215
         outSlope: 0
@@ -96,30 +96,30 @@ TrailRenderer:
         inWeight: 1
         outWeight: 0
       - serializedVersion: 3
-        time: 0.85
+        time: 0.6
         value: 1
-        inSlope: -0.0055116913
-        outSlope: -0.0055116913
+        inSlope: 0.035071533
+        outSlope: 0.035071533
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.44832397
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: -10.8264065
+        inSlope: -4.8408785
         outSlope: 0
         tangentMode: 1
         weightedMode: 0
-        inWeight: 0.21566583
+        inWeight: 0.13966487
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 0}
-      key1: {r: 1, g: 1, b: 1, a: 0.19607843}
+      key0: {r: 0.8387771, g: 0.94777226, b: 0.9716981, a: 0}
+      key1: {r: 0.8387771, g: 0.94777226, b: 0.9716981, a: 0.09803922}
       key2: {r: 0, g: 0, b: 0, a: 0.19607843}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}

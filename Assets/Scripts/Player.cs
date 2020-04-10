@@ -347,6 +347,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
+		lastFrameVelocity = Vector2.zero;
 		velocity = Vector2.zero;
 		Won = false;
 		SetAnimationBool("Won", Won);

@@ -18,7 +18,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
 		// sr.material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
-		size = (sr.size * transform.lossyScale).Rotate(transform.eulerAngles.z);
+		size = (sr.size * transform.lossyScale);
 	}
 
 	void Update () {
@@ -75,7 +75,16 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			passengerMask
 		);
 
-		foreach(RaycastHit2D hit in hits) {
+		DebugExtensions.DrawBoxCast2D(
+			transform.position,
+			(size - Vector2.one * 2 * skinWidth),
+			transform.eulerAngles.z,
+			original.normalized,
+			original.magnitude + skinWidth,
+			Color.cyan
+		);
+
+		foreach (RaycastHit2D hit in hits) {
             IPlatformMoveBlocker pass = hit.collider.GetComponent<IPlatformMoveBlocker>();
             if (pass != null) {
 				Vector2 passMoveAmount = original - norm * (hit.distance - skinWidth);

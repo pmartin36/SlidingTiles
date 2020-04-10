@@ -70,7 +70,8 @@
 				// float4 texColor = tex2D(_MainTex, i.uv);
 				float d = abs(i.uv.y - 0.5);
 				float3 color = (0.7 + 0.3 * step(d, 0.25)) * i.color.rgb;
-				float alpha = smoothstep(0.3, -0.0, d) * i.color.a + (tex2D(_Noise, i.uv + _Time.x).r * (1-d) * 0.8);
+				//float alpha = smoothstep(0.3, -0.0, d) * i.color.a + (tex2D(_Noise, i.uv + _Time.x).r * (1-d) * 0.8);
+				float alpha = ((1 - d*2)*0.8 + tex2D(_Noise, i.uv + _Time.x).r * d * 0.4) * i.color.a;
 				// alpha *= texColor.r;
 				return float4(color, alpha);
             }

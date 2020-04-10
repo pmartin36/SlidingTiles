@@ -93,9 +93,9 @@ Shader "SlidingTiles/World3_Grass"
 			{
 				float grass_start = 0.275;
 
-				float n = N21(i.uv);
+				float n = N21(i.screenPos);
 				float darkness = max(n, frac(n*183.2));
-				darkness = tex2D(_Noise, i.uv ).r * 0.7 + 0.3 * darkness;
+				darkness = tex2D(_Noise, i.screenPos ).r * 0.7 + 0.3 * darkness;
 				float value = lerp(0.4, 0.75, smoothstep(0.35, 1.4, darkness));
 
 				float3 grass_primary = rgb2hsv(i.primaryColor);
@@ -106,8 +106,8 @@ Shader "SlidingTiles/World3_Grass"
 				grass_secondary.z = value;
 				grass_secondary = hsv2rgb(grass_secondary);
 
-				float noise = tex2D(_Noise, i.uv).r * 0.6;
-				noise += tex2D(_Noise, i.uv * 5).r * 0.2;
+				float noise = tex2D(_Noise, i.screenPos).r * 0.6;
+				noise += tex2D(_Noise, i.screenPos * 5).r * 0.2;
 
 				float3 tertiary = float3(0.75, 0.63, 0.45);
 				float3 darkTertiary = float3(0.35, 0.21, 0.02) * 1.5;

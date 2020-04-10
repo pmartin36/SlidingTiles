@@ -32,9 +32,9 @@ public class TutorialTile : Tile
 		}
 	}
 
-	public override bool Move(Vector3 moveAmount, Direction d) {
+	public override bool Move(Vector3 moveAmount, Direction d, bool markMoved) {
 		bool wasCentered = Centered;
-		bool returnValue = base.Move(moveAmount, d);
+		bool returnValue = base.Move(moveAmount, d, markMoved);
 		if(wasCentered && !Centered) {
 			OnMovedFromCenter?.Invoke();
 		}

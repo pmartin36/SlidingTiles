@@ -198,7 +198,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		space.Tile = this;		
 	}
 
-	public virtual bool Move(Vector3 moveAmount, Direction d) {
+	public virtual bool Move(Vector3 moveAmount, Direction d, bool markMoved = true) {
 		// if we're going up to the border, make sure we don't overshoot
 		if (!Centered && Space.GetNeighborInDirection(d) == null && Vector2.Dot(transform.localPosition, transform.localPosition + moveAmount) < 0) {
 			moveAmount = -transform.localPosition;
@@ -232,7 +232,9 @@ public class Tile : MonoBehaviour, IRequireResources
 		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {
 			this.SetMovable(false);
 		}
-		movedThisFrame = true;
+		if(markMoved) {
+			movedThisFrame = true;
+		}
 		return changedTilespaces;
 	}
 
@@ -292,7 +294,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			if(!centered) {
 				if(transform.localPosition.magnitude < BaseThresholdSquared) {
-					transform.localPosition = Vector3.zero;
+					Move(transform.localPosition, Direction.None, false);
 					centered = true;
 				}
 				else {
