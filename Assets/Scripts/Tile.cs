@@ -43,7 +43,8 @@ public class Tile : MonoBehaviour, IRequireResources
 	private static int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
 	private static Material SelectedMaterial;
-	private static Material UnselectedMaterial;
+
+	private List<Material> AllMaterials;
 
 	private static AsyncOperationHandle<Material> OnImmobileMaterialLoad;
 
@@ -57,11 +58,11 @@ public class Tile : MonoBehaviour, IRequireResources
 		spriteRenderer.sortingOrder = -this.Space.Position.y;
 
 		audio = GetComponent<AudioSource>();
+		AllMaterials = new List<Material>() { spriteRenderer.sharedMaterial };
 
 		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld && Movable) {
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
 		
-			UnselectedMaterial = spriteRenderer.sharedMaterial;
 			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
 				(obj) =>
 					{
@@ -189,8 +190,16 @@ public class Tile : MonoBehaviour, IRequireResources
 		if (Selected) {
 			PositionWhenSelected = transform.position;
 			ResidualVelocity = Vector2.zero;
+
+			if(!AllMaterials.Contains(SelectedMaterial)) {
+				AllMaterials.Add(SelectedMaterial);
+				spriteRenderer.sharedMaterials = AllMaterials.ToArray();
+			}
 		}
-		spriteRenderer.sharedMaterial = Selected ? SelectedMaterial : UnselectedMaterial;
+		else {
+			AllMaterials.RemoveAll(m => m == SelectedMaterial);
+			spriteRenderer.sharedMaterials = AllMaterials.ToArray();
+		}
 	}
 
 	public void CompleteMove(Tilespace space) {

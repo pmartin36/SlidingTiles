@@ -40,7 +40,7 @@ public class Wind : MonoBehaviour
 	public void SetStrength(float strength, bool clampbottom = true) {
 		float val = strength;
 		val = Mathf.Clamp(strength, clampbottom ? 0.1f : 0.0f, 0.2f);
-		foreach (var m in background.SpriteRenderer.sharedMaterials) {
+		foreach (var m in background.AllMaterials) {
 			m.SetFloat("_WindStrength", val);
 		}
 	}
@@ -49,7 +49,7 @@ public class Wind : MonoBehaviour
 		Direction = Random.value * 360f;
 		Strength = 0.15f + Random.value * 0.05f;
 
-		foreach(var m in background.SpriteRenderer.sharedMaterials) {
+		foreach(var m in background.AllMaterials) {
 			m.SetFloat("_WindDirectionAngle", ((180f + Direction) % 360f) * Mathf.Deg2Rad);
 		}
 		SetStrength(Strength);

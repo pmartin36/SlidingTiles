@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Background : MonoBehaviour
@@ -7,10 +8,15 @@ public class Background : MonoBehaviour
 	public SpriteRenderer SpriteRenderer { get; private set; }
 	public List<Material> AdditionalMaterials;
 
+	[HideInInspector]
+	public List<Material> AllMaterials;
+
 	private void Awake() {
 		SpriteRenderer = GetComponent<SpriteRenderer>();
 		AdditionalMaterials.Add(SpriteRenderer.sharedMaterial);
 		SpriteRenderer.sharedMaterials = AdditionalMaterials.ToArray();
+
+		AllMaterials = GetComponentsInChildren<SpriteRenderer>().SelectMany(s => s.sharedMaterials).ToList();
 	}
 
 	void Start() {

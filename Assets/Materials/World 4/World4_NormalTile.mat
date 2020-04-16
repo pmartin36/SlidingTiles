@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: World4_NormalTile
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 0da15531e70a05f4fa94d0d7c24ee972, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -25,6 +25,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ChalkTexture:
+        m_Texture: {fileID: 2800000, guid: 3dcd9445b4b8daf48b42d059dac9e859, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -62,6 +66,8 @@ Material:
     m_Floats:
     - PixelSnap: 0
     - _BumpScale: 1
+    - _ChalkPower: 2
+    - _ChalkSub: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -70,6 +76,7 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
+    - _Mobile: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -82,4 +89,6 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _ImmobileColor: {r: 1, g: 0.4084586, b: 0.25943398, a: 1}
+    - _MobileColor: {r: 1, g: 0.99284506, b: 0.4764151, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

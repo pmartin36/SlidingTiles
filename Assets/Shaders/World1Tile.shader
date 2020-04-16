@@ -14,7 +14,7 @@
     {
         Tags { 
 			"RenderType"="Transparent" 
-			"Queue"="Transparent"
+			"Queue"="Transparent-100"
 		}
 
         Pass

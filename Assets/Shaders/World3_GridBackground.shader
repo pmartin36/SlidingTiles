@@ -12,6 +12,7 @@
     {
         Tags { 
 			"RenderType"="Transparent" 
+			"Queue"="Geometry"
 		}
 
         Pass

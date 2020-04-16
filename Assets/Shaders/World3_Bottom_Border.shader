@@ -26,7 +26,7 @@ Shader "SlidingTiles/World3_Bottom_Border"
 			Tags
 			{
 				"RenderType" = "Transparent"
-				"Queue" = "Transparent"
+				"Queue" = "Transparent-10"
 			}
 
 			Pass
