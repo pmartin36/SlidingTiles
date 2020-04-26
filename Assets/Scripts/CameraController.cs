@@ -17,6 +17,7 @@ public class CameraController : MonoBehaviour
 	private bool shakeDecreasingSpeed;
 	private float shakeSpeed;	
 
+	private GameObject PostProcessObjectsContainer { get; set; }
 	public PostProcessVolume PostProcessVolume { get; set; }
 
 	public Camera Camera { get; private set; }
@@ -100,10 +101,25 @@ public class CameraController : MonoBehaviour
 		offset = Vector3.Lerp(offset, targetOffset, shakeSpeed);
 	}
 
-	public void ModifyPostProcessSettings(float value) {
-		if(PostProcessVolume != null && PostProcessVolume.gameObject != null) {
-			PostProcessVolume.profile.TryGetSettings<ScreenWipe>(out ScreenWipe wipe);
-			wipe.blend.value = value;
+	public void EnablePostEffects(bool enable) {
+		PostProcessObjectsContainer?.SetActive(enable);
+	}
+
+	public void RegisterPostProcessVolume(PostProcessVolume v) {
+		PostProcessVolume = v;
+		PostProcessObjectsContainer = v.transform.parent.gameObject;
+
+		var childCamera = PostProcessObjectsContainer?.GetComponentInChildren<Camera>();
+		if(childCamera != null) {
+			childCamera.transform.position = Camera.transform.position;
 		}
+	}
+
+	public T GetModifiablePostProcessSettings<T>() where T : PostProcessEffectSettings {
+		if (PostProcessVolume != null && PostProcessVolume.gameObject != null) {
+			PostProcessVolume.profile.TryGetSettings<T>(out T settings);
+			return settings;
+		}
+		return null;
 	}
 }

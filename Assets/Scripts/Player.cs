@@ -48,6 +48,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	public Animator PortraitAnimator;
 
+	private Material blurMaterial;
+
 	private bool Won { get; set; }
 
 	void Awake() {
@@ -60,6 +62,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		footfallParticles.Stop();
 		heavyLandParticles = ps.First(p => p.name == "heavyLandParticles");
 		heavyLandParticles.Stop();
+
+		blurMaterial = new Material(Shader.Find("Hidden/Blur"));
 	}
 
 	void Start() {
@@ -423,6 +427,17 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private void SetAnimationFloat(string key, float value) {
 		animator.SetFloat(key, value);
 		PortraitAnimator.SetFloat(key, value);
+	}
+
+	private void OnRenderImage(RenderTexture src, RenderTexture dest) {
+		Graphics.Blit(src, dest);
+
+		for(int i = 0; i < 4; i++) {
+			var temp = RenderTexture.GetTemporary(src.width, src.height);
+			Graphics.Blit(dest, temp, blurMaterial, 0);
+			Graphics.Blit(temp, dest, blurMaterial, 1);
+			RenderTexture.ReleaseTemporary(temp);
+		}
 	}
 
 	private IEnumerator FlagReached(GoalFlag flag) {

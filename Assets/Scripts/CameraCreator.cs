@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
@@ -16,9 +17,9 @@ public class CameraCreator : MonoBehaviour
 		GameManager gm = GameManager.Instance; // create the game and music managers as well
 		MusicManager mm = MusicManager.Instance;
 
-		var pp = GameObject.FindObjectOfType<PostProcessVolume>();
+		var pp = GameObject.FindObjectsOfType<PostProcessVolume>().First(p => LayerMask.LayerToName(p.gameObject.layer) == "PostProcessing");
 		if(pp != null) {
-			CameraManager.Instance.CameraController.PostProcessVolume = pp;
+			CameraManager.Instance.CameraController.RegisterPostProcessVolume(pp);
 		}
     }
 }

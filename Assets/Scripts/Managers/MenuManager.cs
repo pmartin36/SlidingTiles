@@ -60,7 +60,8 @@ public class MenuManager : ContextManager {
 	}
 
 	public void LateUpdate() {
-		CameraManager.Instance.CameraController.ModifyPostProcessSettings(LevelBlend);
+		ScreenWipe wipeSettings = CameraManager.Instance.CameraController.GetModifiablePostProcessSettings<ScreenWipe>();
+		wipeSettings.blend.value = LevelBlend;
 	}
 
 	public void ToggleSettings() {

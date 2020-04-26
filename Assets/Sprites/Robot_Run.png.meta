@@ -63,10 +63,10 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 190
+  spritePixelsToUnits: 72
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -142,9 +142,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 2700
-        width: 900
-        height: 900
+        y: 1023
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,7 +152,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7b2bdcb799fa3404fabad3e55dd3ce3e
+      spriteID: 707d243d0151fd446917cf3dbe4e7590
       vertices: []
       indices: 
       edges: []
@@ -161,10 +161,10 @@ TextureImporter:
       name: Robot_Run_1
       rect:
         serializedVersion: 2
-        x: 900
-        y: 2700
-        width: 900
-        height: 900
+        x: 341
+        y: 1023
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,7 +172,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d9406ccfff1118146a7c68ccd9898ec0
+      spriteID: 9e242a7f3e362164a9312a62c369840b
       vertices: []
       indices: 
       edges: []
@@ -181,10 +181,10 @@ TextureImporter:
       name: Robot_Run_2
       rect:
         serializedVersion: 2
-        x: 1800
-        y: 2700
-        width: 900
-        height: 900
+        x: 682
+        y: 1023
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -192,7 +192,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e8d5ad0a0e813841b9574efb14cce82
+      spriteID: bb725b247660d9846933231a148f9843
       vertices: []
       indices: 
       edges: []
@@ -201,10 +201,10 @@ TextureImporter:
       name: Robot_Run_3
       rect:
         serializedVersion: 2
-        x: 2700
-        y: 2700
-        width: 900
-        height: 900
+        x: 1023
+        y: 1023
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -212,7 +212,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bcece6b2651663846a420f1de72e15ad
+      spriteID: b76262501b8c1b34793479fb3998e2ba
       vertices: []
       indices: 
       edges: []
@@ -221,10 +221,10 @@ TextureImporter:
       name: Robot_Run_4
       rect:
         serializedVersion: 2
-        x: 3600
-        y: 2700
-        width: 900
-        height: 900
+        x: 1364
+        y: 1023
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -232,7 +232,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 130742f051ad9e04f85b7a874d5e5c28
+      spriteID: b254b1d508cf6d54a8c494b9432e4144
       vertices: []
       indices: 
       edges: []
@@ -241,10 +241,10 @@ TextureImporter:
       name: Robot_Run_5
       rect:
         serializedVersion: 2
-        x: 4500
-        y: 2700
-        width: 900
-        height: 900
+        x: 1705
+        y: 1023
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -252,7 +252,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0890024bf4986e34885e82e6d4245089
+      spriteID: a522dd1568feb6b41b2e0cad3209667f
       vertices: []
       indices: 
       edges: []
@@ -262,9 +262,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 1800
-        width: 900
-        height: 900
+        y: 682
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -272,7 +272,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1bf0873f50212184c9f1aaf4aa7bdf56
+      spriteID: ded628aa8d635964ea7bb75a8e2eecdb
       vertices: []
       indices: 
       edges: []
@@ -281,10 +281,10 @@ TextureImporter:
       name: Robot_Run_7
       rect:
         serializedVersion: 2
-        x: 900
-        y: 1800
-        width: 900
-        height: 900
+        x: 341
+        y: 682
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -292,7 +292,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bd1b94fedc1858e4dbf73436a27b2d39
+      spriteID: 3aa07bf6d287b554496f914c7eb224b9
       vertices: []
       indices: 
       edges: []
@@ -301,10 +301,10 @@ TextureImporter:
       name: Robot_Run_8
       rect:
         serializedVersion: 2
-        x: 1800
-        y: 1800
-        width: 900
-        height: 900
+        x: 682
+        y: 682
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -312,7 +312,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d35bd21e9a3a44446a0ebb5b183c6bff
+      spriteID: 93d308f02f276c140b54bc58b9e73fcc
       vertices: []
       indices: 
       edges: []
@@ -321,10 +321,10 @@ TextureImporter:
       name: Robot_Run_9
       rect:
         serializedVersion: 2
-        x: 2700
-        y: 1800
-        width: 900
-        height: 900
+        x: 1023
+        y: 682
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -332,7 +332,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ba7f52ce4217444c925ae3e2ee10fac
+      spriteID: 9368fc00d92d3db4db11829410ef991a
       vertices: []
       indices: 
       edges: []
@@ -341,10 +341,10 @@ TextureImporter:
       name: Robot_Run_10
       rect:
         serializedVersion: 2
-        x: 3600
-        y: 1800
-        width: 900
-        height: 900
+        x: 1364
+        y: 682
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -352,7 +352,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd7dbb7358da3ee4987474d3e726a3f3
+      spriteID: ec8eda5948970de46bd9b262b1913c4d
       vertices: []
       indices: 
       edges: []
@@ -361,10 +361,10 @@ TextureImporter:
       name: Robot_Run_11
       rect:
         serializedVersion: 2
-        x: 4500
-        y: 1800
-        width: 900
-        height: 900
+        x: 1705
+        y: 682
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -372,7 +372,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7329a4b792a02054abfaa16ac349bc25
+      spriteID: 57cce1b7f9aa75c47a06347b7ae45e0a
       vertices: []
       indices: 
       edges: []
@@ -382,9 +382,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 900
-        width: 900
-        height: 900
+        y: 341
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -392,7 +392,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b26753d617ddde44c9c2ae79310202bb
+      spriteID: 87b7a068f51c91e4cb3dc543e227ef6a
       vertices: []
       indices: 
       edges: []
@@ -401,10 +401,10 @@ TextureImporter:
       name: Robot_Run_13
       rect:
         serializedVersion: 2
-        x: 900
-        y: 900
-        width: 900
-        height: 900
+        x: 341
+        y: 341
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -412,7 +412,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0588e36383fd52141bf33bf4dca22ab9
+      spriteID: 5c835ef38f4256b488ea47848833fa2f
       vertices: []
       indices: 
       edges: []
@@ -421,10 +421,10 @@ TextureImporter:
       name: Robot_Run_14
       rect:
         serializedVersion: 2
-        x: 1800
-        y: 900
-        width: 900
-        height: 900
+        x: 682
+        y: 341
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -432,7 +432,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f1382557c38741b4a91f4b4a21e1ca65
+      spriteID: 37c03417667f14f4d9133ae62ec38d2f
       vertices: []
       indices: 
       edges: []
@@ -441,10 +441,10 @@ TextureImporter:
       name: Robot_Run_15
       rect:
         serializedVersion: 2
-        x: 2700
-        y: 900
-        width: 900
-        height: 900
+        x: 1023
+        y: 341
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -452,7 +452,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac9eb6d4e51aa4b4c816bc492d07ad88
+      spriteID: fc7b363f02553274f848e2ad632fcc07
       vertices: []
       indices: 
       edges: []
@@ -461,10 +461,10 @@ TextureImporter:
       name: Robot_Run_16
       rect:
         serializedVersion: 2
-        x: 3600
-        y: 900
-        width: 900
-        height: 900
+        x: 1364
+        y: 341
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -472,7 +472,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ef2c01ea5fb23d448de53bb67d9dfd9
+      spriteID: 3775ccb15f47898418c0da5aa6de6824
       vertices: []
       indices: 
       edges: []
@@ -481,10 +481,10 @@ TextureImporter:
       name: Robot_Run_17
       rect:
         serializedVersion: 2
-        x: 4500
-        y: 900
-        width: 900
-        height: 900
+        x: 1705
+        y: 341
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -492,7 +492,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e1c5f17e0ff22f43a4c05b2a568aad1
+      spriteID: 5da9b4b4789ca4a47bb577ba6aa22936
       vertices: []
       indices: 
       edges: []
@@ -503,8 +503,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 900
-        height: 900
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -512,7 +512,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f4f1aff741a54ff4bade38582ecf34da
+      spriteID: 0fb9c668e53c06f4f88b2dc709f9b60a
       vertices: []
       indices: 
       edges: []
@@ -521,10 +521,10 @@ TextureImporter:
       name: Robot_Run_19
       rect:
         serializedVersion: 2
-        x: 900
+        x: 341
         y: 0
-        width: 900
-        height: 900
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -532,7 +532,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2e86d64a82329804eb597dd218c49995
+      spriteID: d4979359dc83e4644b216acbed83f024
       vertices: []
       indices: 
       edges: []
@@ -541,10 +541,10 @@ TextureImporter:
       name: Robot_Run_20
       rect:
         serializedVersion: 2
-        x: 1800
+        x: 682
         y: 0
-        width: 900
-        height: 900
+        width: 341
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -552,7 +552,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a17214ea92121394ea6a76ff7ebf79d1
+      spriteID: ddb87d0ccbc6bdd4f83dba2b89f46274
       vertices: []
       indices: 
       edges: []
