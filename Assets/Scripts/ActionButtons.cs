@@ -41,6 +41,7 @@ public class ActionButtons : MonoBehaviour
 	public void ForceSetBasedOnPlayerAlive(bool alive) {
 		Pause(!alive);
 		Animator.SetBool("highlight", !alive);
+		SetInteractable(true);
 	}
 
 	public void Pause(bool paused) {

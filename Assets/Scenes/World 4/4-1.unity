@@ -1356,7 +1356,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.19}
+  m_Offset: {x: 0, y: 0.4}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -4968,11 +4968,6 @@ PrefabInstance:
       propertyPath: PortraitAnimator
       value: 
       objectReference: {fileID: 1167306831}
-    - target: {fileID: 2300834580857512372, guid: a4443ec0f57373942a39a5afd44922c2,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 5cbb6ebd2d01c3c4588e0bb8891b49fa, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4443ec0f57373942a39a5afd44922c2, type: 3}
 --- !u!4 &2300834579964729565 stripped

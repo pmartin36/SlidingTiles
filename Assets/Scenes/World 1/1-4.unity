@@ -1295,6 +1295,16 @@ PrefabInstance:
       propertyPath: PortraitAnimator
       value: 
       objectReference: {fileID: 248166706}
+    - target: {fileID: 3174210489862551412, guid: a4443ec0f57373942a39a5afd44922c2,
+        type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3174210489862551412, guid: a4443ec0f57373942a39a5afd44922c2,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4443ec0f57373942a39a5afd44922c2, type: 3}
 --- !u!4 &463168742 stripped
@@ -4394,6 +4404,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4415416653994323076, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Colors.m_DisabledColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4415416654283529398, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Colors.m_DisabledColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934897909995931002, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Colors.m_DisabledColor.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd06a0798a9539c45a6228cab7593341, type: 3}

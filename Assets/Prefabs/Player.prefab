@@ -9569,7 +9569,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5cbb6ebd2d01c3c4588e0bb8891b49fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9810,7 +9810,7 @@ GameObject:
   - component: {fileID: 8135775391449962080}
   m_Layer: 0
   m_Name: Respawn Effects
-  m_TagString: Untagged
+  m_TagString: PlayerRespawnEffects
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9897,13 +9897,13 @@ TrailRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -321237203
+  m_SortingLayer: 3
+  m_SortingOrder: -1
   m_Time: 0.5
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 7
+    widthMultiplier: 3
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -10081,7 +10081,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.75
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -10250,8 +10250,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 4
-      minScalar: 2
+      scalar: 3
+      minScalar: 1.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -10884,7 +10884,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 0.8
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -11287,7 +11287,7 @@ ParticleSystem:
         ctime7: 0
         atime0: 0
         atime1: 8096
-        atime2: 56861
+        atime2: 41827
         atime3: 65535
         atime4: 0
         atime5: 0
@@ -11302,8 +11302,8 @@ ParticleSystem:
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0.43529412}
         key3: {r: 0, g: 0, b: 0, a: 1}
-        key4: {r: 0, g: 0, b: 0, a: 0.40392157}
-        key5: {r: 0, g: 0, b: 0, a: 1}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
@@ -11315,16 +11315,16 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 8674
-        atime2: 25636
-        atime3: 39899
-        atime4: 49730
-        atime5: 58211
+        atime1: 11951
+        atime2: 27371
+        atime3: 44525
+        atime4: 65535
+        atime5: 65535
         atime6: 65535
         atime7: 0
         m_Mode: 0
         m_NumColorKeys: 2
-        m_NumAlphaKeys: 7
+        m_NumAlphaKeys: 5
   UVModule:
     enabled: 0
     mode: 0
@@ -14638,8 +14638,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1516291007
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0

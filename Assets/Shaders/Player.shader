@@ -4,7 +4,6 @@
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color", Color) = (1,1,1,1)
-		_Whiteout("Whiteout Amount", Range(0,1)) = 0
 		_DistortRadius("Distort Radius", Range(0,1)) = 2
     }
     SubShader
@@ -45,11 +44,8 @@
             float4 _MainTex_ST;
 			float4 _MainTex_TexelSize;
 			float4 _Color;
-			float _Whiteout;
 			float _DistortRadius;
 
-			//fixed3 white = fixed3(1, 1, 1);
-			
             v2f vert (appdata v)
             {
                 v2f o;

@@ -48,7 +48,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	public Animator PortraitAnimator;
 
-	private Material blurMaterial;
+	private GameObject playerRespawnEffects;
 
 	private bool Won { get; set; }
 
@@ -63,7 +63,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		heavyLandParticles = ps.First(p => p.name == "heavyLandParticles");
 		heavyLandParticles.Stop();
 
-		blurMaterial = new Material(Shader.Find("Hidden/Blur"));
+		foreach(Transform child in transform) {
+			if(child.CompareTag("PlayerRespawnEffects")) {
+				playerRespawnEffects = child.gameObject;
+			}
+		}
+		playerRespawnEffects.SetActive(false);
 	}
 
 	void Start() {
@@ -82,7 +87,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public void SetRespawnManager(RespawnManager m) => RespawnManager = m;
 
 	void FixedUpdate() {
-		if(!Paused) {
+		if(!Paused && Alive) {
 			CalculateVelocity();
 
 			// dont include gravity in jump calculations
@@ -184,7 +189,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		SetAnimationFloat("Vy", velocity.y);
 	}
 
-	// TODO: I don't like this, we should implement an abstract class or an interface requires this class to have a composition Jumper object
+	// TODO: I don't like this, should implement an abstract class or an interface requires this class to have a composition Jumper object
 	public bool DetermineJump(Vector3 move, out ValueTuple<bool, Vector3> modifiedMove) {
 		modifiedMove = (false, Vector3.zero);
 		
@@ -339,24 +344,35 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void SetAlive(bool alive) {
-		if (Alive != alive) {
-			aliveChanged?.Invoke(this, alive);
-		}
-
+		bool aliveStateChanged = Alive != alive;
 		Alive = alive;
 		this.controller.collider.enabled = alive;
-		this.enabled = alive;
-		transform.position = RespawnManager.PlayerSpawnPosition;
-		transform.localScale = Vector2.one * 1.2f;
-
 		moveDirection = 1f;
 		ChangeGravityDirection(-1f);
 		lastFrameVelocity = Vector2.zero;
 		velocity = Vector2.zero;
 		Won = false;
-		SetAnimationBool("Won", Won);
-		SetAnimationFloat("Vx", 0f);
-		SetAnimationBool("Alive", alive);
+
+		bool animating = false;
+
+		if (aliveStateChanged) {
+			if(!alive) {
+				animating = true;
+				StartCoroutine(Respawn());
+			}
+			else {
+				aliveChanged?.Invoke(this, alive);
+			}
+		}
+
+		if(!animating) {
+			transform.position = RespawnManager.PlayerSpawnPosition;
+			transform.localScale = Vector2.one * 1.2f;
+
+			SetAnimationBool("Won", Won);
+			SetAnimationFloat("Vx", 0f);
+			SetAnimationBool("Alive", alive);
+		}
 	}
 
 	public void OnDestroy() {
@@ -429,17 +445,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		PortraitAnimator.SetFloat(key, value);
 	}
 
-	private void OnRenderImage(RenderTexture src, RenderTexture dest) {
-		Graphics.Blit(src, dest);
-
-		for(int i = 0; i < 4; i++) {
-			var temp = RenderTexture.GetTemporary(src.width, src.height);
-			Graphics.Blit(dest, temp, blurMaterial, 0);
-			Graphics.Blit(temp, dest, blurMaterial, 1);
-			RenderTexture.ReleaseTemporary(temp);
-		}
-	}
-
 	private IEnumerator FlagReached(GoalFlag flag) {
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
@@ -486,5 +491,97 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		Vibration.VibratePop();
 		yield return yieldinstruction;
 		Vibration.VibratePeek();
+	}
+
+	private IEnumerator Respawn() {
+		CameraController c = CameraManager.Instance.CameraController;
+		BlurComposite blur = c.GetModifiablePostProcessSettings<BlurComposite>();
+
+		Vector3 startPosition = transform.position;
+		SpriteRenderer sr = GetComponent<SpriteRenderer>();
+
+		Vector3 respawnPosition = RespawnManager.PlayerSpawnPosition;
+		Vector3 diff = respawnPosition - startPosition;
+		Vector3 cubicPoint = startPosition + new Vector3(-diff.x * 0.2f, diff.y * 1.5f, 0);
+
+		float tShrinkGrow = 0.5f;
+		float tMove = Mathf.InverseLerp(100, 400, diff.sqrMagnitude);
+		tMove = Mathf.Max(tMove, 0.5f);
+
+		Vector3 scaleNormal = transform.localScale.normalized;
+
+		animator.StopPlayback();
+		RespawnManager.ActionButtons.SpawnButton.interactable = false;
+
+		c.EnablePostEffects(true);
+		playerRespawnEffects.SetActive(true);
+
+		float t = 0;
+		while (t < tShrinkGrow) {
+			float v = t / tShrinkGrow;
+			float r = Mathf.Lerp(1f, 0.6f, v);
+			sr.material.SetFloat("_DistortRadius", r);
+
+			float b = Mathf.Lerp(1, 2, v * 1.1f);
+			blur.intensity.value = b;
+
+			float scale = Mathf.Lerp(1.2f, 1.44f, v);
+			transform.localScale = scale * scaleNormal;
+
+			t += Time.deltaTime;
+			yield return null;
+		}
+		sr.material.SetFloat("_DistortRadius", 0.6f);
+		blur.intensity.value = 2;
+		transform.localScale = 1.44f * Vector3.one;
+
+		// move
+		t = 0;
+		while (t < tMove) {
+			float mt = Mathf.SmoothStep(0, 1, t/tMove);
+			Vector3 pos = (1 - mt) * (1 - mt) * startPosition
+							+ 2 * (1 - mt) * mt * cubicPoint
+							+ mt * mt * respawnPosition;
+			transform.position = pos;
+
+			t += Time.deltaTime;
+			yield return null;
+		}
+		transform.position = respawnPosition;
+
+		// set animation parameters for the other side
+		SetAnimationBool("Won", Won);
+		SetAnimationFloat("Vx", 0f);
+		SetAnimationBool("Alive", false);
+
+		// grow
+		var waitQuarter = new WaitForSeconds(0.25f); 
+		yield return waitQuarter; // particles last a second, growing takes 0.5f, so we add 0.25f before and after to take full second
+
+		t = 0;
+		while (t < tShrinkGrow) {
+			float v = t / tShrinkGrow;
+			float r = Mathf.Lerp(0.6f, 1f, v);
+			sr.material.SetFloat("_DistortRadius", r);
+
+			float b = (1 - t) * 2;
+			blur.intensity.value = b;
+
+			float scale = Mathf.Lerp(1.44f, 1.2f, v);
+			transform.localScale = scale * Vector3.one;
+
+			t += Time.deltaTime;
+			yield return null;
+		}
+		sr.material.SetFloat("_DistortRadius", 1f);
+		blur.intensity.value = 0;
+		transform.localScale = 1.2f * Vector3.one;
+		
+		// re-enable action buttons
+		aliveChanged?.Invoke(this, false);
+
+		yield return waitQuarter;
+		c.EnablePostEffects(false);
+		playerRespawnEffects.SetActive(false);
 	}
 }
