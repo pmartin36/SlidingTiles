@@ -107,7 +107,7 @@ public class CameraController : MonoBehaviour
 
 	public void RegisterPostProcessVolume(PostProcessVolume v) {
 		PostProcessVolume = v;
-		PostProcessObjectsContainer = v.transform.parent.gameObject;
+		PostProcessObjectsContainer = v.transform.parent?.gameObject;
 
 		var childCamera = PostProcessObjectsContainer?.GetComponentInChildren<Camera>();
 		if(childCamera != null) {

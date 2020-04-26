@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class LevelSelectButton : MenuImageSpriteCopy
+public class LevelSelectButton : MenuImageCopy
 {	
 	public bool Interactable { 
 		get => button.interactable;

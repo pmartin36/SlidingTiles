@@ -22,6 +22,9 @@ public class NumberedLevelSelectButton : LevelSelectButton
 	}
 
 	public void SetButtonInfo(Vector2 position, int num, bool unlocked, bool paywalled, int stars = 0) {
+		// soft removing paywalled because it shouldn't be in the final product
+		paywalled = false;
+
 		text.text = num.ToString();
 		SetPosition(position);
 		if(num != Number) {
@@ -48,9 +51,9 @@ public class NumberedLevelSelectButton : LevelSelectButton
 	}
 
 	public void SetPaywalled(bool paywalled) {
-		Paywalled = paywalled;
-		// add money icon over top
-		Money.gameObject.SetActive(paywalled);
+		//Paywalled = paywalled;
+		//// add money icon over top
+		//Money.gameObject.SetActive(paywalled);
 	}
 
 	public override void TryEnableInteractable() {

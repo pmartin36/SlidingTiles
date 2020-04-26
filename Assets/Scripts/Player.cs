@@ -48,7 +48,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	public Animator PortraitAnimator;
 
-	private GameObject playerRespawnEffects;
+	private bool respawning;
+	private GameObject respawnEffects;
 
 	private bool Won { get; set; }
 
@@ -65,10 +66,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		foreach(Transform child in transform) {
 			if(child.CompareTag("PlayerRespawnEffects")) {
-				playerRespawnEffects = child.gameObject;
+				respawnEffects = child.gameObject;
 			}
 		}
-		playerRespawnEffects.SetActive(false);
+		respawnEffects.SetActive(false);
 	}
 
 	void Start() {
@@ -344,34 +345,36 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void SetAlive(bool alive) {
-		bool aliveStateChanged = Alive != alive;
-		Alive = alive;
-		this.controller.collider.enabled = alive;
-		moveDirection = 1f;
-		ChangeGravityDirection(-1f);
-		lastFrameVelocity = Vector2.zero;
-		velocity = Vector2.zero;
-		Won = false;
+		if(!respawning) {
+			bool aliveStateChanged = Alive != alive;
+			Alive = alive;
+			this.controller.collider.enabled = alive;
+			moveDirection = 1f;
+			ChangeGravityDirection(-1f);
+			lastFrameVelocity = Vector2.zero;
+			velocity = Vector2.zero;
+			Won = false;
 
-		bool animating = false;
+			bool animating = false;
 
-		if (aliveStateChanged) {
-			if(!alive) {
-				animating = true;
-				StartCoroutine(Respawn());
+			if (aliveStateChanged) {
+				if(!alive) {
+					animating = true;
+					StartCoroutine(Respawn());
+				}
+				else {
+					aliveChanged?.Invoke(this, alive);
+				}
 			}
-			else {
-				aliveChanged?.Invoke(this, alive);
+
+			if (!animating) {
+				transform.position = RespawnManager.PlayerSpawnPosition;
+				transform.localScale = Vector2.one * 1.2f;
+
+				SetAnimationBool("Won", Won);
+				SetAnimationFloat("Vx", 0f);
+				SetAnimationBool("Alive", alive);
 			}
-		}
-
-		if(!animating) {
-			transform.position = RespawnManager.PlayerSpawnPosition;
-			transform.localScale = Vector2.one * 1.2f;
-
-			SetAnimationBool("Won", Won);
-			SetAnimationFloat("Vx", 0f);
-			SetAnimationBool("Alive", alive);
 		}
 	}
 
@@ -494,6 +497,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	private IEnumerator Respawn() {
+		respawning = true;
 		CameraController c = CameraManager.Instance.CameraController;
 		BlurComposite blur = c.GetModifiablePostProcessSettings<BlurComposite>();
 
@@ -510,11 +514,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		Vector3 scaleNormal = transform.localScale.normalized;
 
-		animator.StopPlayback();
+		animator.enabled = false;
 		RespawnManager.ActionButtons.SpawnButton.interactable = false;
 
 		c.EnablePostEffects(true);
-		playerRespawnEffects.SetActive(true);
+		respawnEffects.SetActive(true);
 
 		float t = 0;
 		while (t < tShrinkGrow) {
@@ -553,6 +557,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		SetAnimationBool("Won", Won);
 		SetAnimationFloat("Vx", 0f);
 		SetAnimationBool("Alive", false);
+		animator.enabled = true;
 
 		// grow
 		var waitQuarter = new WaitForSeconds(0.25f); 
@@ -582,6 +587,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		yield return waitQuarter;
 		c.EnablePostEffects(false);
-		playerRespawnEffects.SetActive(false);
+		respawnEffects.SetActive(false);
+		respawning = false;
 	}
 }
