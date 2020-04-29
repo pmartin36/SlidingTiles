@@ -1648,16 +1648,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1799186549381864979, guid: 2b91f4cb285bcdf48bc71756726f7f14,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 1799186549381864979, guid: 2b91f4cb285bcdf48bc71756726f7f14,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.55
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b91f4cb285bcdf48bc71756726f7f14, type: 3}
 --- !u!1001 &396966208
@@ -5849,6 +5839,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 354206429}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &2016977346 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2798108027210399714, guid: dd06a0798a9539c45a6228cab7593341,
+    type: 3}
+  m_PrefabInstance: {fileID: 856132473633963264}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2028775643
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6433,6 +6429,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2300834580857512374, guid: a4443ec0f57373942a39a5afd44922c2,
+        type: 3}
+      propertyPath: PortraitAnimator
+      value: 
+      objectReference: {fileID: 2016977346}
     - target: {fileID: 2300834580857512372, guid: a4443ec0f57373942a39a5afd44922c2,
         type: 3}
       propertyPath: m_Color.r

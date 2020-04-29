@@ -206,12 +206,14 @@ public class LevelManager : ContextManager {
 	}
 
 	public virtual void Reset(bool fromRightSideButton) {
+		bool skipAnimation = false;
 		if(!fromRightSideButton) {
 			winType.Hide();
 			StartCoroutine(winType.WhenTilesOffScreen(() => {
 				Won = false;
 				winType.Reset();
 			}));
+			skipAnimation = true;
 		}
 		else if(Won) {
 			return;
@@ -220,7 +222,7 @@ public class LevelManager : ContextManager {
 		collectedStars = 0;
 		goalFlag?.Reset();
 		Grid?.Reset();
-		Player?.SetAlive(false);
+		Player?.SetAlive(false, skipAnimation);
 		Preview.Show(false);
 		
 		TimerRunning = false;

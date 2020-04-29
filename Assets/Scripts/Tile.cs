@@ -163,7 +163,7 @@ public class Tile : MonoBehaviour, IRequireResources
 				// 0.9 is basically max speed
 				// 0.01 is barely moving
 				float v = Mathf.InverseLerp(-0.2f, 0.4f, movingVelocityAverage);
-				audio.volume = Mathf.Lerp(0.0f, Selected ? 0.65f : 0.5f, v) * GameManager.Instance.SaveData.FxVolume;
+				audio.volume = Mathf.Lerp(0.0f, Selected ? 0.8f : 0.65f, v) * GameManager.Instance.SaveData.FxVolume;
 				
 				//float p = Mathf.InverseLerp(0f, 0.6f, movingVelocityAverage);
 				//audio.pitch = Mathf.Lerp(0.8f, 1f, movingVelocityAverage);
@@ -418,7 +418,7 @@ public class Tile : MonoBehaviour, IRequireResources
 			if (Selected) {
 				Select(false);
 			}
-
+			audio.Stop();
 			StopCoroutine(SetImmobileAnimation());
 			if(animate) {
 				StartCoroutine(SetImmobileAnimation());

@@ -344,7 +344,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		}	
 	}
 
-	public void SetAlive(bool alive) {
+	public void SetAlive(bool alive, bool skipAnimation = false) {
 		if(!respawning) {
 			bool aliveStateChanged = Alive != alive;
 			Alive = alive;
@@ -358,7 +358,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			bool animating = false;
 
 			if (aliveStateChanged) {
-				if(!alive) {
+				if(!alive && !skipAnimation) {
 					animating = true;
 					StartCoroutine(Respawn());
 				}
@@ -425,7 +425,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		footfallParticles.Play();
 
 		float freq = 1f + 0.1f * UnityEngine.Random.value;
-		float volume = 0.3f + 0.2f * UnityEngine.Random.value;
+		float volume = 0.2f + 0.2f * UnityEngine.Random.value;
 		if(audio.clip != WalkSoundClip) {
 			audio.clip = WalkSoundClip;
 		}
@@ -582,12 +582,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		blur.intensity.value = 0;
 		transform.localScale = 1.2f * Vector3.one;
 		
-		// re-enable action buttons
-		aliveChanged?.Invoke(this, false);
-
 		yield return waitQuarter;
 		c.EnablePostEffects(false);
 		respawnEffects.SetActive(false);
 		respawning = false;
+
+		// re-enable action buttons
+		aliveChanged?.Invoke(this, false);
 	}
 }
