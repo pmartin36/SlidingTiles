@@ -120,8 +120,10 @@ public class Tile : MonoBehaviour, IRequireResources
 			Vector2 v2 = position;
 			Direction direction = GetDirectionFromPosition(ref v2);
 			if (CanMoveTo(ref moveAmount, tilesToMove, direction)) {
-				foreach (Tile t in tilesToMove) {
-					t.Move(moveAmount, direction);
+				foreach (Tile t in tilesToMove.Reverse()) {
+					if(!t.Centered) {
+						t.Move(moveAmount, direction);
+					}
 				}
 			}
 		}
@@ -136,7 +138,7 @@ public class Tile : MonoBehaviour, IRequireResources
 			var noDirection = Direction.None;
 			HashSet<Tile> tilesToMove = new HashSet<Tile>() { this };
             if (CanMoveTo(ref moveAmount, tilesToMove, noDirection)) {
-				foreach (Tile t in tilesToMove) {
+				foreach (Tile t in tilesToMove.Reverse()) {
 					t.Move(moveAmount, noDirection);
 				}
 			}
@@ -209,7 +211,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public virtual bool Move(Vector3 moveAmount, Direction d, bool markMoved = true) {
 		// if we're going up to the border, make sure we don't overshoot
-		if (!Centered && Space.GetNeighborInDirection(d) == null && Vector2.Dot(transform.localPosition, transform.localPosition + moveAmount) < 0) {
+		if (!Centered && Space.GetNeighborInDirection(d) == null && Vector2.Dot(transform.localPosition, transform.localPosition + moveAmount) < 0.00001f) {
 			moveAmount = -transform.localPosition;
 		}
 
@@ -373,14 +375,22 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			bool canMove = CanMoveTo(ref moveAmount, tilesToMove, direction);
 			if (canMove) {
-				moved = this.Move(moveAmount, direction);
-				foreach (Tile t in tilesToMove) {
-					var tMoveAmount = position - (Vector2)t.transform.localPosition;
+				var movingTiles = tilesToMove.Reverse();
+				foreach (Tile t in movingTiles) {
+					var originalPosition = (Vector2)t.transform.localPosition;
+					var tMoveAmount = position - originalPosition;
+
 					t.Move(tMoveAmount, direction);
 					if(fromResidual) {
 						t.ResidualVelocity = this.ResidualVelocity;
 					}
+					
+					Vector2 actualMovement = (Vector2)t.transform.localPosition - originalPosition;
+					if(actualMovement.sqrMagnitude < tMoveAmount.sqrMagnitude) {
+						position = originalPosition + actualMovement;
+					}
 				}
+				moved = this.Move(moveAmount, direction);
 			}
 
 			// if movement is off by 90 degrees, it's changed direction from the residual velocity - throw it out
