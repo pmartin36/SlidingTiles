@@ -17,8 +17,7 @@ public class CameraController : MonoBehaviour
 	private bool shakeDecreasingSpeed;
 	private float shakeSpeed;	
 
-	private GameObject PostProcessObjectsContainer { get; set; }
-	public PostProcessVolume PostProcessVolume { get; set; }
+	public PostProcessInfo PostProcessInfo { get; private set; }
 
 	public Camera Camera { get; private set; }
 
@@ -102,24 +101,49 @@ public class CameraController : MonoBehaviour
 	}
 
 	public void EnablePostEffects(bool enable) {
-		PostProcessObjectsContainer?.SetActive(enable);
+		PostProcessInfo?.PostProcessObjectsContainer?.SetActive(enable);
 	}
 
-	public void RegisterPostProcessVolume(PostProcessVolume v) {
-		PostProcessVolume = v;
-		PostProcessObjectsContainer = v.transform.parent?.gameObject;
+	public void RegisterPostProcessVolume(PostProcessInfo v) {
+		GameObject objectToDestroy = PostProcessInfo?.PostProcessObjectsContainer ?? PostProcessInfo?.Volume.gameObject;
+		objectToDestroy?.Destroy();
 
-		var childCamera = PostProcessObjectsContainer?.GetComponentInChildren<Camera>();
-		if(childCamera != null) {
-			childCamera.transform.position = Camera.transform.position;
+		Transform objectToApply = v.PostProcessObjectsContainer?.transform ?? v.Volume.transform;
+		objectToApply.parent = this.transform.parent;
+
+		if (v.ChildCamera != null) {
+			v.ChildCamera.transform.position = Camera.transform.position;
 		}
+		PostProcessInfo = v;
 	}
 
 	public T GetModifiablePostProcessSettings<T>() where T : PostProcessEffectSettings {
-		if (PostProcessVolume != null && PostProcessVolume.gameObject != null) {
-			PostProcessVolume.profile.TryGetSettings<T>(out T settings);
+		if (PostProcessInfo?.Volume != null && PostProcessInfo.Volume.gameObject != null) {
+			PostProcessInfo.Volume.profile.TryGetSettings<T>(out T settings);
 			return settings;
 		}
 		return null;
 	}
+}
+
+public class PostProcessInfo {
+	public PostProcessVolume Volume { get; set; }
+	public PostProcessType Type { get; set; }
+	public GameObject PostProcessObjectsContainer { get; set; }
+	public Camera ChildCamera { get; set; }
+
+	public PostProcessInfo(PostProcessVolume v) {
+		Volume = v;
+		bool isLevel = v.gameObject.scene.buildIndex >= SceneHelpers.TutorialLevelStart;
+		Type = isLevel ? PostProcessType.Level : PostProcessType.Menu;
+
+		PostProcessObjectsContainer = v.transform.parent?.gameObject;
+		ChildCamera = PostProcessObjectsContainer?.GetComponentInChildren<Camera>();
+	}
+}
+
+public enum PostProcessType {
+	Undefined,
+	Menu,
+	Level
 }
