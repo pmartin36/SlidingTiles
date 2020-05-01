@@ -49,7 +49,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public Animator PortraitAnimator;
 
 	private bool respawning;
-	private GameObject respawnEffects;
+	private PlayerRespawnEffects respawnEffects;
 
 	private bool Won { get; set; }
 
@@ -64,12 +64,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		heavyLandParticles = ps.First(p => p.name == "heavyLandParticles");
 		heavyLandParticles.Stop();
 
-		foreach(Transform child in transform) {
-			if(child.CompareTag("PlayerRespawnEffects")) {
-				respawnEffects = child.gameObject;
-			}
-		}
-		respawnEffects.SetActive(false);
+		respawnEffects = GetComponentInChildren<PlayerRespawnEffects>();
+		respawnEffects.gameObject.SetActive(false);
 	}
 
 	void Start() {
@@ -518,7 +514,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		RespawnManager.ActionButtons.SpawnButton.interactable = false;
 
 		c.EnablePostEffects(true);
-		respawnEffects.SetActive(true);
+		respawnEffects.gameObject.SetActive(true);
+		respawnEffects.PlayDeathClip();
 
 		float t = 0;
 		while (t < tShrinkGrow) {
@@ -540,6 +537,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		transform.localScale = 1.44f * Vector3.one;
 
 		// move
+		respawnEffects.PlayMoveClip();
 		t = 0;
 		while (t < tMove) {
 			float mt = Mathf.SmoothStep(0, 1, t/tMove);
@@ -563,6 +561,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		var waitQuarter = new WaitForSeconds(0.25f); 
 		yield return waitQuarter; // particles last a second, growing takes 0.5f, so we add 0.25f before and after to take full second
 
+		respawnEffects.PlayRespawnClip();
 		t = 0;
 		while (t < tShrinkGrow) {
 			float v = t / tShrinkGrow;
@@ -584,7 +583,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		
 		yield return waitQuarter;
 		c.EnablePostEffects(false);
-		respawnEffects.SetActive(false);
+		respawnEffects.gameObject.SetActive(false);
 		respawning = false;
 
 		// re-enable action buttons

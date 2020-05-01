@@ -43,10 +43,10 @@ public class Tile : MonoBehaviour, IRequireResources
 	private static int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
 	private static Material SelectedMaterial;
-
 	private List<Material> AllMaterials;
 
-	private static AsyncOperationHandle<Material> OnImmobileMaterialLoad;
+	private static AudioClip StickySound;
+	private static AudioClip MoveSound;
 
 	protected void Awake() {
 		playerMask = 1 << LayerMask.NameToLayer("Player");
@@ -62,16 +62,25 @@ public class Tile : MonoBehaviour, IRequireResources
 
 		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld && Movable) {
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
+			int loadedObjects = 0;
 		
 			Addressables.LoadAssetAsync<Material>($"Level_SelectedTile").Completed +=
-				(obj) =>
-					{
-						SelectedMaterial = obj.Result;
-						Loaded = true;
-					};
+				(obj) => {
+					SelectedMaterial = obj.Result;
+					Loaded = ++loadedObjects >= 2;
+				};
+			Addressables.LoadAssetAsync<AudioClip>("StickySound").Completed +=
+				(obj) => {
+					StickySound = obj.Result;
+					Loaded = ++loadedObjects >= 2;
+				};
 		}
 		else {
 			Loaded = true;
+		}
+
+		if(MoveSound == null || MoveSound.name != audio.clip.name) {
+			MoveSound = audio.clip;
 		}
 
 		//if (!Movable) {
@@ -420,6 +429,13 @@ public class Tile : MonoBehaviour, IRequireResources
 		this.Space = initialTilespace;
 		SetMovable(initialMovable, false);
 		transform.localPosition = Vector2.zero;
+		this.ResidualVelocity = Vector2.zero;
+
+		if (Movable && audio.clip.name != MoveSound.name) {
+			audio.clip = MoveSound;
+			audio.pitch = 0.8f;
+			audio.loop = true;
+		}
 	}
 
 	public void SetMovable(bool movable, bool animate = true) {
@@ -431,6 +447,7 @@ public class Tile : MonoBehaviour, IRequireResources
 			audio.Stop();
 			StopCoroutine(SetImmobileAnimation());
 			if(animate) {
+				PlayStickySound();
 				StartCoroutine(SetImmobileAnimation());
 			}
 			else {
@@ -440,6 +457,16 @@ public class Tile : MonoBehaviour, IRequireResources
 		else {
 			SetMobileShaderValue(1f);
 		}
+	}
+
+	private void PlayStickySound() {
+		audio.Stop();
+		audio.clip = StickySound;
+		audio.volume = 0.85f * GameManager.Instance.SaveData.FxVolume;
+		audio.pitch = 1.3f;
+		audio.loop = false;
+		audio.time = 0f;
+		audio.Play();
 	}
 
 	private void SetMobileShaderValue(float v, Material m = null) {
