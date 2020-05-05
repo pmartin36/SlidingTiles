@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class LevelSelectButton : MenuImageCopy
+public class LevelSelectButton : MenuImageSpriteCopy
 {	
 	public bool Interactable { 
 		get => button.interactable;
@@ -17,15 +17,11 @@ public class LevelSelectButton : MenuImageCopy
 	protected System.Action OnHideShowCallback;
 	protected Animator anim;
 
-	protected Color tileColor; // temporary I think
-
 	public void Init() {
 		button = GetComponent<Button>();
 		text = GetComponentInChildren<TMP_Text>();
 		rectTransform = GetComponent<RectTransform>();
 		anim = GetComponent<Animator>();
-
-		tileColor = button.image.color;
 	}
 
 	public void SetPosition(Vector2 position) {
@@ -45,10 +41,12 @@ public class LevelSelectButton : MenuImageCopy
 	}
 
 	public virtual void SetStayHidden(bool stayHidden) {
-		Color clear = Color.white;
-		clear.a = 0;
-		text.color = stayHidden ? clear : Color.white;
-		button.image.color = stayHidden ? clear : tileColor;
+		Color textColor = Color.white;
+		Color tileColor = button.image.color;
+		textColor.a = stayHidden ? 0f : 1f;
+		tileColor.a = stayHidden ? 0f : 1f;
+		text.color = textColor;
+		button.image.color = tileColor;
 		button.enabled = !stayHidden;
 	}
 

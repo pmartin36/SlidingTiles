@@ -6,6 +6,7 @@ using UnityEngine;
 public class LevelSelect : MenuCopyComponent
 {
 	public static float CameraWipeTime = 0.5f;
+	private const float tileWidth = 150;
 
 	public MenuCopyManager CopyManager;
 	public LevelSelectButton Back;
@@ -25,33 +26,32 @@ public class LevelSelect : MenuCopyComponent
 	private LevelData[,] levelData;
 
 	void Awake() {
-		float tileWidth = 150;
-		WorldSelectedTilePosition = new Vector2(2.5f * tileWidth, 1.5f * tileWidth);
+		WorldSelectedTilePosition = new Vector2(0f, 3f * tileWidth);
 		WorldPositions = new[] {
-			new Vector2(-3.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2(-1.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2( 0.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2( 2.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2(-2.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2(-0.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2( 1.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2( 3.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2(-3.5f * tileWidth, -1.5f * tileWidth),
-			new Vector2(-1.5f * tileWidth, -1.5f * tileWidth),
-			new Vector2( 0.5f * tileWidth, -1.5f * tileWidth),
-			new Vector2( 2.5f * tileWidth, -1.5f * tileWidth)
+			new Vector2(	-2f * tileWidth,	2f * tileWidth - 1),
+			new Vector2(	0f * tileWidth,		2f * tileWidth - 1),
+			new Vector2(	2f * tileWidth,		2f * tileWidth - 1),
+			new Vector2(	-2f * tileWidth,	0f * tileWidth - 1),
+			new Vector2(	0f * tileWidth,		0f * tileWidth - 1),
+			new Vector2(	2f * tileWidth,		0f * tileWidth - 1),
+			new Vector2(	-2f * tileWidth,	-2f * tileWidth - 1),
+			new Vector2(	 0f * tileWidth,	-2f * tileWidth - 1),
+			new Vector2(	2f * tileWidth,		-2f * tileWidth - 1),
+			new Vector2(	-2f * tileWidth,	-4f * tileWidth - 1),
+			new Vector2(	 0f * tileWidth,	-4f * tileWidth - 1),
+			new Vector2(	 2f * tileWidth,	-4f * tileWidth - 1)
 		};
 		LevelPositions = new [] {
-			new Vector2(-0.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2( 1.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2( 3.5f * tileWidth,  0.5f * tileWidth),
-			new Vector2(-1.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2( 0.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2( 2.5f * tileWidth, -0.5f * tileWidth),
-			new Vector2(-2.5f * tileWidth, -1.5f * tileWidth),
-			new Vector2(-0.5f * tileWidth, -1.5f * tileWidth),
-			new Vector2( 1.5f * tileWidth, -1.5f * tileWidth),
-			new Vector2( 3.5f * tileWidth, -1.5f * tileWidth),
+			new Vector2(    2f * tileWidth,     2f * tileWidth - 1),
+			new Vector2(    -2f * tileWidth,    0f * tileWidth - 1),
+			new Vector2(    0f * tileWidth,     0f * tileWidth - 1),
+			new Vector2(    2f * tileWidth,     0f * tileWidth - 1),
+			new Vector2(    -2f * tileWidth,    -2f * tileWidth - 1),
+			new Vector2(     0f * tileWidth,    -2f * tileWidth - 1),
+			new Vector2(    2f * tileWidth,     -2f * tileWidth - 1),
+			new Vector2(    -2f * tileWidth,    -4f * tileWidth - 1),
+			new Vector2(     0f * tileWidth,    -4f * tileWidth - 1),
+			new Vector2(     2f * tileWidth,    -4f * tileWidth - 1),
 			//garbage
 			Vector2.zero,
 			Vector2.zero
@@ -72,11 +72,7 @@ public class LevelSelect : MenuCopyComponent
 
 		if(LevelSelectOpen) {
 			NumberedLevelSelectButton b = NumberedLevelButtons[WorldSelected - 1];
-			b.SetButtonInfo(
-				WorldSelectedTilePosition, 
-				WorldSelected, 
-				true, 
-				false);
+			SetLevelSelectButton(b);
 			if (SelectedWorldComplete) {
 				b.Interactable = true;
 				b.SetOnClick(SwitchToWorldCompleteScene);
@@ -122,6 +118,13 @@ public class LevelSelect : MenuCopyComponent
 					b.SetButtonInfo(LevelSelectPosition(b.Number), b.Number, worldFullyUnlocked || b.Number <= highestUnlockedLevel, false, stars);
   				}
 			}	
+			else {
+				int len = levelData.GetLength(1);
+				int minStars = 4;
+				for (int i = 0; i < len; i++)
+					minStars = Mathf.Min(minStars, levelData[b.Number - 1, i].MaxStarsCollected);
+				b.SetButtonInfo(WorldSelectedTilePosition, WorldSelected, true, false, minStars);
+			}
 		}
 		else {
 			int len = levelData.GetLength(1);

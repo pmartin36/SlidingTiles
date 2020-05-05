@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 613a79837fd37ef4787c943e282e104f, type: 3}
+  m_Script: {fileID: 11500000, guid: d29c657738c7a5846a4c5881c0aea82e, type: 3}
   m_Name: Tile
   m_EditorClassIdentifier: 
-  Material: {fileID: 2100000, guid: 4196b3cd94ca6c0448dd8a14ef441e49, type: 2}
+  Material: {fileID: 2100000, guid: f87a13e4b6cd7c7469002c4654db692c, type: 2}
+  Sprite: {fileID: 21300000, guid: 8d2cc533fd56c2e4c9e7efea365b5a14, type: 3}
+  Color: {r: 1, g: 0.99284506, b: 0.4764151, a: 1}

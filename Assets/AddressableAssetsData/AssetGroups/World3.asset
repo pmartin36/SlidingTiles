@@ -15,36 +15,33 @@ MonoBehaviour:
   m_GroupName: World3
   m_Data:
     m_SerializedData: []
-  m_GUID: 66030aa66e6a99041bcc5e53272517a8
+  m_GUID: c5b908f3c37436c4a8a806ab2ec6b6e8
   m_SerializeEntries:
-  - m_GUID: 6824dd3bbcf46304ea1fb3e969b57ef1
+  - m_GUID: 6a4fa92d84c021d4e9441f840eef374d
+    m_Address: World3/GridFore
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6d0ddfbf57179d34b850c5ee59aa2225
     m_Address: World3/Back
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - World3Menu
-  - m_GUID: 6a4fa92d84c021d4e9441f840eef374d
-    m_Address: World3/Grid
+    m_SerializedLabels: []
+  - m_GUID: 6f1a294b3add6544dacb5b589509d7ea
+    m_Address: World3/GridBack
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - World3Menu
+    m_SerializedLabels: []
   - m_GUID: 93826f871a123204580a461b098ecfdf
     m_Address: World3/TileText
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - World3Menu
+    m_SerializedLabels: []
   - m_GUID: e072d9980b9ec2c4ab385ee1604a478a
     m_Address: World3/Tile
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - World3Menu
+    m_SerializedLabels: []
   - m_GUID: fd27d554a7a14b54186fade45fa58388
     m_Address: World3/Background
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - World3Menu
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 661c34b85dc3ec142a3b80a216831dd2, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: a454c299d61915f448a49e02cd5a926c, type: 2}
-    - {fileID: 11400000, guid: aefcd1768b6a07442b324902e986ca99, type: 2}
+    m_Schemas: []

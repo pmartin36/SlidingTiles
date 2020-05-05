@@ -15,11 +15,17 @@ public class MenuImageSpriteCopy : KeyedMenuCopyComponent {
 			image = GetComponent<Image>();
 		}
 
-		CopyImageObject copyObject = m as CopyImageObject;
-		image.material = copyObject.Material;
-		if (copyObject != null) {
-			image.sprite = copyObject.Sprite;
+		if(m is CopyImageObject) {
+			CopyImageObject copyObject = m as CopyImageObject;
+			image.material = copyObject.Material;
 			image.color = copyObject.Color;
+
+			if(copyObject.Sprite)
+				image.sprite = copyObject.Sprite;
+		}
+		else if(m is CopyObject) {
+			image.material = (m as CopyObject).Material;
+			image.color = Color.white;
 		}
 	}
 }

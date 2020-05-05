@@ -65,7 +65,7 @@
 				float alpha = col.a;
 				alpha *= lerp(pow(saturate(chalk.r-_ChalkSub), _ChalkPower), 0.8, min(0.5, col.r));
 
-				return float4(i.color.rgb * col.b, alpha);
+				return float4(i.color.rgb * col.b, alpha * i.color.a);
             }
             ENDCG
         }

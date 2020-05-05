@@ -69,7 +69,8 @@ public struct LevelMaterial {
 public enum CopyKey {
 	Back,
 	Background,
-	Grid,
+	GridBack,
+	GridFore,
 	Tile,
 	TileText
 }

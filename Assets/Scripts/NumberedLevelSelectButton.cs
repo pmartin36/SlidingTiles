@@ -38,10 +38,7 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		c.a = unlocked ? 1 : 0.5f;
 		text.color = c;
 
-		for(int i = 0; i < 3; i++) {
-			RawImage star = Stars[i];
-			star.gameObject.SetActive(i < stars);
-		}
+		SetStars(stars);
 	}
 
 	public void SetUnlocked(bool unlocked) {
@@ -54,6 +51,13 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		//Paywalled = paywalled;
 		//// add money icon over top
 		//Money.gameObject.SetActive(paywalled);
+	}
+
+	public void SetStars(int stars) {
+		for (int i = 0; i < 3; i++) {
+			RawImage star = Stars[i];
+			star.gameObject.SetActive(i < stars);
+		}
 	}
 
 	public override void TryEnableInteractable() {
