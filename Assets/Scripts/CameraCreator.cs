@@ -10,13 +10,15 @@ public class CameraCreator : MonoBehaviour
 	private PostProcessVolume ppv;
 
     void Awake() {
-		Screen.orientation = ScreenOrientation.LandscapeLeft;
+		Screen.orientation = ScreenOrientation.Portrait;
 
 		if(CameraManager.Instance.CameraController == null) {
 			CameraManager.Instance.Create(MainCameraPrefab, true);
 		}
 		GameManager gm = GameManager.Instance; // create the game and music managers as well
 		MusicManager mm = MusicManager.Instance;
+
+		if(this.gameObject.scene.buildIndex == SceneHelpers.LoadSceneBuildIndex) return;
 
 		ppv = GameObject.FindObjectsOfType<PostProcessVolume>().FirstOrDefault(p => 
 			LayerMask.LayerToName(p.gameObject.layer) == "PostProcessing" 
@@ -31,6 +33,9 @@ public class CameraCreator : MonoBehaviour
 				var objectToRemove = info.PostProcessObjectsContainer?.gameObject ?? info.Volume.gameObject;
 				objectToRemove.Destroy();
 			}
+		}
+		else {
+			CameraManager.Instance.CameraController.DestroyPostProcessVolume();
 		}
     }
 }

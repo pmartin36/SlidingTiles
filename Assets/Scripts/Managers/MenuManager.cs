@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuManager : ContextManager {
 	public bool LevelSelectOpen { get; set; }
@@ -17,8 +19,14 @@ public class MenuManager : ContextManager {
 
 	public AnimationCurve Curve;
 
+	private bool finishedTutorial = false;
+
 	public override void Start() {
 		base.Start();
+		finishedTutorial = GameManager.Instance.HighestUnlockedLevel >= SceneHelpers.TutorialLevelStart + 2;
+		if(!finishedTutorial) {
+			this.GetComponentsInChildren<Button>().First(b => b.gameObject.name.Contains("Tutorial")).gameObject.SetActive(false);
+		}
 	}
 
 	public override void HandleInput(InputPackage p) {
@@ -37,11 +45,10 @@ public class MenuManager : ContextManager {
 
 	public void OpenLevelSelect(bool skipAnimation = false) { 
 		LevelSelectOpen = true;
-		int highestUnlocked = GameManager.Instance.HighestUnlockedLevel;
 
 		// User hasn't completed the tutorial levels yet
-		if (highestUnlocked < SceneHelpers.TutorialLevelStart + 2) {
-			GameManager.Instance.LoadScene(highestUnlocked, null);
+		if (!finishedTutorial) {
+			GameManager.Instance.LoadScene(GameManager.Instance.HighestUnlockedLevel, null);
 			return;
 		}
 
@@ -76,6 +83,10 @@ public class MenuManager : ContextManager {
 		//SettingsMenu.gameObject.SetActive(SettingsOpen);
 		
 		SettingsMenu.Show(SettingsOpen);
+	}
+
+	public void ReplayTutorial() {
+		GameManager.Instance.LoadScene(SceneHelpers.TutorialLevelStart, null);
 	}
 
 	public void GooglePlayGamesClicked() {

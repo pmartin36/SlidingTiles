@@ -17,16 +17,16 @@ public class SettingsMenu : MonoBehaviour
 
 	public void Start() {
 		if (GameManager.Instance.SaveData.AdsRemoved) {
-			HideAdRemovalWidget();
+			// HideAdRemovalWidget();
 		}
 	}
 
 	public void HideAdRemovalWidget() {
-		AdRemovalWidget.SetActive(false);
-		MusicWidget.anchoredPosition =  new Vector2(-58, 225);
-		SoundWidget.anchoredPosition =  new Vector2(-58, 42);
-		ShowMSWidget.anchoredPosition = new Vector2(-58, -143);
-		CreditsPanel.anchoredPosition = new Vector2(-37, -400);
+		//AdRemovalWidget.SetActive(false);
+		//MusicWidget.anchoredPosition =  new Vector2(-58, 225);
+		//SoundWidget.anchoredPosition =  new Vector2(-58, 42);
+		//ShowMSWidget.anchoredPosition = new Vector2(-58, -143);
+		//CreditsPanel.anchoredPosition = new Vector2(-37, -400);
 	}
 
 	public void Show(bool show) {

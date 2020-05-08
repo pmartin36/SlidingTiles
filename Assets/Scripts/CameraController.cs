@@ -105,8 +105,7 @@ public class CameraController : MonoBehaviour
 	}
 
 	public void RegisterPostProcessVolume(PostProcessInfo v) {
-		GameObject objectToDestroy = PostProcessInfo?.PostProcessObjectsContainer ?? PostProcessInfo?.Volume.gameObject;
-		objectToDestroy?.Destroy();
+		DestroyPostProcessVolume();
 
 		Transform objectToApply = v.PostProcessObjectsContainer?.transform ?? v.Volume.transform;
 		objectToApply.parent = this.transform.parent;
@@ -115,6 +114,12 @@ public class CameraController : MonoBehaviour
 			v.ChildCamera.transform.position = Camera.transform.position;
 		}
 		PostProcessInfo = v;
+	}
+
+	public void DestroyPostProcessVolume() {
+		GameObject objectToDestroy = PostProcessInfo?.PostProcessObjectsContainer ?? PostProcessInfo?.Volume.gameObject;
+		objectToDestroy?.Destroy();
+		PostProcessInfo = null;
 	}
 
 	public T GetModifiablePostProcessSettings<T>() where T : PostProcessEffectSettings {

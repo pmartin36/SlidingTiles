@@ -42,10 +42,10 @@ public class LoadScreen : MonoBehaviour
 		midPositions = new List<Vector2>(count);
 		endPositions = new List<Vector2>(count);
 		foreach(RectTransform rt in tileRTs) {
-			Vector2 start = rt.anchoredPosition + Vector2.right * 1600;
+			Vector2 start = rt.anchoredPosition + Vector2.right * 1000;
 			startPositions.Add(start);
 			midPositions.Add(rt.anchoredPosition);
-			endPositions.Add(rt.anchoredPosition - Vector2.right * 1600);
+			endPositions.Add(rt.anchoredPosition - Vector2.right * 1000);
 
 			rt.anchoredPosition = start;
 		}
