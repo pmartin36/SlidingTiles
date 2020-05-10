@@ -66,6 +66,16 @@ public abstract class WinType : MonoBehaviour {
 
 		float elapsedTime = timeInfo.Time;
 		ElapsedTime.text = Utils.SplitTime(elapsedTime, true);
+		ElapsedTime.ForceMeshUpdate();
+
+		RectTransform elapsedTimeRT = ElapsedTime.GetComponent<RectTransform>();
+		float width = ElapsedTime.textBounds.size.x;
+		elapsedTimeRT.sizeDelta = new Vector2(width, elapsedTimeRT.sizeDelta.y);
+		elapsedTimeRT.anchoredPosition = new Vector2((-width / 2f) - 25f, elapsedTimeRT.anchoredPosition.y);
+
+		RectTransform newRecordRT = RecordTime.GetComponent<RectTransform>();
+		newRecordRT.sizeDelta = new Vector2(width, newRecordRT.sizeDelta.y);
+		newRecordRT.anchoredPosition = new Vector2(elapsedTimeRT.anchoredPosition.x, newRecordRT.anchoredPosition.y);
 
 		OnActionSelected = callback;
 	}

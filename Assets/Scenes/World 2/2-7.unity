@@ -4822,7 +4822,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868015142}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 829443428}
@@ -5615,6 +5615,29 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 5975277033373234401, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
+        type: 3}
+    - target: {fileID: 6514423713644356208, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
+        type: 3}
+    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
+        type: 3}
+    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 856132472866506067, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -5654,29 +5677,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5975277033373234401, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
-        type: 3}
-    - target: {fileID: 6514423713644356208, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
-        type: 3}
-    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
-        type: 3}
-    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Type
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6251326600221497046, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}

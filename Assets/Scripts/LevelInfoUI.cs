@@ -31,26 +31,25 @@ public class LevelInfoUI : MonoBehaviour
 		maxWidth = rt.sizeDelta.x * 0.9f;
 
 		minutesSecondsRT = minutesSeconds.GetComponent<RectTransform>();
-		millisecondsRT = milliseconds.GetComponent<RectTransform>();
+		//millisecondsRT = milliseconds.GetComponent<RectTransform>();
 		LevelName.text = this.gameObject.scene.name;
 
 		showTimer = GameManager.Instance.SaveData.ShowTimer;
 		if (showTimer) {
 			SetTimer(0);
 			minutesSeconds.ForceMeshUpdate();
-			milliseconds.ForceMeshUpdate();
 
-			SetMillisecondsEnabled(showMilliseconds);
-
+			// milliseconds.ForceMeshUpdate();
+			// SetMillisecondsEnabled(showMilliseconds);
 		}
 		else {
 			minutesSeconds.gameObject.SetActive(false);
 			milliseconds.gameObject.SetActive(false);
 
 			// Position/Size Level Name
-			LevelName.fontSize = 200;
-			LevelName.alignment = TextAlignmentOptions.Center;
-			LevelName.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -9);
+			//LevelName.fontSize = 200;
+			//LevelName.alignment = TextAlignmentOptions.Center;
+			//LevelName.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -9);
 		}
 	}
 
@@ -59,6 +58,11 @@ public class LevelInfoUI : MonoBehaviour
 			minutes = Mathf.FloorToInt(_seconds / 60f);
 			int intSeconds = Mathf.FloorToInt(_seconds);
 			seconds = intSeconds % 60;
+			float ms = _seconds - intSeconds;
+			minutesSeconds.text = $"{minutes:0}:{seconds:00}<voffset=0.05em><sub>{ms:.000}</sub></voffset>";
+
+			// if you want more advanced timer stuff, this is it
+			/*
 			int mspace = msHiddenSpace;
 			if(showMilliseconds) {
 				mspace = msShowingSpace;
@@ -72,6 +76,7 @@ public class LevelInfoUI : MonoBehaviour
 				minutesDigits = newMinutesDigits;
 				FitAndCenter();
 			}
+			*/
 		}
 	}
 
