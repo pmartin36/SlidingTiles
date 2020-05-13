@@ -18,6 +18,7 @@ public class CameraController : MonoBehaviour
 	private float shakeSpeed;	
 
 	public PostProcessInfo PostProcessInfo { get; private set; }
+	public bool IsTablet { get; private set; }
 
 	public Camera Camera { get; private set; }
 
@@ -25,7 +26,17 @@ public class CameraController : MonoBehaviour
 		Camera = GetComponent<Camera>();
 		Camera.depthTextureMode = DepthTextureMode.Depth;
 		centeredPosition = transform.position;
-    }
+
+		float screenWidth = Screen.width / Screen.dpi;
+		float screenHeight = Screen.height / Screen.dpi;
+		float diagonalInches = Mathf.Sqrt(Mathf.Pow(screenWidth, 2) + Mathf.Pow(screenHeight, 2));
+		IsTablet = diagonalInches > 7f && Camera.aspect > 0.55f;
+
+		if(!IsTablet) {
+			// we want half width to be 24
+			Camera.orthographicSize = 24f / Camera.aspect;
+		}
+	}
 
 	protected virtual void Update() {
 		float pctDuration = (Time.time - shakeStartTime) / shakeDuration;
@@ -112,6 +123,7 @@ public class CameraController : MonoBehaviour
 
 		if (v.ChildCamera != null) {
 			v.ChildCamera.transform.position = Camera.transform.position;
+			v.ChildCamera.orthographicSize = Camera.orthographicSize;
 		}
 		PostProcessInfo = v;
 	}

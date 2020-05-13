@@ -76,6 +76,10 @@ public class LevelManager : ContextManager {
 		LevelInfo = FindObjectsOfType<LevelInfoUI>().First(g => g.gameObject.scene == this.gameObject.scene);
 		LevelInfo.SetTimer(ElapsedTime);
 
+		if (CameraManager.Instance.CameraController.IsTablet) {
+			Grid.transform.parent.position = Vector2.zero;
+		}
+
 		StartCoroutine(RunTimer());
 		CreateRespawnManager();
 	}

@@ -69,7 +69,7 @@ public abstract class WinType : MonoBehaviour {
 		ElapsedTime.ForceMeshUpdate();
 
 		RectTransform elapsedTimeRT = ElapsedTime.GetComponent<RectTransform>();
-		float width = ElapsedTime.textBounds.size.x;
+		float width = ElapsedTime.textBounds.size.x * (1 + 2f/ElapsedTime.text.Length);
 		elapsedTimeRT.sizeDelta = new Vector2(width, elapsedTimeRT.sizeDelta.y);
 		elapsedTimeRT.anchoredPosition = new Vector2((-width / 2f) - 25f, elapsedTimeRT.anchoredPosition.y);
 
