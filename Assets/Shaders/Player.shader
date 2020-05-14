@@ -4,8 +4,7 @@
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color", Color) = (1,1,1,1)
-		_DistortRadius("Distort Radius", Range(0,1)) = 2
-		_CellSize("Cell Size", float) = 341
+		_DistortRadius("Distort Radius", Range(0,1)) = 1
     }
     SubShader
     {
@@ -25,6 +24,7 @@
             #pragma fragment frag
 			
             #include "UnityCG.cginc"
+			#define CELLSIZE 341
 
             struct appdata
             {
@@ -45,7 +45,6 @@
 			float4 _MainTex_TexelSize;
 			float4 _Color;
 			float _DistortRadius;
-			float _CellSize;
 
             v2f vert (appdata v)
             {
@@ -66,8 +65,8 @@
 
 				// convert from 0 to 1 from sprite sheet uv
 				float2 normalizedUv = i.uv * _MainTex_TexelSize.zw;
-				float2 iuv = floor(normalizedUv / _CellSize);
-				normalizedUv = frac(normalizedUv / _CellSize);
+				float2 iuv = floor(normalizedUv / CELLSIZE);
+				normalizedUv = frac(normalizedUv / CELLSIZE);
 
 				// convert uv to -1 to 1
 				float2 uv = normalizedUv * 2 - 1;
@@ -96,7 +95,7 @@
 				uv = saturate(uv);
 
 				// convert back to sprite sheet uv
-				uv = (uv + iuv) * _CellSize / _MainTex_TexelSize.zw;
+				uv = (uv + iuv) * CELLSIZE / _MainTex_TexelSize.zw;
 
 				// sample tex and modify color
 				float4 col = tex2D(_MainTex, uv);

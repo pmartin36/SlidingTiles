@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine.UI;
 
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, ISpringable, ISpeedChangable {
@@ -500,6 +501,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		Vector3 startPosition = transform.position;
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
 
+		Image portrait = PortraitAnimator.GetComponent<Image>();
+
 		Vector3 respawnPosition = RespawnManager.PlayerSpawnPosition;
 		Vector3 diff = respawnPosition - startPosition;
 		Vector3 cubicPoint = startPosition + new Vector3(-diff.x * 0.2f, diff.y * 1.5f, 0);
@@ -522,6 +525,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			float v = t / tShrinkGrow;
 			float r = Mathf.Lerp(1f, 0.6f, v);
 			sr.material.SetFloat("_DistortRadius", r);
+			portrait.material.SetFloat("_OverridePct", v * 0.5f);
 
 			float b = Mathf.Lerp(1, 2, v * 1.1f);
 			blur.intensity.value = b;
@@ -567,6 +571,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			float v = t / tShrinkGrow;
 			float r = Mathf.Lerp(0.6f, 1f, v);
 			sr.material.SetFloat("_DistortRadius", r);
+			portrait.material.SetFloat("_OverridePct", (1 - v) / 2f);
 
 			float b = (1 - t) * 2;
 			blur.intensity.value = b;
@@ -577,10 +582,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			t += Time.deltaTime;
 			yield return null;
 		}
-		sr.material.SetFloat("_DistortRadius", 1f);
 		blur.intensity.value = 0;
 		transform.localScale = 1.2f * Vector3.one;
-		
+		sr.material.SetFloat("_DistortRadius", 1f);
+		portrait.material.SetFloat("_OverridePct", 0f);
+
 		yield return waitQuarter;
 		c.EnablePostEffects(false);
 		respawnEffects.gameObject.SetActive(false);

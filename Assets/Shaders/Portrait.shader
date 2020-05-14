@@ -1,4 +1,4 @@
-﻿Shader "SlidingTiles/ColorOverride"
+﻿Shader "SlidingTiles/Portrait"
 {
     Properties
     {
@@ -59,6 +59,21 @@
 			{
 				float4 col = tex2D(_MainTex, i.uv) * i.color;
 				col.rgb = lerp(col.rgb, _Color, _OverridePct);
+
+				// convert from 0 to 1 from sprite sheet uv
+				float2 normalizedUv = i.uv * _MainTex_TexelSize.zw;
+				float2 iuv = floor(normalizedUv / CELLSIZE);
+				normalizedUv = frac(normalizedUv / CELLSIZE);
+
+				// convert uv to -1 to 1
+				float2 uv = normalizedUv * 2 - 1;
+				float len = length(uv);
+				float a = smoothstep(_OverridePct * 3, _OverridePct, len) * 0.2;
+				
+				float diff = step(col.a, a);
+				col.rgb += float3(1, 1, 1) * diff;
+				col.a = max(col.a, a);
+
 				return col;
             }
             ENDCG

@@ -81,6 +81,9 @@ public abstract class WinType : MonoBehaviour {
 	}
 
 	public virtual bool SelectAction(WinTypeAction w) {
+		if(ActionSelected) {
+			return false;
+		}
 		if(w == WinTypeAction.Next && !GameManager.Instance.CanPlayNextLevel()) {
 			return false;
 		}
