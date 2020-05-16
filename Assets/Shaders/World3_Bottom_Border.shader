@@ -3,6 +3,8 @@ Shader "SlidingTiles/World3_Bottom_Border"
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
+		
+		_Seed("Seed", float) = 1
 
 		[Toggle(FLOWERS)]
 		_ShowFlowers("Show Flowers", Float) = 0
@@ -53,6 +55,7 @@ Shader "SlidingTiles/World3_Bottom_Border"
 				float4 _MainTex_TexelSize;
 
 				sampler2D _CameraDepthTexture;
+				float _Seed;
 				float _Size;
 				float _WindDirectionAngle;
 				float _WindFrequency;
@@ -85,6 +88,7 @@ Shader "SlidingTiles/World3_Bottom_Border"
 					o.secondaryColor = v.color * _SecondaryColor;
 					o.screenPos = ComputeScreenPos(o.vertex);
 
+					// this doesn't work, look at world3 flowers
 					float xScale = length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x));
 					o.screenToTexScale = (_MainTex_TexelSize.zw * xScale) / _ScreenParams.xy / 3.5;
 					o.texScale = _MainTex_TexelSize.y / _MainTex_TexelSize.xy;
@@ -94,46 +98,18 @@ Shader "SlidingTiles/World3_Bottom_Border"
 
 				float4 frag(v2f i) : SV_Target
 				{
-					/*float grass_start = 0.275;
-
-					float n = N21(i.screenPos);
-					float darkness = max(n, frac(n*183.2));
-					darkness = tex2D(_Noise, i.screenPos).r * 0.7 + 0.3 * darkness;
-					float value = lerp(0.4, 0.75, smoothstep(0.35, 1.4, darkness));
-
-					float3 grass_primary = rgb2hsv(i.primaryColor);
-					grass_primary.z = value - 0.075;
-					grass_primary = hsv2rgb(grass_primary);
-
-					float3 grass_secondary = rgb2hsv(i.secondaryColor);
-					grass_secondary.z = value;
-					grass_secondary = hsv2rgb(grass_secondary);
-
-					float noise = tex2D(_Noise, i.screenPos).r * 0.6;
-					noise += tex2D(_Noise, i.screenPos * 5).r * 0.2;
-
-					float3 tertiary = float3(0.75, 0.63, 0.45);
-					float3 darkTertiary = float3(0.35, 0.21, 0.02) * 1.5;
-					float3 dirt = lerp(darkTertiary, tertiary, smoothstep(0, grass_start, noise - 0.15));
-
-					float grassLerp = smoothstep(grass_start, 0.7, noise);
-					float3 grass = lerp(grass_primary, grass_secondary, grassLerp);
-
-					float3 val = lerp(dirt, grass, smoothstep(grass_start - 0.05, grass_start + 0.05, noise));*/
-
 					float n = N21(i.screenPos);
 					float noise = tex2D(_BackgroundTex, i.screenPos / 3).r;
 					noise = pow(noise + 0.4, 4);
 					float3 val = lerp(i.primaryColor, i.secondaryColor, noise);
 
 					// grass lines
-					float2 uv = float2(i.screenPos.x, -i.uv.y) * _ScreenParams.y / _ScreenParams.xy;
-					uv.x *= _Size * 2;
+					float2 uv = float2(i.uv.x * _Size / 2, -i.uv.y * 0.9);
 					float2 id = floor(uv);
-					float random = N21(id);
+					float random = N21(id * _Seed);
 					float2 guv = frac(uv);// *(0.5 + random * 0.5);
 
-					float2 gv = guv + frac(random * float2(422.4, 156.3)) * 0.5 - 0.25;
+					float2 gv = guv + frac(random * float2(574.4, 156.3)) * 0.5 - 0.25;
 
 					float num_squiggle_rows = 2;
 					float num_squiggle_columns = 4;
@@ -144,9 +120,10 @@ Shader "SlidingTiles/World3_Bottom_Border"
 					float2 squiggle_uv = squiggle_start_uv + gv / float2(num_squiggle_columns, num_squiggle_rows);
 					float4 squiggle = tex2D(_SquiggleTex, squiggle_uv) * 0.6;
 
-					float noGrass = step(0.3, frac(random * 321.3));
+					float noGrass = step(0.4, frac(random * 133.7));
 					val = lerp(val, squiggle.rgb, squiggle.a * noGrass);
 
+					// shading due to slope
 					float4 map = tex2D(_MainTex, i.uv);
 
 					float g = (map.g - 0.5) * 2;

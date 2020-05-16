@@ -4,6 +4,8 @@ Shader "SlidingTiles/World3_Grass2"
     {
 		_MainTex("Texture", 2D) = "white" {}
 
+		_Seed("Seed", float) = 1
+
 		[Toggle(FLOWERS)]
 		_ShowFlowers("Show Flowers", Float) = 0
 
@@ -52,6 +54,7 @@ Shader "SlidingTiles/World3_Grass2"
 			float4 _MainTex_TexelSize;
 
 			sampler2D _CameraDepthTexture;
+			float _Seed;
 			float _Size;
 			float _WindDirectionAngle;
 			float _WindFrequency;
@@ -84,6 +87,7 @@ Shader "SlidingTiles/World3_Grass2"
 				o.secondaryColor = v.color * _SecondaryColor;
 				o.screenPos = ComputeScreenPos(o.vertex);
 
+				// this doesn't work, look at world3 flowers
 				float xScale = length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x));
 				o.screenToTexScale = (_MainTex_TexelSize.zw * xScale) / _ScreenParams.xy / 3.5;
 				o.texScale = _MainTex_TexelSize.y / _MainTex_TexelSize.xy;
@@ -102,7 +106,7 @@ Shader "SlidingTiles/World3_Grass2"
 				float2 uv = i.screenPos * i.texScale;
 				uv *= _Size * 2;
 				float2 id = floor(uv);
-				float random = N21(id);
+				float random = N21(id * _Seed);
 				float2 guv = frac(uv);// *(0.5 + random * 0.5);
 
 				float2 gv = guv + frac(random * float2(422.4, 156.3)) * 0.5 - 0.25;
@@ -119,6 +123,14 @@ Shader "SlidingTiles/World3_Grass2"
 				float noGrass = step(0.85, frac(random * 321.3));
 				val = lerp(val, squiggle.rgb, squiggle.a * noGrass);
 
+				// DEBUG
+				//float4 debug = float4(0, 0, 0, 1);
+				//if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
+				//debug.r += smoothstep(0.1, 0.0, length(gv));
+				//debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
+				////debug.g = depth;
+				//return debug;
+
 				#if FLOWERS
 					uv = i.uv * i.texScale;	// square boxes
 					uv *= _Size;
@@ -134,12 +146,13 @@ Shader "SlidingTiles/World3_Grass2"
 					sampleuv = ((sampleuv * 2 - 1) * i.screenToTexScale + 1) / 2;
 					float depth = tex2D(_CameraDepthTexture, sampleuv).r;
 
-					// float4 debug = float4(0, 0, 0, 1);
-					// if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
-					// debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
-					// debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
-					// debug.g = depth;	
-					// return debug;
+					// DEBUG
+					 /*float4 debug = float4(0, 0, 0, 1);
+					 if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
+					 debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
+					 debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
+					 debug.g = depth;	
+					 return debug;*/
 
 					// how much will the wind move the flower position
 					float2 windDirection = normalize(float2(cos(_WindDirectionAngle), sin(_WindDirectionAngle)));

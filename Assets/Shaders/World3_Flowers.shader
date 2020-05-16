@@ -4,6 +4,8 @@ Shader "SlidingTiles/World3_Flowers"
     {
 		_MainTex("Texture", 2D) = "white" {}
 
+		_Seed("Seed", float) = 1
+
 		_Size("Size", Range(1, 50)) = 20
 
 		[Header(Wind)]
@@ -38,6 +40,7 @@ Shader "SlidingTiles/World3_Flowers"
 			float4 _MainTex_TexelSize;
 
 			sampler2D _CameraDepthTexture;
+			float _Seed;
 			float _Size;
 			float _WindDirectionAngle;
 			float _WindFrequency;
@@ -63,9 +66,17 @@ Shader "SlidingTiles/World3_Flowers"
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				float xScale = length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x));
-				o.screenToTexScale = (_MainTex_TexelSize.zw * xScale) / _ScreenParams.xy / 14;
-				o.texScale = _MainTex_TexelSize.y / _MainTex_TexelSize.xy;
+				// texScale.y will always == 1, texScale.x will be > 1 if texture height > texture width (true with current background texture)
+				o.texScale = _MainTex_TexelSize.y / _MainTex_TexelSize.xy; 
+
+				// get transform x/y/z scale - since background is always scaled evenly across 3 axis, just sample x
+				//float scale = length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x)); 
+				//o.screenToTexScale = (_MainTex_TexelSize.zw * scale) / _ScreenParams.xy / 16.5;
+				//o.screenToTexScale = 1 + ((_MainTex_TexelSize.zw * scale) / _ScreenParams.xy / 100);
+
+				// I would prefer not to use this approach as it hardcodes 1.2 (the size of the background is 1.2x the camera size)
+				// but can release with this if it works on all devices.
+				o.screenToTexScale = float2(1, (_ScreenParams.x / _ScreenParams.y) / o.texScale.x) * 1.2;
 				return o;
 			}
 
@@ -76,7 +87,7 @@ Shader "SlidingTiles/World3_Flowers"
 				float2 guv = frac(uv) - 0.5;
 				float2 id = floor(uv);			
 
-				float random = N21(id);
+				float random = N21(id * _Seed);
 
 				float2 cellMovement = frac(random * float2(422.4, 156.3)) * 0.5 - 0.25;
 				float2 gv_no_wind = guv - cellMovement;
@@ -90,6 +101,7 @@ Shader "SlidingTiles/World3_Flowers"
 				debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
 				debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
 				debug.g = depth;	
+				debug.a = 0.5;
 				return debug;*/
 
 				// how much will the wind move the flower position
@@ -138,7 +150,7 @@ Shader "SlidingTiles/World3_Flowers"
 				float3 color = petalColor * alpha + float3(0, 0, 0) * shadowAlpha + float3(0.05, 0.41, 0) * stemAlpha;
 
 				float allColor = max(max(alpha, stemAlpha), shadowAlpha);
-				float noFlower = step(0.5, frac(random * 321.3)) * step(depth, 0.5); // 50% of spaces missing flowers, anything with flower center covered should not show
+				float noFlower = step(0.4, frac(random * 321.3)) * step(depth, 0.5); // 40% of spaces missing flowers, anything with flower center covered should not show
 				float4 col = float4(color, allColor * noFlower);
 
 				// if (guv.x > 0.48 || guv.y > 0.48) col = float4(1, 0, 0, 1);
