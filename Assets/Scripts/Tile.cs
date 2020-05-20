@@ -462,8 +462,8 @@ public class Tile : MonoBehaviour, IRequireResources
 	private void PlayStickySound() {
 		audio.Stop();
 		audio.clip = StickySound;
-		audio.volume = 0.85f * GameManager.Instance.SaveData.FxVolume;
-		audio.pitch = 1.3f;
+		audio.volume = 0.4f * GameManager.Instance.SaveData.FxVolume;
+		audio.pitch = 0.8f;
 		audio.loop = false;
 		audio.time = 0f;
 		audio.Play();

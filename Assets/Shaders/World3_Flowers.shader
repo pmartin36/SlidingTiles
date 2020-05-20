@@ -5,8 +5,10 @@ Shader "SlidingTiles/World3_Flowers"
 		_MainTex("Texture", 2D) = "white" {}
 
 		_Seed("Seed", float) = 1
-
 		_Size("Size", Range(1, 50)) = 20
+
+		[Toggle(DEBUG)]
+		_Debug("Debug", Float) = 0
 
 		[Header(Wind)]
 		_WindDirectionAngle("Wind Direction", Range(0, 6.28)) = 0
@@ -31,6 +33,7 @@ Shader "SlidingTiles/World3_Flowers"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma shader_feature DEBUG
 
 			#include "UnityCG.cginc"
 			#include "CommonFunctions.cginc"
@@ -96,13 +99,15 @@ Shader "SlidingTiles/World3_Flowers"
 				sampleuv = ((sampleuv * 2 - 1) * i.screenToTexScale + 1) / 2;
 				float depth = tex2D(_CameraDepthTexture, sampleuv).r;
 
-				/*float4 debug = float4(0, 0, 0, 1);
-				if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
-				debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
-				debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
-				debug.g = depth;	
-				debug.a = 0.5;
-				return debug;*/
+				#if DEBUG
+					float4 debug = float4(0, 0, 0, 1);
+					if (guv.x > 0.48 || guv.y > 0.48) debug.r = 1;
+					debug.r += smoothstep(0.1, 0.0, length(gv_no_wind));
+					debug.b = tex2D(_CameraDepthTexture, ((i.uv * 2 - 1) * i.screenToTexScale + 1) / 2).r;
+					debug.g = depth;	
+					debug.a = 0.5;
+					return debug;
+				#endif
 
 				// how much will the wind move the flower position
 				float2 windDirection = normalize(float2(cos(_WindDirectionAngle), sin(_WindDirectionAngle)));
@@ -113,7 +118,7 @@ Shader "SlidingTiles/World3_Flowers"
 				float2 gv = gv_no_wind+windOffset;
 
 				// what color
-				float3 flowerColor = frac(random * float3(267.9, 113.2, 472.1)) * 0.4 + 0.6;
+				float3 flowerColor = frac(random * float3(267.9, 113.2, 472.1)) * 0.6 + 0.4;
 
 				// make petals
 				float theta = atan2(gv.y, gv.x);
@@ -150,7 +155,7 @@ Shader "SlidingTiles/World3_Flowers"
 				float3 color = petalColor * alpha + float3(0, 0, 0) * shadowAlpha + float3(0.05, 0.41, 0) * stemAlpha;
 
 				float allColor = max(max(alpha, stemAlpha), shadowAlpha);
-				float noFlower = step(0.4, frac(random * 321.3)) * step(depth, 0.5); // 40% of spaces missing flowers, anything with flower center covered should not show
+				float noFlower = step(0.5, frac(random * 321.3)) * step(depth, 0.5); // 50% of spaces missing flowers, anything with flower center covered should not show
 				float4 col = float4(color, allColor * noFlower);
 
 				// if (guv.x > 0.48 || guv.y > 0.48) col = float4(1, 0, 0, 1);

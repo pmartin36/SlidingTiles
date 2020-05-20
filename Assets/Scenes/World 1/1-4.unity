@@ -1295,6 +1295,21 @@ PrefabInstance:
       propertyPath: PortraitAnimator
       value: 
       objectReference: {fileID: 248166706}
+    - target: {fileID: 4204666685430825285, guid: a4443ec0f57373942a39a5afd44922c2,
+        type: 3}
+      propertyPath: DeathClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 65437b97355f31c4d8a976b5c8cd837b, type: 3}
+    - target: {fileID: 4204666685430825285, guid: a4443ec0f57373942a39a5afd44922c2,
+        type: 3}
+      propertyPath: MoveClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a343581a3685c5a4d9a1e82cfe06f9fb, type: 3}
+    - target: {fileID: 4204666685430825285, guid: a4443ec0f57373942a39a5afd44922c2,
+        type: 3}
+      propertyPath: RespawnClip
+      value: 
+      objectReference: {fileID: 8300000, guid: d4e311eaf06d99147839bf5d42d42b09, type: 3}
     - target: {fileID: 3174210489862551412, guid: a4443ec0f57373942a39a5afd44922c2,
         type: 3}
       propertyPath: InitialModule.startSize.minScalar
@@ -4360,16 +4375,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4415416653994323076, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Colors.m_DisabledColor.a
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 856132473892189394, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 4415416653994323076, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Colors.m_DisabledColor.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4415416654283529398, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_Colors.m_DisabledColor.a

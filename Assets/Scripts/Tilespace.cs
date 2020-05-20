@@ -21,12 +21,7 @@ public class Tilespace : MonoBehaviour
 		if(Tile != null) {
 			Tile.Init(this);
 		}
-
-		if(Sticky) {
-			SpriteRenderer sr = GetComponent<SpriteRenderer>();
-			sr.material.SetFloat("_Sticky", 1.0f);
-		}
-    }
+    } 
 
 	public void Init(Grid g) {
 		grid = g;

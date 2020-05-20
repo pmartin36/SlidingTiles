@@ -519,6 +519,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		c.EnablePostEffects(true);
 		respawnEffects.gameObject.SetActive(true);
 		respawnEffects.PlayDeathClip();
+		respawnEffects.PlayMoveClip();
 
 		float t = 0;
 		while (t < tShrinkGrow) {
@@ -533,6 +534,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			float scale = Mathf.Lerp(1.2f, 1.44f, v);
 			transform.localScale = scale * scaleNormal;
 
+			respawnEffects.MoveClipVolume = Mathf.Max(v * 0.75f, respawnEffects.MoveClipVolume);
+
 			t += Time.deltaTime;
 			yield return null;
 		}
@@ -541,7 +544,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		transform.localScale = 1.44f * Vector3.one;
 
 		// move
-		respawnEffects.PlayMoveClip();
 		t = 0;
 		while (t < tMove) {
 			float mt = Mathf.SmoothStep(0, 1, t/tMove);
@@ -587,7 +589,13 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		sr.material.SetFloat("_DistortRadius", 1f);
 		portrait.material.SetFloat("_OverridePct", 0f);
 
-		yield return waitQuarter;
+		t = 0;
+		while( t < 0.25f ) {
+			float v = t / 0.25f;
+			respawnEffects.MoveClipVolume = Mathf.Min(v, respawnEffects.MoveClipVolume);
+			t += Time.deltaTime;
+			yield return null;
+		}
 		c.EnablePostEffects(false);
 		respawnEffects.gameObject.SetActive(false);
 		respawning = false;

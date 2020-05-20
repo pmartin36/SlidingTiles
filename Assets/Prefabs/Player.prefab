@@ -9845,9 +9845,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b01357815bf424dbfc2461ccd07460, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeathClip: {fileID: 8300000, guid: e089cd04154d5f34d8e0ca75b2f7a6c4, type: 3}
-  MoveClip: {fileID: 0}
-  RespawnClip: {fileID: 8300000, guid: 984f4c722d3ea2a49af3da86eaf2b13f, type: 3}
+  DeathClip: {fileID: 8300000, guid: 65437b97355f31c4d8a976b5c8cd837b, type: 3}
+  MoveClip: {fileID: 8300000, guid: a343581a3685c5a4d9a1e82cfe06f9fb, type: 3}
+  RespawnClip: {fileID: 8300000, guid: d4e311eaf06d99147839bf5d42d42b09, type: 3}
 --- !u!82 &3027219930642145636
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10016,7 +10016,7 @@ TrailRenderer:
   m_Time: 0.5
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 3
+    widthMultiplier: 2.5
     widthCurve:
       serializedVersion: 2
       m_Curve:
