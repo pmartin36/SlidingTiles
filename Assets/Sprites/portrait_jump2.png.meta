@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ba7099d946458e0439eac9c3dbe8e1c8
+guid: ecfb83422d9183f40bc547712ae654ae
 TextureImporter:
   fileIDToRecycleName:
     21300000: portrait_jump_0
@@ -32,7 +32,36 @@ TextureImporter:
     21300054: portrait_jump_27
     21300056: portrait_jump_28
     21300058: portrait_jump_29
-    21300060: portrait_jump_30
+    21300060: portrait_jump2_0
+    21300062: portrait_jump2_1
+    21300064: portrait_jump2_2
+    21300066: portrait_jump2_3
+    21300068: portrait_jump2_4
+    21300070: portrait_jump2_5
+    21300072: portrait_jump2_6
+    21300074: portrait_jump2_7
+    21300076: portrait_jump2_8
+    21300078: portrait_jump2_9
+    21300080: portrait_jump2_10
+    21300082: portrait_jump2_11
+    21300084: portrait_jump2_12
+    21300086: portrait_jump2_13
+    21300088: portrait_jump2_14
+    21300090: portrait_jump2_15
+    21300092: portrait_jump2_16
+    21300094: portrait_jump2_17
+    21300096: portrait_jump2_18
+    21300098: portrait_jump2_19
+    21300100: portrait_jump2_20
+    21300102: portrait_jump2_21
+    21300104: portrait_jump2_22
+    21300106: portrait_jump2_23
+    21300108: portrait_jump2_24
+    21300110: portrait_jump2_25
+    21300112: portrait_jump2_26
+    21300114: portrait_jump2_27
+    21300116: portrait_jump2_28
+    21300118: portrait_jump2_29
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -148,127 +177,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: portrait_jump_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 1705
-        width: 341
-        height: 341
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 54768b5effa1e7d4db342f80bb6a7616
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: portrait_jump_1
-      rect:
-        serializedVersion: 2
-        x: 341
-        y: 1705
-        width: 341
-        height: 341
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 48b19c65171aa10459d2fd79b993594b
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: portrait_jump_2
-      rect:
-        serializedVersion: 2
-        x: 682
-        y: 1705
-        width: 341
-        height: 341
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b27becd992978d94ea26cfa92ea20e9d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: portrait_jump_3
-      rect:
-        serializedVersion: 2
-        x: 1023
-        y: 1705
-        width: 341
-        height: 341
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b62081d00f8c0d9408dabfb408bc8e2d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: portrait_jump_4
-      rect:
-        serializedVersion: 2
-        x: 1364
-        y: 1705
-        width: 341
-        height: 341
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d40e2cac22ecca049999e45e18b83c85
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: portrait_jump_5
-      rect:
-        serializedVersion: 2
-        x: 1705
-        y: 1705
-        width: 341
-        height: 341
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3e66502ff05f052458615412ad80a9d8
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: portrait_jump_6
+      name: portrait_jump2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -282,13 +191,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ad116a76b0a96334ba11f9425e7a613f
+      spriteID: ec6c337dba6eb7b41aa2a9d5e7559685
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_7
+      name: portrait_jump2_1
       rect:
         serializedVersion: 2
         x: 341
@@ -302,13 +211,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 78132d7f9a3502247b12435c7dfa7e6d
+      spriteID: 172eb447c54ae3f4b806f03fab167778
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_8
+      name: portrait_jump2_2
       rect:
         serializedVersion: 2
         x: 682
@@ -322,13 +231,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e7959042daa7d5f4e943da4c78e60e09
+      spriteID: 0c64215a5f38caa44b5d0ff1462c9e5d
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_9
+      name: portrait_jump2_3
       rect:
         serializedVersion: 2
         x: 1023
@@ -342,13 +251,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7dade1e77bc7dca49af61c9b940eee5a
+      spriteID: 918bab4433774ee4dbc281c78fbaf9fd
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_10
+      name: portrait_jump2_4
       rect:
         serializedVersion: 2
         x: 1364
@@ -362,13 +271,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ea8741063afdc54488e03d9b16c9c552
+      spriteID: a4192d0fa1841b64eb934f50c8e8523b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_11
+      name: portrait_jump2_5
       rect:
         serializedVersion: 2
         x: 1705
@@ -382,13 +291,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9c0bdaf96a0858d498a0fb50a218bb6d
+      spriteID: a14135826334e4649aa61ff9374d0c9f
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_12
+      name: portrait_jump2_6
       rect:
         serializedVersion: 2
         x: 0
@@ -402,13 +311,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f52eb75367d82484db381af09c7850dc
+      spriteID: cd9e9ea687b0d8e4495365f295ccd90d
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_13
+      name: portrait_jump2_7
       rect:
         serializedVersion: 2
         x: 341
@@ -422,13 +331,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ffdeff03de261a4abbd02dd9ed37d76
+      spriteID: a34b6b193f0a1ab4287943f1b5523cff
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_14
+      name: portrait_jump2_8
       rect:
         serializedVersion: 2
         x: 682
@@ -442,13 +351,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 554c728d615453b4a9740446d2aed567
+      spriteID: ec1113f989742c043b1889132a97692c
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_15
+      name: portrait_jump2_9
       rect:
         serializedVersion: 2
         x: 1023
@@ -462,13 +371,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d35ce76c2b019643be9dcc8ddda1908
+      spriteID: cb258ca8693af414cafd2f17e8c7f1d9
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_16
+      name: portrait_jump2_10
       rect:
         serializedVersion: 2
         x: 1364
@@ -482,13 +391,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d1e4724e4d750c141ae4af18e66a7514
+      spriteID: 78cfb2a0480b608498c9d9c4e82fda36
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_17
+      name: portrait_jump2_11
       rect:
         serializedVersion: 2
         x: 1705
@@ -502,13 +411,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 04c022324509a184887c7bea190c9a6f
+      spriteID: 208953227d4fe65479f95fd501a4c372
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_18
+      name: portrait_jump2_12
       rect:
         serializedVersion: 2
         x: 0
@@ -522,13 +431,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9591d4d90c0b17745bf2171039dc9a49
+      spriteID: 517facc70bf0f55488a29e2e5c098d0a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_19
+      name: portrait_jump2_13
       rect:
         serializedVersion: 2
         x: 341
@@ -542,13 +451,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4200b06aefb0c274d8f01ae8a1b925d1
+      spriteID: 5e4c0183b44058d4eb1f92c6fff24ae1
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_20
+      name: portrait_jump2_14
       rect:
         serializedVersion: 2
         x: 682
@@ -562,13 +471,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 399606466aaa75a4588fce16898d0437
+      spriteID: 5175e2fe69a35a94a8de4af8dc5e2af4
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_21
+      name: portrait_jump2_15
       rect:
         serializedVersion: 2
         x: 1023
@@ -582,13 +491,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6bac498faa1d54442aec2c2face27053
+      spriteID: 435ccfaf336d9af42990044626c63840
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_22
+      name: portrait_jump2_16
       rect:
         serializedVersion: 2
         x: 1364
@@ -602,13 +511,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 031618057853abd4c81f7ee7fdcbae27
+      spriteID: d119a49234658a941bdcc50af8c661d0
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_23
+      name: portrait_jump2_17
       rect:
         serializedVersion: 2
         x: 1705
@@ -622,13 +531,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 16d0ec1ebd2eeba449cebdd3aa1de438
+      spriteID: a099127c234af0043a688fa8071b332c
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_24
+      name: portrait_jump2_18
       rect:
         serializedVersion: 2
         x: 0
@@ -642,13 +551,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4bc2612926e4a584bade69a331e2767b
+      spriteID: 41aeb02842da08045a42b7b2bc7a10ce
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_25
+      name: portrait_jump2_19
       rect:
         serializedVersion: 2
         x: 341
@@ -662,13 +571,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 05fe587c0f3045c419937e1cbdea1862
+      spriteID: 4a70ad455f681b44b9f1762a9efdbbe9
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_26
+      name: portrait_jump2_20
       rect:
         serializedVersion: 2
         x: 682
@@ -682,13 +591,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e27539ae8ac3ca141a3a65b22ecc9659
+      spriteID: 17be17c83daaf9d43bb577bfd55e0bf4
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_27
+      name: portrait_jump2_21
       rect:
         serializedVersion: 2
         x: 1023
@@ -702,13 +611,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64508ac4db787e64490524ca0d6e53c5
+      spriteID: 4bb3135f6b4e5434ea77b5071b34427c
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_28
+      name: portrait_jump2_22
       rect:
         serializedVersion: 2
         x: 1364
@@ -722,13 +631,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c7384dc27deef0244bd7393f046dd8ca
+      spriteID: 56e87748738a3c9499f9b2cb1c0bf853
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_29
+      name: portrait_jump2_23
       rect:
         serializedVersion: 2
         x: 1705
@@ -742,13 +651,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dbfc9eff67529c543a8cfb7eee4edd5b
+      spriteID: f18c80fdea9752b4a888f4dfcb57fb19
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: portrait_jump_30
+      name: portrait_jump2_24
       rect:
         serializedVersion: 2
         x: 0
@@ -762,7 +671,107 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 97ebc8db13d0030489384099644dd087
+      spriteID: 1229d87fa08a38f40867a678ca276afb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portrait_jump2_25
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 0
+        width: 341
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 730fd1a6b7fc44b47b2a7e54b61863fb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portrait_jump2_26
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 0
+        width: 341
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 475c8e389c2ced246899810573dec3fe
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portrait_jump2_27
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 0
+        width: 341
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbfadff5c3b990c40bbde34ffd10cc49
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portrait_jump2_28
+      rect:
+        serializedVersion: 2
+        x: 1364
+        y: 0
+        width: 341
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df043ee0251a9d04489dc5e8dae10d55
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portrait_jump2_29
+      rect:
+        serializedVersion: 2
+        x: 1705
+        y: 0
+        width: 341
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bd9146ae5f1f024a9a43e06c7c2b6be
       vertices: []
       indices: 
       edges: []
