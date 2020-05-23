@@ -987,6 +987,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win Screen Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1092,11 +1097,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
     - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -4035,6 +4035,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4962786950531476293, guid: ea0506192a2bcb847a2d11d8a2198e36,
+        type: 3}
+      propertyPath: LevelObjectContainer
+      value: 
+      objectReference: {fileID: 1868015142}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ea0506192a2bcb847a2d11d8a2198e36, type: 3}
 --- !u!21 &1548116047
@@ -5046,7 +5051,7 @@ GameObject:
   - component: {fileID: 1868015143}
   m_Layer: 0
   m_Name: Level
-  m_TagString: Untagged
+  m_TagString: LevelContainer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6062,29 +6067,12 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 5975277033373234401, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
-        type: 3}
     - target: {fileID: 6514423713644356208, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
         type: 3}
-    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
-        type: 3}
-    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_Type
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 856132472866506067, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -6124,6 +6112,23 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5975277033373234401, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
+        type: 3}
+    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e34bfc2e9e286145a0c7a7ada9f5e94,
+        type: 3}
+    - target: {fileID: 7657455168964418306, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6251326600221497046, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}

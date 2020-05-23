@@ -201,6 +201,11 @@ public class GameManager : Singleton<GameManager> {
 		if(File.Exists(path)) {
 			string json = File.ReadAllText(path);
 			SaveData = JsonConvert.DeserializeObject<SaveData>(json);
+
+			// TODO: Delete before release
+			if(DateTime.Now.Subtract(SaveData.SaveTime).Days > 30) {
+				SaveData = new SaveData();
+			}
 		}
 		else {
 			SaveData = new SaveData();

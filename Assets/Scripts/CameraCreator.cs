@@ -37,5 +37,10 @@ public class CameraCreator : MonoBehaviour
 		else {
 			CameraManager.Instance.CameraController.DestroyPostProcessVolume();
 		}
+
+		// this needs to exist to modify android manifest to allow vibrations
+		if(gm == null) {
+			Handheld.Vibrate();
+		}
     }
 }

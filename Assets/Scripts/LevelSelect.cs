@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MoreMountains.NiceVibrations;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -144,7 +145,8 @@ public class LevelSelect : MenuCopyComponent
 	}
 
 	public void ButtonSelected(NumberedLevelSelectButton button) {
-		if(LevelSelectOpen) {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
+		if (LevelSelectOpen) {
 			int buildIndex = SceneHelpers.GetBuildIndexFromLevel(WorldSelected, button.TempNumber.HasValue ? button.TempNumber.Value : button.Number);
 			GameManager.Instance.LoadScene(buildIndex, null);
 		}
@@ -169,6 +171,7 @@ public class LevelSelect : MenuCopyComponent
 	}
 
 	public void BackSelected() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		// wipe
 		// world one and no world share the same style
 		if (WorldSelected > 1) {

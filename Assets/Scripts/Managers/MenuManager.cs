@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using MoreMountains.NiceVibrations;
 
 public class MenuManager : ContextManager {
 	public bool LevelSelectOpen { get; set; }
@@ -74,6 +75,7 @@ public class MenuManager : ContextManager {
 	}
 
 	public void ToggleSettings() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		SettingsOpen = !SettingsOpen;
 		SetSettingsOpen();
 		GameManager.Instance.Save();
@@ -81,15 +83,16 @@ public class MenuManager : ContextManager {
 
 	public void SetSettingsOpen() {
 		//SettingsMenu.gameObject.SetActive(SettingsOpen);
-		
 		SettingsMenu.Show(SettingsOpen);
 	}
 
 	public void ReplayTutorial() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		GameManager.Instance.LoadScene(SceneHelpers.TutorialLevelStart, null);
 	}
 
 	public void GooglePlayGamesClicked() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 
 	}
 
@@ -129,6 +132,8 @@ public class MenuManager : ContextManager {
 			time += Time.deltaTime;
 			yield return null;
 		}
+
+		MMVibrationManager.Haptic(HapticTypes.LightImpact);
 
 		lsRT.anchoredPosition = middle;
 		lsMirrorRT.anchoredPosition = middle;

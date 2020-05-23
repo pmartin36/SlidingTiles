@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using UnityEngine.UI;
+using MoreMountains.NiceVibrations;
 
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, ISpringable, ISpeedChangable {
@@ -119,9 +120,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 						velocity.x = newV;
 
 						if(lerp > 3) {
-							StartCoroutine(Vibrate());
+							MMVibrationManager.Haptic(HapticTypes.MediumImpact);
 						}
-
+						var lp = heavyLandParticles.transform.localPosition;
+						lp.y = Mathf.Abs(lp.y) * sign;
+						heavyLandParticles.transform.localPosition = lp;
 						heavyLandParticles.Play();
 						if (audio.clip != LandSoundClip) {
 							audio.clip = LandSoundClip;
@@ -222,12 +225,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 					}
 
 					// DEBUG
-					float pct = (distanceToObstacle - modifiedMove.Item2.x - minDistanceCanJumpFrom) / (maxDistanceCanJumpFrom - minDistanceCanJumpFrom);
-					string str = $"Doing it at velocity: {velocity.y:.00}, height: {heightToJump}, pct: {pct}";
-					if(modifiedMove.Item1) {
-						str += $", excessMove: {modifiedMove.Item2.x:0.0}";
-					}
-					Debug.Log(str);
+					//float pct = (distanceToObstacle - modifiedMove.Item2.x - minDistanceCanJumpFrom) / (maxDistanceCanJumpFrom - minDistanceCanJumpFrom);
+					//string str = $"Doing it at velocity: {velocity.y:.00}, height: {heightToJump}, pct: {pct}";
+					//if(modifiedMove.Item1) {
+					//	str += $", excessMove: {modifiedMove.Item2.x:0.0}";
+					//}
+					//Debug.Log(str);
 					// END DEBUG
 
 					return true;
@@ -329,7 +332,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		if (collision.gameObject.scene != this.gameObject.scene) return;
 
 		if (collision.CompareTag("Reset")) {
-			StartCoroutine(Vibrate(new WaitForSeconds(0.1f)));
+			MMVibrationManager.Haptic(HapticTypes.Failure);
 			SetAlive(false);
 		}
 		if (collision.CompareTag("Flag")) { 
@@ -466,11 +469,12 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		// silence fireworks
 		t = 0f;
 		while (t < 2f) {
-			float sm = Mathf.SmoothStep(0.5f, 0f, t / 2f);
+			float sm = Mathf.SmoothStep(0.5f, 0.0f, t / 2f);
 			flag.SetAudioVolume(sm);
 			t += Time.deltaTime;
 			yield return null;
 		}
+		flag.Reset();
 	}
 
 	private IEnumerator UnpauseFailed() {
@@ -485,12 +489,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			yield return null;
 		}
 		sr.color = end;
-	}
-
-	private IEnumerator Vibrate(YieldInstruction yieldinstruction = null) {
-		Vibration.VibratePop();
-		yield return yieldinstruction;
-		Vibration.VibratePeek();
 	}
 
 	private IEnumerator Respawn() {

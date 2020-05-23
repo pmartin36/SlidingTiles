@@ -29,7 +29,7 @@ public class LoadScreen : MonoBehaviour
 		Camera c = CameraManager.Instance.Camera;
 
 		Canvas canvas = gameObject.GetComponentInParent<Canvas>();
-		Debug.Log(canvas.pixelRect);
+		// Debug.Log(canvas.pixelRect);
 
 		tileRTs = new List<RectTransform>();
 		for(int i = 0; i < panelTransform.childCount; i++) {

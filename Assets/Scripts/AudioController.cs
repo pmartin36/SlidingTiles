@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MoreMountains.NiceVibrations;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,6 +33,7 @@ public class AudioController : MonoBehaviour
 	}
 
 	public void OnMuteButtonToggle() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		bool isMuting = slider.value > 0;
 		slider.value = isMuting ? 0 : 1; // maybe should animate
 		OnSliderValueChange();

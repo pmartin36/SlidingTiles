@@ -33,16 +33,19 @@ public class Star : MonoBehaviour
 		GetComponent<PolygonCollider2D>().enabled = false;
 		animator.SetBool("collected", true);
 
-		float f = 1f + (starCount-1) * 0.125f;
-		audio.volume = 0.25f * GameManager.Instance.SaveData.FxVolume;
-		audio.pitch = f;
-		audio.Play();
+		PlayCollectedSound(1f + (starCount - 1) * 0.125f);
 
 		float angle = Utils.VectorToAngle(direction) - 22.5f;
 		ps.transform.parent = null;
 		ps.Play();
 		ps.transform.localRotation = Quaternion.Euler(0,0,angle);
 		StartCoroutine(StopEmitting());
+	}
+
+	public void PlayCollectedSound(float f) {
+		audio.volume = 0.45f * GameManager.Instance.SaveData.FxVolume;
+		audio.pitch = f;
+		audio.Play();
 	}
 
 	private IEnumerator StopEmitting() {

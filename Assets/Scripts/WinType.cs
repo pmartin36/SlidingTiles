@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public enum WinTypeAction {
 	None,
@@ -144,6 +146,16 @@ public abstract class WinType : MonoBehaviour {
 		frontPanelImage.material.SetFloat("_AnimationPercent", PercentAnimated);
 		IsAnimating = false;
 		ActionSelected = false;
+	}
+
+	public void PlayStarSound(int index) {
+		var f = 1f + (index) * 0.125f;
+		//f = 1.25f + (index+1) * 0.0625f;
+
+		var stars = GameManager.Instance.LevelManager.RespawnManager.Stars;
+		if(this.Stars[index].AllowAnimate) {
+			stars[index].PlayCollectedSound(f);
+		}
 	}
 
 	public IEnumerator WhenTilesOffScreen(Action action = null) {

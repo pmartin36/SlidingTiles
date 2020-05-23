@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
+using MoreMountains.NiceVibrations;
 
 public class WorldCompleteManager : ContextManager, IRequireResources
 {
@@ -67,6 +68,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	}
 
 	public void GoToMenu() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		GameManager.Instance.LoadScene(
 			SceneHelpers.MenuBuildIndex,
 			null,
@@ -75,6 +77,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	}
 
 	public void Continue() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		int nextWorld = World+1;
 		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(nextWorld);
 		GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1));

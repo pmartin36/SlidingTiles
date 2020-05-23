@@ -2268,16 +2268,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 3621375651869332933, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.1000061
-      objectReference: {fileID: 0}
-    - target: {fileID: 7992058103395802012, guid: dd06a0798a9539c45a6228cab7593341,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.1000061
-      objectReference: {fileID: 0}
     - target: {fileID: 7040478619243397123, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}
       propertyPath: m_RootOrder
@@ -2292,6 +2282,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3621375651869332933, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.1000061
+      objectReference: {fileID: 0}
+    - target: {fileID: 7992058103395802012, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.1000061
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd06a0798a9539c45a6228cab7593341, type: 3}
@@ -2385,7 +2385,7 @@ GameObject:
   - component: {fileID: 1259330851}
   m_Layer: 0
   m_Name: Level
-  m_TagString: Untagged
+  m_TagString: LevelContainer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3510,12 +3510,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 360025573}
-    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
+    - target: {fileID: 3811466736544847549, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable.Value
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3811466736544847549, guid: 2a69677bca6d814438407abbc8de80ee,
+    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable.Value
       value: 1

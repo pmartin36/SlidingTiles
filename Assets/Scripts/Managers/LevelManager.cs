@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using MoreMountains.NiceVibrations;
 
 public class LevelManager : ContextManager {
 	public int World { get; set; }
@@ -76,6 +77,8 @@ public class LevelManager : ContextManager {
 		LevelInfo = FindObjectsOfType<LevelInfoUI>().First(g => g.gameObject.scene == this.gameObject.scene);
 		LevelInfo.SetTimer(ElapsedTime);
 
+		LevelObjectContainer = LevelObjectContainer ?? GameObject.FindGameObjectsWithTag("LevelContainer").First(g => g.gameObject.scene == this.gameObject.scene);
+
 		if (CameraManager.Instance.CameraController.IsTablet) {
 			Grid.transform.parent.position = Vector2.zero;
 		}
@@ -109,7 +112,7 @@ public class LevelManager : ContextManager {
 						grabPoint = p.MousePositionWorldSpace;
 						SelectedTile.Select(true);
 
-						Vibration.VibratePop();
+						MMVibrationManager.Haptic(HapticTypes.Selection);
 
 						grabMovingVelocityAverage = Vector2.zero;
 					}
@@ -174,7 +177,7 @@ public class LevelManager : ContextManager {
 					if(!SelectedTile.Centered) {
 						avgOnRelease *= SelectedTile.NormalizedPosition;
 					}
-					Debug.Log(avgOnRelease);
+					//Debug.Log(avgOnRelease);
 
 					SelectedTile.SetResidualVelocity(avgOnRelease);
 					SelectedTile.Select(false);
@@ -194,12 +197,15 @@ public class LevelManager : ContextManager {
 	}
 
 	public virtual void PlayPauseButtonClicked() {
-		if (Player.Alive) {
-			SetPause(!Paused);
-		}
-		else {
-			RespawnManager.RespawnPlayer();
-			StartTimer();
+		if(!Won) {
+			MMVibrationManager.Haptic(HapticTypes.Selection);
+			if (Player.Alive) {
+				SetPause(!Paused);
+			}
+			else {
+				RespawnManager.RespawnPlayer();
+				StartTimer();
+			}
 		}
 	}
 
@@ -222,6 +228,7 @@ public class LevelManager : ContextManager {
 		else if(Won) {
 			return;
 		}
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		AcceptingInputs = true;
 		collectedStars = 0;
 		goalFlag?.Reset();
@@ -327,7 +334,7 @@ public class LevelManager : ContextManager {
 		if (w != WinTypeAction.Next) {
 			cts.Cancel();
 		}
-
+		MMVibrationManager.Haptic(HapticTypes.Selection);
 		switch (w) {
 			case WinTypeAction.Menu:
 				GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex, StartCoroutine(winType.WhenTilesOffScreen()));
@@ -369,6 +376,7 @@ public class LevelManager : ContextManager {
 				return;
 			}
 			else {
+				MMVibrationManager.Haptic(HapticTypes.Selection);
 				GameManager.Instance.LoadScene(SceneHelpers.MenuBuildIndex);
 			}
 		}

@@ -342,6 +342,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win Screen Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -447,11 +452,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5675921555654412932, guid: 36c234df805c6f74e9f917be183a199d,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36c234df805c6f74e9f917be183a199d, type: 3}
 --- !u!224 &190271285 stripped
@@ -1213,15 +1213,15 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: Movable
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3811466736544847549, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable.Value
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: Movable
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
@@ -2047,6 +2047,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4962786950531476293, guid: ea0506192a2bcb847a2d11d8a2198e36,
+        type: 3}
+      propertyPath: LevelObjectContainer
+      value: 
+      objectReference: {fileID: 1365673301}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ea0506192a2bcb847a2d11d8a2198e36, type: 3}
 --- !u!1001 &698040575
@@ -2147,15 +2152,15 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
-        type: 3}
-      propertyPath: Movable
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3811466736544847549, guid: 2a69677bca6d814438407abbc8de80ee,
         type: 3}
       propertyPath: Movable.Value
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5340890148602460917, guid: 2a69677bca6d814438407abbc8de80ee,
+        type: 3}
+      propertyPath: Movable
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a69677bca6d814438407abbc8de80ee, type: 3}
@@ -3364,7 +3369,7 @@ GameObject:
   - component: {fileID: 1365673302}
   m_Layer: 0
   m_Name: Level
-  m_TagString: Untagged
+  m_TagString: LevelContainer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

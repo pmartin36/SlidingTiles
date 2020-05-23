@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using MoreMountains.NiceVibrations;
 
 public class Tile : MonoBehaviour, IRequireResources
 {
@@ -47,6 +48,8 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private static AudioClip StickySound;
 	private static AudioClip MoveSound;
+
+	private bool ResetThisFrame;
 
 	protected void Awake() {
 		playerMask = 1 << LayerMask.NameToLayer("Player");
@@ -158,8 +161,14 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public void LateUpdate() {
 		if(Movable) {
-			Vector2 diff = (transform.position - lastFramePosition) / transform.localScale.x;
-			movingVelocityAverage = 0.25f * diff.magnitude +  movingVelocityAverage * 0.75f;
+			if(ResetThisFrame) {
+				movingVelocityAverage = 0f;
+			}
+			else {
+				Vector2 diff = (transform.position - lastFramePosition) / transform.localScale.x;
+				movingVelocityAverage = 0.25f * diff.magnitude + movingVelocityAverage * 0.75f;
+			}
+
 			if(movingVelocityAverage < 0.001f) {
 				if (audio.enabled) {
 					audio.enabled = false;
@@ -174,13 +183,14 @@ public class Tile : MonoBehaviour, IRequireResources
 				// 0.9 is basically max speed
 				// 0.01 is barely moving
 				float v = Mathf.InverseLerp(-0.2f, 0.4f, movingVelocityAverage);
-				audio.volume = Mathf.Lerp(0.0f, Selected ? 0.8f : 0.65f, v) * GameManager.Instance.SaveData.FxVolume;
+				audio.volume = Mathf.Lerp(0.0f, Selected ? 1f : 0.8f, v) * GameManager.Instance.SaveData.FxVolume;
 				
 				//float p = Mathf.InverseLerp(0f, 0.6f, movingVelocityAverage);
 				//audio.pitch = Mathf.Lerp(0.8f, 1f, movingVelocityAverage);
 			}
 			lastFramePosition = transform.position;
 		}
+		ResetThisFrame = false;
 	}
 
 	public virtual void SetResidualVelocity(Vector2 avgVelocity) {
@@ -251,6 +261,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {
 			this.SetMovable(false);
+			MMVibrationManager.Haptic(HapticTypes.LightImpact);
 		}
 		if(markMoved) {
 			movedThisFrame = true;
@@ -430,6 +441,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		SetMovable(initialMovable, false);
 		transform.localPosition = Vector2.zero;
 		this.ResidualVelocity = Vector2.zero;
+		this.ResetThisFrame = true;
 
 		if (Movable && audio.clip.name != MoveSound.name) {
 			audio.clip = MoveSound;
@@ -462,7 +474,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	private void PlayStickySound() {
 		audio.Stop();
 		audio.clip = StickySound;
-		audio.volume = 0.4f * GameManager.Instance.SaveData.FxVolume;
+		audio.volume = 0.6f * GameManager.Instance.SaveData.FxVolume;
 		audio.pitch = 0.8f;
 		audio.loop = false;
 		audio.time = 0f;

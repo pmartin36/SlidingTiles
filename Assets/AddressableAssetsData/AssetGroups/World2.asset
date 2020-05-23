@@ -20,28 +20,36 @@ MonoBehaviour:
   - m_GUID: 0fc0330ea80b7c14b9b474dd4b922a06
     m_Address: World2/Background
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - World2Menu
   - m_GUID: 28fa97e8a5f4ecd4fbdbc1aca7fbc42d
     m_Address: World2/GridFore
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - World2Menu
   - m_GUID: 65643449d800b6d4f90f381eddbde863
     m_Address: World2/Back
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - World2Menu
   - m_GUID: 78f6b38c1fd60264fa6dfa092712e1a9
     m_Address: World2/Tile
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - World2Menu
   - m_GUID: 7fc3ade5a22060f4484baa269409340e
     m_Address: World2/GridBack
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - World2Menu
   - m_GUID: f4790420a8d65eb4f8ddb10a2e0b9782
     m_Address: World2/TileText
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - World2Menu
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 661c34b85dc3ec142a3b80a216831dd2, type: 2}
   m_SchemaSet:
-    m_Schemas: []
+    m_Schemas:
+    - {fileID: 11400000, guid: b222d5685ad7d094a9b37c27096a3351, type: 2}
+    - {fileID: 11400000, guid: 9c6de79c560b74343a0425a3419a3aec, type: 2}

@@ -15,7 +15,7 @@ public class TestCommunicator : StoreCommunicator {
 	}
 
 	public override void AddSaveData(string json) {
-		Debug.Log(json);
+		// Debug.Log(json);
 	}
 
 	public override bool TryLoadSaveData(Action<string> callback) {
