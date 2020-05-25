@@ -122,9 +122,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 						if(lerp > 3) {
 							MMVibrationManager.Haptic(HapticTypes.MediumImpact);
 						}
+
 						var lp = heavyLandParticles.transform.localPosition;
 						lp.y = Mathf.Abs(lp.y) * sign;
 						heavyLandParticles.transform.localPosition = lp;
+
 						heavyLandParticles.Play();
 						if (audio.clip != LandSoundClip) {
 							audio.clip = LandSoundClip;
