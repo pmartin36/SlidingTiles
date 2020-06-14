@@ -25,6 +25,8 @@ public class TilePreview : MonoBehaviour
     }
 
 	public void Show(bool show, Vector3? target = null) {
+		if(!GameManager.Instance.LevelManager.ShowSelectionMaterial) return;
+
 		if(target.HasValue) {
 			TargetPosition = target.Value;
 			if(!Active) {

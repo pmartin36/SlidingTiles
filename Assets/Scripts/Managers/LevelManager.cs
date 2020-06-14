@@ -43,6 +43,7 @@ public class LevelManager : ContextManager {
 	[Header("Gif Stuff")]
 	public bool ShowFingerprint;
 	private Fingerprint Fingerprint; 
+	public bool ShowSelectionMaterial => !ShowFingerprint;
 
 	public override void Awake() {
 		base.Awake();
