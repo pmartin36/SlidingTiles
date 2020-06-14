@@ -92,6 +92,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 		childPlatforms = GetComponentsInChildren<PlatformController>();
 		lastFramePosition = transform.position;
+		ResetThisFrame = true;
 	}
 
 	public void Init(Tilespace t) {
@@ -159,7 +160,11 @@ public class Tile : MonoBehaviour, IRequireResources
 		movedThisFrame = false;
 	}
 
-	public void LateUpdate() {
+	public virtual void Update() {
+
+	}
+
+	public virtual void LateUpdate() {
 		if(Movable) {
 			if(ResetThisFrame) {
 				movingVelocityAverage = 0f;
@@ -212,12 +217,12 @@ public class Tile : MonoBehaviour, IRequireResources
 			PositionWhenSelected = transform.position;
 			ResidualVelocity = Vector2.zero;
 
-			if(!AllMaterials.Contains(SelectedMaterial)) {
+			if(GameManager.Instance.LevelManager.ShowSelectionMaterial && !AllMaterials.Contains(SelectedMaterial)) {
 				AllMaterials.Add(SelectedMaterial);
 				spriteRenderer.sharedMaterials = AllMaterials.ToArray();
 			}
 		}
-		else {
+		else if(GameManager.Instance.LevelManager.ShowSelectionMaterial) {
 			AllMaterials.RemoveAll(m => m == SelectedMaterial);
 			spriteRenderer.sharedMaterials = AllMaterials.ToArray();
 		}
