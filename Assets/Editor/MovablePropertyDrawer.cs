@@ -20,6 +20,9 @@ public class MovablePropertyDrawer : PropertyDrawer {
 			var g = property.serializedObject.targetObject as MonoBehaviour;
 
 			SpriteRenderer spriteRenderer = g.GetComponent<SpriteRenderer>();
+			if(spriteRenderer == null) {
+				spriteRenderer = g.transform.GetChild(0).GetComponent<SpriteRenderer>();
+			}
 
 			var m = new Material(spriteRenderer.sharedMaterial);
 			m.SetFloat("_Mobile", prop.boolValue ? 1 : 0);

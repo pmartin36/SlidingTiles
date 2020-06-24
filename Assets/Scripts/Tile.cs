@@ -28,16 +28,21 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private LayerMask tileMask;
 	protected LayerMask playerMask;
-	protected SpriteRenderer spriteRenderer;
+
+	protected List<SpriteRenderer> spriteRenderers;
+	protected SpriteRenderer bottom;
+	protected SpriteRenderer top;
+
 	protected AudioSource audio;
 
-	private PlatformController[] childPlatforms;
+	protected PlatformController[] childPlatforms;
 
 	private Vector3 lastFramePosition;
 	private float movingVelocityAverage;
 	// private static List<int> audibleTiles = new List<int>();
 
 	private bool initialMovable;
+	private bool temporaryUnmovable;
 	private Tilespace initialTilespace;
 	public int ID => initialTilespace.Position.y * 4 + initialTilespace.Position.x;
 
@@ -57,11 +62,16 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	protected virtual void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
-		spriteRenderer = GetComponent<SpriteRenderer>();
-		spriteRenderer.sortingOrder = -this.Space.Position.y;
+		spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
+		bottom = spriteRenderers.FirstOrDefault(g => g.CompareTag("TileBottom"));
+		top = spriteRenderers.FirstOrDefault(g => !g.CompareTag("TileBottom"));
+
+		top.sortingOrder = -this.Space.Position.y * 3;
+		if(bottom != null)
+			bottom.sortingOrder = top.sortingOrder - 2;
 
 		audio = GetComponent<AudioSource>();
-		AllMaterials = new List<Material>() { spriteRenderer.sharedMaterial };
+		AllMaterials = new List<Material>() { top.sharedMaterial };
 
 		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld && Movable) {
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
@@ -165,7 +175,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public virtual void LateUpdate() {
-		if(Movable) {
+		if(Movable && !temporaryUnmovable) {
 			if(ResetThisFrame) {
 				movingVelocityAverage = 0f;
 			}
@@ -219,12 +229,12 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			if(GameManager.Instance.LevelManager.ShowSelectionMaterial && !AllMaterials.Contains(SelectedMaterial)) {
 				AllMaterials.Add(SelectedMaterial);
-				spriteRenderer.sharedMaterials = AllMaterials.ToArray();
+				top.sharedMaterials = AllMaterials.ToArray();
 			}
 		}
 		else if(GameManager.Instance.LevelManager.ShowSelectionMaterial) {
 			AllMaterials.RemoveAll(m => m == SelectedMaterial);
-			spriteRenderer.sharedMaterials = AllMaterials.ToArray();
+			top.sharedMaterials = AllMaterials.ToArray();
 		}
 	}
 
@@ -240,7 +250,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		}
 
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
-
+		
 		foreach (PlatformController c in childPlatforms) {
 			c.Premove(ref globalMoveAmount);
 		}
@@ -248,6 +258,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		foreach (PlatformController c in childPlatforms) {
 			c.Postmove(ref globalMoveAmount);
 		}
+		//Debug.Log($"tile move: {moveAmount.y * transform.lossyScale.y}");
 
 		bool changedTilespaces = false;
 
@@ -261,7 +272,9 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			next.SetChildTile(this);
 			changedTilespaces = true;
-			spriteRenderer.sortingOrder = -this.Space.Position.y;
+			top.sortingOrder = -this.Space.Position.y * 3;
+			if (bottom != null)
+				bottom.sortingOrder = top.sortingOrder - 2;
 		}
 
 		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {
@@ -282,13 +295,15 @@ public class Tile : MonoBehaviour, IRequireResources
 			Vector2 size = Mathf.Abs(moveAmount.x) > 0.0001f 
 				? new Vector2(moveAmount.magnitude * 0.5f, 0.90f) * transform.lossyScale.x
 				: new Vector2(0.90f, moveAmount.magnitude * 0.5f) * transform.lossyScale.x;
-			Collider2D[] collisions = 
-				Physics2D.OverlapBoxAll(
+			RaycastHit2D[] collisions = 
+				Physics2D.BoxCastAll(
 					this.transform.position + moveAmount.normalized * ((1 + moveAmount.magnitude) * transform.lossyScale.x * 0.5f),
 					size, 
 					0,
+					Vector2.zero,
+					0,
 					tileMask)
-					.Where(r => r.gameObject != this.gameObject).ToArray();
+					.Where(r => r.collider.gameObject != this.gameObject).ToArray();
 			Debug.DrawRay(this.transform.position, moveAmount.normalized * ((transform.lossyScale.x + 0.001f) * 0.5f + moveAmount.magnitude * transform.lossyScale.x), Color.white);
 			Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 			foreach (PlatformController p in childPlatforms) {
@@ -305,11 +320,11 @@ public class Tile : MonoBehaviour, IRequireResources
 				return true;
 			}
 			else if (collisions.Length == 1) {
-				Debug.DrawRay(this.transform.position, transform.lossyScale * 0.5f + moveAmount, Color.red);
+				Debug.DrawLine(this.transform.position, collisions[0].point, Color.red);
 			
-				Tile collidedTile = collisions[0].GetComponent<Tile>();
+				Tile collidedTile = collisions[0].collider.GetComponent<Tile>();
 				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
-				if (collidedTile.Movable && !collidedTile.Selected && canMoveInDirection) {		
+				if (collidedTile.Movable && !collidedTile.temporaryUnmovable && !collidedTile.Selected && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
 					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d);
@@ -324,7 +339,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public bool TryMoveToPosition(Vector2 position, Vector2 delta, bool fromResidual = false) {
-		if(Movable) {
+		if(Movable && !temporaryUnmovable) {
 			bool centered = Centered;
 			float deltaTimeSpeedCap = SpeedCap * Time.fixedDeltaTime;
 
@@ -444,6 +459,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		transform.parent = initialTilespace.transform;
 		this.Space = initialTilespace;
 		SetMovable(initialMovable, false);
+		temporaryUnmovable = false;
 		transform.localPosition = Vector2.zero;
 		this.ResidualVelocity = Vector2.zero;
 		this.ResetThisFrame = true;
@@ -455,7 +471,12 @@ public class Tile : MonoBehaviour, IRequireResources
 		}
 	}
 
+	public void SetTemporaryUnmovable(bool unmovable) {
+		temporaryUnmovable = unmovable;
+	}
+
 	public void SetMovable(bool movable, bool animate = true) {
+		temporaryUnmovable = false;
 		Movable = movable;
 		if(!movable) {
 			if (Selected) {
@@ -486,22 +507,26 @@ public class Tile : MonoBehaviour, IRequireResources
 		audio.Play();
 	}
 
-	private void SetMobileShaderValue(float v, Material m = null) {
-		m = m ?? new Material(spriteRenderer.sharedMaterial);
-		m.SetFloat("_Mobile", v);
-		spriteRenderer.sharedMaterial = m;
+	protected virtual void SetMobileShaderValue(float v, Material mTop = null, Material mBottom = null) {
+		mTop = mTop ?? new Material(top.sharedMaterial);
+		mBottom = mBottom ?? new Material(bottom.sharedMaterial);
+		mTop.SetFloat("_Mobile", v);
+		mBottom.SetFloat("_Mobile", v);
+		top.sharedMaterial = mTop;
+		bottom.sharedMaterial = mBottom;
 	}
 
-	private IEnumerator SetImmobileAnimation() {
+	protected virtual IEnumerator SetImmobileAnimation() {
 		float t = 0;
 		float animationTime = 0.25f;
-		Material m = new Material(spriteRenderer.sharedMaterial);
+		Material mTop = new Material(top.sharedMaterial);
+		Material mBottom = new Material(bottom.sharedMaterial);
 		while(t < animationTime) {
-			SetMobileShaderValue(1 - t / animationTime, m);
+			SetMobileShaderValue(1 - t / animationTime, mTop, mBottom);
 			t += Time.deltaTime;
 			yield return null;
 		}
-		SetMobileShaderValue(0, m);
+		SetMobileShaderValue(0, mTop, mBottom);
 	}
 
 	public bool IsPlayerOnTile() => Physics2D.OverlapBox(transform.position, transform.lossyScale, 0, playerMask) != null;

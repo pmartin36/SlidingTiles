@@ -56,6 +56,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 						vel = modifiedVelocity.Item2;
 					}
 				}
+				//Debug.Log($"Moving player from platform: {vel.y}");
 				passengerDictionary[passenger.transform].Move(vel, passenger.standingOnPlatform);
 			}
 
@@ -94,6 +95,16 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		}
 	}
 
+	public RaycastHit2D GetCurrentBlocker() {
+		return Physics2D.BoxCast(
+			transform.position,
+			size - Vector2.one * 2 * skinWidth,
+			transform.eulerAngles.z,
+			Vector2.zero,
+			0,
+			passengerMask);
+	}
+
 	void CalculatePassengerMovement(Vector3 velocity) {
 		HashSet<Transform> movedPassengers = new HashSet<Transform> ();
 		passengerMovement = new List<PassengerMovement> ();
@@ -110,7 +121,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 				rayOrigin += Vector2.right * (verticalRaySpacing * i);
 				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, passengerMask);
 
-				if (hit && hit.distance != 0) {
+				if (hit) {
 					if (!movedPassengers.Contains(hit.transform)) {
 						movedPassengers.Add(hit.transform);
 						float pushX = (directionY == 1)?velocity.x:0;
