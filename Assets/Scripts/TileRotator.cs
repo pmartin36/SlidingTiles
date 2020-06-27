@@ -11,7 +11,7 @@ public class TileRotator : MonoBehaviour
 	private float timeSinceLastRotation;
 
 	private Tilespace tilespace;
-	private RotatingTile effectedTile;
+	private Tile effectedTile;
 
 	private float rotation;
 	private float targetRotation;
@@ -37,7 +37,7 @@ public class TileRotator : MonoBehaviour
 
 			var tile = tilespace.Tile;
 			if(tile != null && tile.Centered) {
-				effectedTile = tile as RotatingTile;
+				effectedTile = tile;
 				effectedTile.BeginRotation(Direction);
 			}
 		}

@@ -36,4 +36,20 @@ float N21(float2 p) {
 	return frac(p.x*p.y);
 }
 
+float4 CalculateVertex(float4 vd, float y, float rx, float lx) {
+	// vertex range = -(image size in pixels / pixels per unit / 2) to (image size in pixels / pixels per unit / 2)
+	// vertex.x = -0.5 to 0.5
+	// vertex.y = -0.046875 to 0.046875        (0.9375) in total
+	if (vd.y < 0.0) {
+		vd.y += (1 - y) * 0.09375;
+		if (vd.x < 0) {
+			vd.x *= lx;
+		}
+		else {
+			vd.x *= rx;
+		}
+	}
+	return UnityObjectToClipPos(vd);
+}
+
 #endif

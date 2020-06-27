@@ -19,15 +19,15 @@ public class MovablePropertyDrawer : PropertyDrawer {
 		if (GUI.changed) {
 			var g = property.serializedObject.targetObject as MonoBehaviour;
 
-			SpriteRenderer spriteRenderer = g.GetComponent<SpriteRenderer>();
-			if(spriteRenderer == null) {
-				spriteRenderer = g.transform.GetChild(0).GetComponent<SpriteRenderer>();
+			foreach(Transform child in g.transform) {
+				var sr = child.GetComponent<SpriteRenderer>();
+				if(sr != null) {
+					var m = new Material(sr.sharedMaterial);
+					m.SetFloat("_Mobile", prop.boolValue ? 1 : 0);
+					sr.sharedMaterial = m;
+				}
 			}
 
-			var m = new Material(spriteRenderer.sharedMaterial);
-			m.SetFloat("_Mobile", prop.boolValue ? 1 : 0);
-			spriteRenderer.sharedMaterial = m;
-			
 			//spriteRenderer.material.SetFloat("_Mobile", prop.boolValue ? 1 : 0);
 
 			//int world = Int32.Parse(SceneManager.GetActiveScene().name.Split('-')[0]);

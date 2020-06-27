@@ -136,6 +136,9 @@ public abstract class WinType : MonoBehaviour {
 	}
 
 	public void Hide() {
+		foreach (var c in ConditionalPopups) {
+			c.gameObject.SetActive(false);
+		}
 		anim.SetFloat("direction", -1);
 		anim.Play("rowwin", 0, 1);
 	}

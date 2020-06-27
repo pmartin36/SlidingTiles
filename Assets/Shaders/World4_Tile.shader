@@ -11,25 +11,32 @@
 		_ImmobileColor("Immobile Color", Color) = (1,1,1,1)
 
 		_Mobile("Mobile", Range(0,1)) = 1
+
+		_Y("Y", float) = 1
+		_RightX("Right X", float) = 1
+		_LeftX("Left X", float) = 1
     }
     SubShader
     {
         Tags { 
 			"RenderType"="Transparent" 
 			"Queue"="Transparent-100"
+			"DisableBatching"="True"
 		}
 
         Pass
         {
 			Blend SrcAlpha OneMinusSrcAlpha
-			ZWrite Off
+			ZWrite On
 			Cull Off
+			ZTest Less
 
             CGPROGRAM	
             #pragma vertex vert
             #pragma fragment frag
 			
             #include "UnityCG.cginc"
+			#include "CommonFunctions.cginc"
 
             struct appdata
             {
@@ -56,10 +63,14 @@
 			float4 _ImmobileColor;
 			float _Mobile;
 
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+			float _Y;
+			float _RightX;
+			float _LeftX;
+
+			v2f vert(appdata v)
+			{
+				v2f o;
+				o.vertex = CalculateVertex(v.vertex, _Y, _RightX, _LeftX);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				o.color = v.color * lerp(_ImmobileColor, _MobileColor, _Mobile);
 				o.screenPos = ComputeScreenPos(o.vertex);

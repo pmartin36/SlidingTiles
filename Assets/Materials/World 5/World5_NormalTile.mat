@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ImmobileTex:
-        m_Texture: {fileID: 2800000, guid: 652e3d449f30a3a4bb517cda76107bd6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 96cf1ff087f872f49ad586fa276b5dc6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -80,5 +80,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ImmobileColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ImmobileColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
     - _MobileColor: {r: 1, g: 1, b: 1, a: 1}
