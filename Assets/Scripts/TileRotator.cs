@@ -8,7 +8,7 @@ public class TileRotator : MonoBehaviour
 	public int Direction;
 	public float Downtime;
 
-	private float timeSinceLastRotation;
+	private float timeOfLastRotation;
 
 	private Tilespace tilespace;
 	private Tile effectedTile;
@@ -16,6 +16,8 @@ public class TileRotator : MonoBehaviour
 	private float rotation;
 	private float targetRotation;
 	private bool rotating;
+
+	private LevelManager lm;
 
 	private Animator animator;
 
@@ -27,37 +29,58 @@ public class TileRotator : MonoBehaviour
     }
 
     void Update() {
-        if(Time.time - timeSinceLastRotation > Downtime) {
-			rotating = true;
-			timeSinceLastRotation = Time.time;
-			targetRotation = rotation + 90f * Direction;
-
-			animator.SetFloat("Direction", Direction);
-			animator.Play("tile_rotator", -1, Direction > 0 ? 0 : 1);
-
-			var tile = tilespace.Tile;
-			if(tile != null && tile.Centered) {
-				effectedTile = tile;
-				effectedTile.BeginRotation(Direction);
-			}
-		}
-
-		if(rotating) {
-			float add = Direction * 180 * Time.deltaTime;
-			rotation += add;
-			//rotation += Direction * 45 * Time.deltaTime;
-			if( Mathf.Abs(rotation) >= Mathf.Abs(targetRotation) ) {
-				if(effectedTile != null) {
-					effectedTile.Rotation = (Mathf.Round((effectedTile.Rotation + add) / 90f) * 90f) % 360;
-					effectedTile.EndRotation();
-					effectedTile = null;
+		if(lm == null || !lm.Won) {
+			if(Time.time - timeOfLastRotation > Downtime) {
+				if(lm == null) {
+					lm = GameManager.Instance.LevelManager;
 				}
-				rotation = targetRotation % 360;
-				rotating = false;
+				rotating = true;
+				timeOfLastRotation = Time.time;
+				targetRotation = rotation + 90f * Direction;
+
+				animator.SetFloat("Direction", Direction);
+				animator.Play("tile_rotator", -1, Direction > 0 ? 0 : 1);
+
+				var tile = tilespace.Tile;
+				if(tile != null && tile.Centered) {
+					effectedTile = tile;
+					effectedTile.BeginRotation(Direction, this);
+				}
 			}
-			else if(effectedTile != null) {
-				effectedTile.Rotation += add;
+
+			if(rotating) {
+				float add = Direction * 180 * Time.deltaTime;
+				rotation += add;
+				//rotation += Direction * 45 * Time.deltaTime;
+				if( Mathf.Abs(rotation) >= Mathf.Abs(targetRotation) ) {
+					if(effectedTile != null) {
+						effectedTile.Rotation = (Mathf.Round((effectedTile.Rotation + add) / 90f) * 90f) % 360;
+						effectedTile.EndRotation();
+						ClearEffectedTile();
+					}
+					rotation = targetRotation % 360;
+					rotating = false;
+				}
+				else if(effectedTile != null) {
+					effectedTile.Rotation += add;
+				}
 			}
 		}
     }
+
+	public void ClearEffectedTile() {
+		effectedTile = null;
+	}
+
+	public void ResetAnimation() {
+		rotation = targetRotation;
+		timeOfLastRotation = Time.time;
+		animator.SetFloat("Direction", 0);
+		animator.Play("tile_rotator", -1, 0);
+	}
+
+	public void StopRotating() {
+		effectedTile = null;
+		animator.SetFloat("Direction", 0);
+	}
 }

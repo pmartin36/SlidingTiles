@@ -54,7 +54,15 @@ public class Grid : MonoBehaviour
 	public void Reset() {
 		for(int i = 0; i < Tilespaces.Count; i++) {
 			for(int j = 0; j < Tilespaces[i].Count; j++) {
-				Tilespaces[i][j].Tile?.Reset();
+				Tilespaces[i][j].Reset();
+			}
+		}
+	}
+
+	public void PlayerWon() {
+		for (int i = 0; i < Tilespaces.Count; i++) {
+			for (int j = 0; j < Tilespaces[i].Count; j++) {
+				Tilespaces[i][j].PlayerWon();
 			}
 		}
 	}

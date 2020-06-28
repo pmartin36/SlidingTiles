@@ -268,6 +268,8 @@ public class LevelManager : ContextManager {
 		goalFlag = gf;
 		Won = true;
 
+		Grid?.PlayerWon();
+
 		int bi = SceneHelpers.GetCurrentLevelBuildIndex();
 		SceneHelpers.GetWorldAndLevelFromBuildIndex(bi, out int world, out int level);
 

@@ -42,8 +42,6 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private bool initialMovable;
 	private bool temporaryUnmovable;
-	private Tilespace initialTilespace;
-	public int ID => initialTilespace.Position.y * 4 + initialTilespace.Position.x;
 
 	private static int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
@@ -56,8 +54,9 @@ public class Tile : MonoBehaviour, IRequireResources
 	private bool ResetThisFrame;
 
 	// Rotation Info
-	private bool rotating;
+	private TileRotator rotator;
 	private static RotationInfo RotationInfo;
+	public bool Rotating => rotator != null;
 
 	public float Rotation0to90 => Rotation % 90;
 	public float RotationPercent => Mathf.Abs(Rotation0to90) / 90;
@@ -124,7 +123,6 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public void Init(Tilespace t) {
 		this.Space = t;
-		this.initialTilespace = t;
 		this.initialMovable = this.Movable;
 	}
 
@@ -188,7 +186,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public virtual void Update() {
-		if(rotating) {
+		if(Rotating) {
 			UpdateMaterialProperties();
 			UpdateRotations();
 		}
@@ -476,13 +474,15 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public void Reset() {
-		transform.parent = initialTilespace.transform;
-		this.Space = initialTilespace;
 		SetMovable(initialMovable, false);
-		temporaryUnmovable = false;
-		transform.localPosition = Vector2.zero;
+		SetTemporaryUnmovable(false);
+
+		transform.localPosition = Vector2.zero; // parent set in tilespace.reset
 		this.ResidualVelocity = Vector2.zero;
 		this.ResetThisFrame = true;
+
+		this.Rotation = 0f;
+		EndRotation();
 
 		if (Movable && audio.clip.name != MoveSound.name) {
 			audio.clip = MoveSound;
@@ -570,8 +570,8 @@ public class Tile : MonoBehaviour, IRequireResources
 		}
 	}
 
-	public void BeginRotation(int direction) {
-		rotating = true;
+	public void BeginRotation(int direction, TileRotator rotator) {
+		this.rotator = rotator;
 		RotationDirection = direction;
 		SetTemporaryUnmovable(true);
 		if (BoxSide == null) {
@@ -596,7 +596,8 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public void EndRotation() {
-		rotating = false;
+		rotator?.ClearEffectedTile();
+		rotator = null;
 		SetTemporaryUnmovable(false);
 		RotationComplete();
 	}
@@ -605,12 +606,13 @@ public class Tile : MonoBehaviour, IRequireResources
 		UpdateMaterialProperties();
 
 		Box.transform.localRotation = Quaternion.Euler(0, 0, Rotation);
-		BoxBottom.transform.RotateAround(Box.transform.position, Vector3.forward, -BoxBottom.transform.eulerAngles.z);
-		BoxSide.transform.RotateAround(Box.transform.position, Vector3.forward, -90 - BoxSide.transform.eulerAngles.z);
-
-		BoxSide.sortingOrder -= 10;
-		BoxBottom.sortingOrder -= 10;
 		Box.sortingOrder -= 10;
+		BoxBottom.transform.RotateAround(Box.transform.position, Vector3.forward, -BoxBottom.transform.eulerAngles.z);
+		BoxBottom.sortingOrder -= 10;
+		if(BoxSide != null) {
+			BoxSide.transform.RotateAround(Box.transform.position, Vector3.forward, -90 - BoxSide.transform.eulerAngles.z);
+			BoxSide.sortingOrder -= 10;
+		}
 	}
 
 	private void CreateBoxSide() {

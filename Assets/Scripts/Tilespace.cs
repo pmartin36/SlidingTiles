@@ -14,11 +14,16 @@ public class Tilespace : MonoBehaviour
 
 	// Will tiles get stuck if they move onto this tilespace
 	public bool Sticky;
+	public TileRotator Rotator;
+
+	public Tile initialTile;
 
 	void Awake() {
 		transform.localPosition = new Vector2(Position.x, Position.y) * transform.localScale.x;
 		Tile = GetComponentInChildren<Tile>();
+		Rotator = GetComponentInChildren<TileRotator>();
 		if(Tile != null) {
+			initialTile = Tile;
 			Tile.Init(this);
 		}
     } 
@@ -47,5 +52,25 @@ public class Tilespace : MonoBehaviour
 		//		tilespaces[i - 1].Tile.Move(tilespaces[i]);
 		//	}
 		//}
+	}
+
+	public void Reset() {
+		if(initialTile != null) {
+			SetChildTile(initialTile);
+			this.initialTile.Reset();
+		}
+		else {
+			Tile = null;
+		}
+
+		if(Rotator != null) {
+			Rotator.ResetAnimation();
+		}
+	}
+
+	public void PlayerWon() {
+		if(Rotator != null) {
+			Rotator.StopRotating();
+		}
 	}
 }
