@@ -937,7 +937,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 453231639}
+    m_TransformParent: {fileID: 584705041}
     m_Modifications:
     - target: {fileID: 6901653032643787103, guid: 4bf1ff2cc13a634429db80c3cc50337a,
         type: 3}
@@ -1768,11 +1768,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 222214336914548834, guid: a66a6c2cc4086194fa02a44322f729bc,
-        type: 3}
-      propertyPath: Movable.Value
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8352360549099852769, guid: a66a6c2cc4086194fa02a44322f729bc,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1797,6 +1792,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 222214336914548834, guid: a66a6c2cc4086194fa02a44322f729bc,
+        type: 3}
+      propertyPath: Movable.Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5062574534691984233, guid: a66a6c2cc4086194fa02a44322f729bc,
         type: 3}

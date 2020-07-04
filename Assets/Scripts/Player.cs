@@ -490,7 +490,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			t += Time.deltaTime;
 			yield return null;
 		}
-		yield return new WaitUntil(() => controller.collisions.below); // wait for the player to hit the ground
+		yield return StartCoroutine(BringPlayerToGround()); // wait for the player to hit the ground
 
 		Won = true;
 		yield return new WaitForSeconds(2f); // let player enjoy animation for a second
@@ -505,6 +505,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			yield return null;
 		}
 		flag.Reset();
+	}
+
+	private IEnumerator BringPlayerToGround() {
+		yield return new WaitUntil(() => controller.collisions.below);
 	}
 
 	private IEnumerator UnpauseFailed() {
