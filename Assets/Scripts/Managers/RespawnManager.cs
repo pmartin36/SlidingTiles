@@ -8,12 +8,14 @@ public class RespawnManager
 	public Star[] Stars;
 
 	public Vector3 PlayerSpawnPosition;
+	public Quaternion PlayerSpawnRotation;
 
 	public ActionButtons ActionButtons;
 
     public RespawnManager(Scene scene, Player player, bool playerAlive = false) {
 		Player = player;
 		PlayerSpawnPosition = Player.transform.position;
+		PlayerSpawnRotation = Player.transform.rotation;
 		Player.SetRespawnManager(this);
 		Player.SetAlive(playerAlive);
 
@@ -26,6 +28,7 @@ public class RespawnManager
 
 	public void RespawnPlayer() {
 		Player.SetAlive(true);
+		Player.transform.rotation = PlayerSpawnRotation;
 		ActionButtons.ForceSetBasedOnPlayerAlive(true);
 		foreach (Star s in Stars) {
 			s.Reset();

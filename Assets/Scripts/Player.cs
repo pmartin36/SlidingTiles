@@ -87,84 +87,90 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	void FixedUpdate() {
 		if(!Paused && Alive) {
-			CalculateVelocity();
+			if(!Won) {
+				CalculateVelocity();
 
-			// dont include gravity in jump calculations
-			velocity.y -= gravity * Time.fixedDeltaTime;
-			bool jumping = DetermineJump(velocity * Time.fixedDeltaTime, out var modifiedMove);
-			if(!jumping) {
-				velocity.y += gravity * Time.fixedDeltaTime;
+				// dont include gravity in jump calculations
+				velocity.y -= gravity * Time.fixedDeltaTime;
+				bool jumping = DetermineJump(velocity * Time.fixedDeltaTime, out var modifiedMove);
+				if(!jumping) {
+					velocity.y += gravity * Time.fixedDeltaTime;
+				}
 			}
 
-			// actually perform movement
+			// perform movement
+			// if won, movement comes from bring player to ground
+			// otherwise, comes from physics
 			Vector2 amountMoved = controller.Move (velocity * Time.fixedDeltaTime);
 
-			if (controller.collisions.above || controller.collisions.below) {
-				if (controller.collisions.slidingDownMaxSlope) {
-					velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
-				}
-				else {
-					velocity.y = 0;
+			if(!Won) {
+				if (controller.collisions.above || controller.collisions.below) {
+					if (controller.collisions.slidingDownMaxSlope) {
+						velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
+					}
+					else {
+						velocity.y = 0;
 
-					float vy = Mathf.Abs(lastFrameVelocity.y);
-					float sign = Mathf.Sign(lastFrameVelocity.y);
-					// 1 tile fall, 30ish
-					// 2 tile fall, 40ish
-					// 3 tile fall, 50ish
-					if (vy > 10f) {
-						float absV = Mathf.Abs(velocity.x);
-						float raw = Mathf.Clamp01((vy - 25f) / 25f);
-						float lerp = raw * moveSpeed;
-						float newV = Mathf.Max(0, absV - lerp);
+						float vy = Mathf.Abs(lastFrameVelocity.y);
+						float sign = Mathf.Sign(lastFrameVelocity.y);
+						// 1 tile fall, 30ish
+						// 2 tile fall, 40ish
+						// 3 tile fall, 50ish
+						if (vy > 10f) {
+							float absV = Mathf.Abs(velocity.x);
+							float raw = Mathf.Clamp01((vy - 25f) / 25f);
+							float lerp = raw * moveSpeed;
+							float newV = Mathf.Max(0, absV - lerp);
 
-						velocity.x = newV;
+							velocity.x = newV;
 
-						if(lerp > 3) {
-							MMVibrationManager.Haptic(HapticTypes.MediumImpact);
+							if(lerp > 3) {
+								MMVibrationManager.Haptic(HapticTypes.MediumImpact);
+							}
+
+							var lp = heavyLandParticles.transform.localPosition;
+							lp.y = Mathf.Abs(lp.y) * sign;
+							heavyLandParticles.transform.localPosition = lp;
+
+							heavyLandParticles.Play();
+							if (audio.clip != LandSoundClip) {
+								audio.clip = LandSoundClip;
+							}
+							PlaySound(Mathf.Lerp(0.25f, 1.5f, raw), Mathf.Lerp(1, 0.9f, raw));
+
+							// little screen shake
+							//CameraManager.Instance.CameraController.Shake(
+							//	1f,
+							//	a * 0.3f,
+							//	Vector2.up * sign * a,
+							//	Vector2.down * sign * a * 0.9f
+							//);
 						}
-
-						var lp = heavyLandParticles.transform.localPosition;
-						lp.y = Mathf.Abs(lp.y) * sign;
-						heavyLandParticles.transform.localPosition = lp;
-
-						heavyLandParticles.Play();
-						if (audio.clip != LandSoundClip) {
-							audio.clip = LandSoundClip;
-						}
-						PlaySound(Mathf.Lerp(0.25f, 1.5f, raw), Mathf.Lerp(1, 0.9f, raw));
-
-						// little screen shake
-						//CameraManager.Instance.CameraController.Shake(
-						//	1f,
-						//	a * 0.3f,
-						//	Vector2.up * sign * a,
-						//	Vector2.down * sign * a * 0.9f
-						//);
 					}
 				}
-			}
 
-			if((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left)) {
-				moveDirection *= -1f;
-			}
-
-			// swap player direction only when it starts moving the other way, otherwise it swaps rapidly when smushed between two objects
-			if (amountMoved.sqrMagnitude > 0.001f && transform.localScale.x * amountMoved.x < 0) {
-				bool executeSwap = true;
-				// if collider if offset, verify that when we swap direction, we're not putting the collider inside another collider
-				if(Mathf.Abs(controller.collider.offset.x) > 0.001f) {
-					var hit = Physics2D.OverlapBox(
-						(Vector2)transform.position - Vector2.right * transform.lossyScale.x * controller.collider.offset.x,
-						transform.lossyScale * controller.collider.size - (2 * 0.015f) * Vector2.one,
-						0,
-						controller.collisionMask
-					);
-					executeSwap = hit == null;
+				if((moveDirection > 0.1f && controller.collisions.right) || (moveDirection < -0.1f && controller.collisions.left)) {
+					moveDirection *= -1f;
 				}
-				if(executeSwap) {
-					Vector3 localScale = transform.localScale;
-					localScale.x *= -1f;
-					transform.localScale = localScale;
+
+				// swap player direction only when it starts moving the other way, otherwise it swaps rapidly when smushed between two objects
+				if (amountMoved.sqrMagnitude > 0.001f && transform.localScale.x * amountMoved.x < 0) {
+					bool executeSwap = true;
+					// if collider if offset, verify that when we swap direction, we're not putting the collider inside another collider
+					if(Mathf.Abs(controller.collider.offset.x) > 0.001f) {
+						var hit = Physics2D.OverlapBox(
+							(Vector2)transform.position - Vector2.right * transform.lossyScale.x * controller.collider.offset.x,
+							transform.lossyScale * controller.collider.size - (2 * 0.015f) * Vector2.one,
+							0,
+							controller.collisionMask
+						);
+						executeSwap = hit == null;
+					}
+					if(executeSwap) {
+						Vector3 localScale = transform.localScale;
+						localScale.x *= -1f;
+						transform.localScale = localScale;
+					}
 				}
 			}
 
@@ -338,7 +344,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			SetAlive(false);
 		}
 		if (collision.CompareTag("Flag")) { 
-			moveDirection = 0f;
 			StartCoroutine(FlagReached(collision.GetComponent<GoalFlag>()));
 		}
 		else if(collision.CompareTag("Star")) {
@@ -482,33 +487,90 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		flag.PlayerReached();
 		GameManager.Instance.LevelManager.PlayerWin(flag);
 		SetAnimationBool("Won", true); //start animation for reaching flag
-
+		
 		//play fireworks
-		float t = 0f;
-		while (t < 0.5f) {
-			flag.SetAudioVolume(t);
-			t += Time.deltaTime;
-			yield return null;
-		}
-		yield return StartCoroutine(BringPlayerToGround()); // wait for the player to hit the ground
+		StartCoroutine(flag.SlideVolume(0.5f, 0f, 0.5f));
+
+		yield return StartCoroutine(BringPlayerToGround(flag)); // wait for the player to hit the ground
 
 		Won = true;
 		yield return new WaitForSeconds(2f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
 
 		// silence fireworks
-		t = 0f;
-		while (t < 2f) {
-			float sm = Mathf.SmoothStep(0.5f, 0.0f, t / 2f);
-			flag.SetAudioVolume(sm);
-			t += Time.deltaTime;
-			yield return null;
-		}
+		yield return StartCoroutine(flag.SlideVolume(2, 0.5f, 0f));
 		flag.Reset();
 	}
 
-	private IEnumerator BringPlayerToGround() {
-		yield return new WaitUntil(() => controller.collisions.below);
+	private IEnumerator BringPlayerToGround(GoalFlag flag) {
+		float targetRotation = flag.transform.eulerAngles.z;
+		Vector2 perpDirection = Vector2.down.Rotate(targetRotation);
+
+		// this should be the platform the flag sits on
+		RaycastHit2D baseHit = Physics2D.Raycast(transform.position, perpDirection, 10, controller.collisionMask);
+		Collider2D baseCollider = baseHit.collider;
+
+		float distanceToMove = baseHit.distance - controller.collider.offset.y * transform.lossyScale.y;
+		if(distanceToMove > baseHit.distance) {
+			// to close to the base to stand up, need to back away
+			perpDirection = perpDirection.Rotate(180);
+		}
+		Vector2 parallelDirection = perpDirection.Rotate(90);
+
+		if (Mathf.Sign(perpDirection.y) * Mathf.Sign(gravity) < 0) {
+			velocity.y = 0;
+		}
+
+		Func<Vector3, Vector2> GetPerpDirectionVelocity = (Vector3 expectedParallelVelocity) => {
+			baseHit = Physics2D.Raycast(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, 10, controller.collisionMask);
+			distanceToMove = Mathf.Abs(baseHit.distance - controller.collider.offset.y * transform.lossyScale.y);
+
+			Vector3 expectedVelocity = velocity.Abs() * perpDirection + Mathf.Abs(gravity * Time.fixedDeltaTime) * perpDirection;
+			Vector2 move = (transform.position + expectedVelocity * Time.fixedDeltaTime) - transform.position;
+			if (move.magnitude > distanceToMove) {
+				return (distanceToMove * perpDirection) / Time.fixedDeltaTime;
+			}
+			else {
+				return expectedVelocity;
+			}
+		};
+
+		//in the first t seconds, the player should orient itself with the base, slow parallel direction movement to 0, and move towards movementDirection
+		float t = 0.25f;
+		float timeElapsed = 0f;
+		var fixedDelta = new WaitForFixedUpdate();
+		yield return fixedDelta;
+		while(timeElapsed < t) {
+			float diffFromTargetRotation = targetRotation - transform.eulerAngles.z;
+			while(Mathf.Abs(diffFromTargetRotation) > 360) {
+				diffFromTargetRotation -= Mathf.Sign(diffFromTargetRotation) * 360;
+			}
+			transform.Rotate(0, 0, diffFromTargetRotation * 0.1f);
+
+			Vector3 expectedParallelVelocity = velocity * 0.9f * parallelDirection;
+			Vector2 perpDirectionVelocity = GetPerpDirectionVelocity(expectedParallelVelocity);
+
+			Debug.DrawRay(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, Color.green, 1f);
+			Debug.DrawLine(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, baseHit.point, Color.magenta, 1f); 
+
+			if(baseHit.collider != baseCollider) {
+				// drifted too far
+				velocity = 0f * parallelDirection + perpDirectionVelocity;
+			}
+			else {
+				velocity = (Vector2)expectedParallelVelocity + perpDirectionVelocity;
+			}
+			timeElapsed += Time.fixedDeltaTime;
+			yield return fixedDelta;
+		}
+		transform.rotation = Quaternion.Euler(0,0,targetRotation);
+
+		while(distanceToMove > 0.1f) {
+			Vector2 parallelVelocity = Vector2.zero;
+			Vector2 moveDirectionVelocity = GetPerpDirectionVelocity(parallelVelocity);
+			velocity = parallelVelocity + moveDirectionVelocity;
+			yield return fixedDelta;
+		}
 	}
 
 	private IEnumerator UnpauseFailed() {
@@ -574,6 +636,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		sr.material.SetFloat("_DistortRadius", 0.6f);
 		blur.intensity.value = 2;
 		transform.localScale = 1.44f * Vector3.one;
+		transform.rotation = RespawnManager.PlayerSpawnRotation;
 
 		// move
 		t = 0;

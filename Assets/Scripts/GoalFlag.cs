@@ -46,4 +46,14 @@ public class GoalFlag : MonoBehaviour
 			yield return new WaitForSeconds(UnityEngine.Random.value * 0.95f + 0.05f);
 		}
 	}
+
+	public IEnumerator SlideVolume(float duration, float start, float end) {
+		float t = 0;
+		while (t < duration) {
+			float sm = Mathf.SmoothStep(start, end, t / duration);
+			SetAudioVolume(sm);
+			t += Time.deltaTime;
+			yield return null;
+		}
+	}
 }
