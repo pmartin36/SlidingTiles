@@ -90,6 +90,13 @@ public static class VectorHelpers {
 		return Quaternion.Euler(0, 0, angle) * v;
 	}
 
+	public static Vector2 RotateAround(this Vector2 v, float angle, Vector2 position) {
+		Vector2 vr = v - position;
+		vr = vr.Rotate(angle);
+		vr += position;
+		return vr;
+	}
+
 	public static Vector2 Abs(this Vector2 v) {
 		return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
 	}

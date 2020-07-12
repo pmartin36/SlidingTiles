@@ -22,8 +22,11 @@ public class RaycastController : MonoBehaviour {
 	public BoxCollider2D collider;
 	public RaycastOrigins raycastOrigins;
 
+	public LayerMask platformMask;
+
 	public virtual void Awake() {
 		collider = GetComponent<BoxCollider2D> ();
+		platformMask = 1 << LayerMask.NameToLayer("Level");
 	}
 
 	public virtual void Start() {
@@ -34,12 +37,19 @@ public class RaycastController : MonoBehaviour {
 		Bounds bounds = collider.bounds;
 		bounds.Expand (skinWidth * -2);
 
+		bounds = new Bounds(
+			(Vector2)transform.position + collider.offset * transform.lossyScale.Abs(), 
+			collider.size * transform.lossyScale.Abs() + Vector2.one * skinWidth * -2f);
+
 		CalculateRaySpacing(bounds);
 
-		raycastOrigins.bottomLeft = new Vector2 (bounds.min.x, bounds.min.y);
-		raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y);
-		raycastOrigins.topLeft = new Vector2 (bounds.min.x, bounds.max.y);
-		raycastOrigins.topRight = new Vector2 (bounds.max.x, bounds.max.y);
+		raycastOrigins.rotatedRight = Vector2.right.Rotate(transform.eulerAngles.z);
+		raycastOrigins.rotatedUp = Vector2.up.Rotate(transform.eulerAngles.z);
+
+		raycastOrigins.bottomLeft = new Vector2 (bounds.min.x, bounds.min.y).RotateAround(transform.eulerAngles.z, transform.position);
+		raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y).RotateAround(transform.eulerAngles.z, transform.position);
+		raycastOrigins.topLeft = new Vector2 (bounds.min.x, bounds.max.y).RotateAround(transform.eulerAngles.z, transform.position);
+		raycastOrigins.topRight = new Vector2 (bounds.max.x, bounds.max.y).RotateAround(transform.eulerAngles.z, transform.position);
 	}
 	
 	public void CalculateRaySpacing(Bounds bounds) {
@@ -56,5 +66,6 @@ public class RaycastController : MonoBehaviour {
 	public struct RaycastOrigins {
 		public Vector2 topLeft, topRight;
 		public Vector2 bottomLeft, bottomRight;
+		public Vector2 rotatedRight, rotatedUp;
 	}
 }

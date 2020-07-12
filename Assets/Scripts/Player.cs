@@ -60,6 +60,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		animator = GetComponent<Animator>();
 		audio = GetComponent<AudioSource>();
 
+		PortraitAnimator.GetComponent<Image>().material.SetFloat("_OverridePct", 0f);
+
 		var ps = GetComponentsInChildren<ParticleSystem>();
 		footfallParticles = ps.First(p => p.name == "footfallParticles");
 		footfallParticles.Stop();
@@ -339,7 +341,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	public void OnTriggerEnter2D(Collider2D collision) {
 		if (collision.gameObject.scene != this.gameObject.scene) return;
 
-		if (collision.CompareTag("Reset")) {
+		if (collision.CompareTag("Reset") && !Won) {
 			MMVibrationManager.Haptic(HapticTypes.Failure);
 			SetAlive(false);
 		}
@@ -377,6 +379,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			if (!animating) {
 				transform.position = RespawnManager.PlayerSpawnPosition;
 				transform.localScale = Vector2.one * 1.2f;
+				transform.rotation = RespawnManager.PlayerSpawnRotation;
 
 				SetAnimationBool("Won", Won);
 				SetAnimationFloat("Vx", 0f);
@@ -491,9 +494,9 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		//play fireworks
 		StartCoroutine(flag.SlideVolume(0.5f, 0f, 0.5f));
 
+		Won = true;
 		yield return StartCoroutine(BringPlayerToGround(flag)); // wait for the player to hit the ground
 
-		Won = true;
 		yield return new WaitForSeconds(2f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
 
@@ -504,31 +507,37 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	private IEnumerator BringPlayerToGround(GoalFlag flag) {
 		float targetRotation = flag.transform.eulerAngles.z;
-		Vector2 perpDirection = Vector2.down.Rotate(targetRotation);
+		float targetDistance = (controller.collider.size.y/2f - controller.collider.offset.y) * transform.lossyScale.y;
+		Vector3 perpDirection = Vector3.down.Rotate(targetRotation);
 
 		// this should be the platform the flag sits on
-		RaycastHit2D baseHit = Physics2D.Raycast(transform.position, perpDirection, 10, controller.collisionMask);
+		RaycastHit2D baseHit = Physics2D.Raycast(transform.position, perpDirection, 10, controller.platformMask);
 		Collider2D baseCollider = baseHit.collider;
 
-		float distanceToMove = baseHit.distance - controller.collider.offset.y * transform.lossyScale.y;
-		if(distanceToMove > baseHit.distance) {
-			// to close to the base to stand up, need to back away
-			perpDirection = perpDirection.Rotate(180);
-		}
-		Vector2 parallelDirection = perpDirection.Rotate(90);
+		float distanceToMove = 0f;
+		bool rayHitBase = false;
+		Vector3 parallelDirection = perpDirection.Rotate(-90);
 
 		if (Mathf.Sign(perpDirection.y) * Mathf.Sign(gravity) < 0) {
 			velocity.y = 0;
 		}
 
-		Func<Vector3, Vector2> GetPerpDirectionVelocity = (Vector3 expectedParallelVelocity) => {
-			baseHit = Physics2D.Raycast(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, 10, controller.collisionMask);
-			distanceToMove = Mathf.Abs(baseHit.distance - controller.collider.offset.y * transform.lossyScale.y);
+		Func<Vector3, Vector3> GetPerpDirectionVelocity = (Vector3 expectedParallelVelocity) => {
+			baseHit = Physics2D.Raycast(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, 10, controller.platformMask);
+			rayHitBase = baseHit.collider == baseCollider;
+			if(baseHit.collider != baseCollider) {
+				baseHit = Physics2D.Raycast(transform.position, perpDirection, 10, controller.platformMask);
+			}
+			float amountToMove = baseHit.distance - targetDistance;
+			distanceToMove = Mathf.Abs(amountToMove);
 
-			Vector3 expectedVelocity = velocity.Abs() * perpDirection + Mathf.Abs(gravity * Time.fixedDeltaTime) * perpDirection;
-			Vector2 move = (transform.position + expectedVelocity * Time.fixedDeltaTime) - transform.position;
-			if (move.magnitude > distanceToMove) {
-				return (distanceToMove * perpDirection) / Time.fixedDeltaTime;
+			if(Mathf.Sign(amountToMove) < 0) {
+				int x = 0;
+			}
+
+			Vector3 expectedVelocity = Vector3.Project(velocity, perpDirection) + Mathf.Abs(gravity) * Time.fixedDeltaTime * perpDirection * Mathf.Sign(amountToMove);
+			if ((expectedVelocity * Time.fixedDeltaTime).magnitude > distanceToMove) {
+				return amountToMove * perpDirection / Time.fixedDeltaTime;
 			}
 			else {
 				return expectedVelocity;
@@ -547,18 +556,18 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			}
 			transform.Rotate(0, 0, diffFromTargetRotation * 0.1f);
 
-			Vector3 expectedParallelVelocity = velocity * 0.9f * parallelDirection;
-			Vector2 perpDirectionVelocity = GetPerpDirectionVelocity(expectedParallelVelocity);
+			Vector3 expectedParallelVelocity = Vector3.Project(velocity * 0.9f,  parallelDirection);
+			Vector3 perpDirectionVelocity = GetPerpDirectionVelocity(expectedParallelVelocity);
 
 			Debug.DrawRay(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, Color.green, 1f);
 			Debug.DrawLine(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, baseHit.point, Color.magenta, 1f); 
 
-			if(baseHit.collider != baseCollider) {
-				// drifted too far
-				velocity = 0f * parallelDirection + perpDirectionVelocity;
+			if(rayHitBase) {
+				velocity = expectedParallelVelocity + perpDirectionVelocity;
 			}
 			else {
-				velocity = (Vector2)expectedParallelVelocity + perpDirectionVelocity;
+				// drifted too far
+				velocity = 0f * parallelDirection + perpDirectionVelocity;
 			}
 			timeElapsed += Time.fixedDeltaTime;
 			yield return fixedDelta;
