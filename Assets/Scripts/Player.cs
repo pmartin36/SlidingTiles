@@ -511,29 +511,39 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		Vector3 perpDirection = Vector3.down.Rotate(targetRotation);
 
 		// this should be the platform the flag sits on
-		RaycastHit2D baseHit = Physics2D.Raycast(transform.position, perpDirection, 10, controller.platformMask);
+		RaycastHit2D baseHit = Physics2D.Raycast(flag.transform.position, perpDirection, 10, controller.platformMask);
 		Collider2D baseCollider = baseHit.collider;
 
 		float distanceToMove = 0f;
 		bool rayHitBase = false;
+		int maxHits = 0;
 		Vector3 parallelDirection = perpDirection.Rotate(-90);
 
 		if (Mathf.Sign(perpDirection.y) * Mathf.Sign(gravity) < 0) {
 			velocity.y = 0;
 		}
 
+		Func<Vector3, List<RaycastHit2D>> GetHits = (Vector3 center) => {
+			Vector3 halfSize = Vector3.right.Rotate(targetRotation) * ((transform.lossyScale.x * controller.collider.size.x / 2f) - RaycastController.skinWidth);
+			RaycastHit2D leftHit = Physics2D.Raycast(center + halfSize, perpDirection, 10, controller.platformMask);
+			RaycastHit2D rightHit = Physics2D.Raycast(center - halfSize, perpDirection, 10, controller.platformMask);
+			List<RaycastHit2D> hits = new List<RaycastHit2D>();
+			if(leftHit.collider == baseCollider) hits.Add(leftHit);
+			if(rightHit.collider == baseCollider) hits.Add(rightHit);
+			return hits;
+		};
+
 		Func<Vector3, Vector3> GetPerpDirectionVelocity = (Vector3 expectedParallelVelocity) => {
-			baseHit = Physics2D.Raycast(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, 10, controller.platformMask);
-			rayHitBase = baseHit.collider == baseCollider;
-			if(baseHit.collider != baseCollider) {
-				baseHit = Physics2D.Raycast(transform.position, perpDirection, 10, controller.platformMask);
+			List<RaycastHit2D> hits = GetHits(transform.position + expectedParallelVelocity * Time.fixedDeltaTime);
+			maxHits = Mathf.Max(hits.Count, maxHits);
+			rayHitBase = hits.Count >= maxHits;
+			if(hits.Count == 0) {
+				hits = GetHits(transform.position);
 			}
+			baseHit = hits[0];
+
 			float amountToMove = baseHit.distance - targetDistance;
 			distanceToMove = Mathf.Abs(amountToMove);
-
-			if(Mathf.Sign(amountToMove) < 0) {
-				int x = 0;
-			}
 
 			Vector3 expectedVelocity = Vector3.Project(velocity, perpDirection) + Mathf.Abs(gravity) * Time.fixedDeltaTime * perpDirection * Mathf.Sign(amountToMove);
 			if ((expectedVelocity * Time.fixedDeltaTime).magnitude > distanceToMove) {
