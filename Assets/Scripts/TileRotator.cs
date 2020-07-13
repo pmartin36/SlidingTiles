@@ -20,32 +20,20 @@ public class TileRotator : MonoBehaviour
 	private LevelManager lm;
 
 	private Animator animator;
+	private AudioSource audio;
 
     void Start() {
 		tilespace = transform.parent.GetComponent<Tilespace>();
 		rotation = transform.localEulerAngles.z;
 
 		animator = GetComponent<Animator>();
+		audio = GetComponent<AudioSource>();
     }
 
     void Update() {
 		if(lm == null || !lm.Won) {
 			if(Time.time - timeOfLastRotation > Downtime) {
-				if(lm == null) {
-					lm = GameManager.Instance.LevelManager;
-				}
-				rotating = true;
-				timeOfLastRotation = Time.time;
-				targetRotation = rotation + 90f * Direction;
-
-				animator.SetFloat("Direction", Direction);
-				animator.Play("tile_rotator", -1, Direction > 0 ? 0 : 1);
-
-				var tile = tilespace.Tile;
-				if(tile != null && tile.Centered) {
-					effectedTile = tile;
-					effectedTile.BeginRotation(Direction, this);
-				}
+				BeginRotating();
 			}
 
 			if(rotating) {
@@ -70,6 +58,25 @@ public class TileRotator : MonoBehaviour
 
 	public void ClearEffectedTile() {
 		effectedTile = null;
+	}
+
+	public void BeginRotating() {
+		if (lm == null) {
+			lm = GameManager.Instance.LevelManager;
+		}
+		rotating = true;
+		timeOfLastRotation = Time.time;
+		targetRotation = rotation + 90f * Direction;
+		audio.Play();
+
+		animator.SetFloat("Direction", Direction);
+		animator.Play("tile_rotator", -1, Direction > 0 ? 0 : 1);
+
+		var tile = tilespace.Tile;
+		if (tile != null && tile.Centered) {
+			effectedTile = tile;
+			effectedTile.BeginRotation(Direction, this);
+		}
 	}
 
 	public void ResetAnimation() {
