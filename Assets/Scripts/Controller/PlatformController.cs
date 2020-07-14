@@ -118,8 +118,8 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			
 			for (int i = 0; i < verticalRayCount; i ++) {
 				Vector2 rayOrigin = (directionY == -1)?raycastOrigins.bottomLeft:raycastOrigins.topLeft;
-				rayOrigin += Vector2.right * (verticalRaySpacing * i);
-				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, passengerMask);
+				rayOrigin += raycastOrigins.rotatedRight * (verticalRaySpacing * i);
+				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedUp * directionY, rayLength, passengerMask);
 
 				if (hit) {
 					if (!movedPassengers.Contains(hit.transform)) {
@@ -139,8 +139,8 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			
 			for (int i = 0; i < horizontalRayCount; i ++) {
 				Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
-				rayOrigin += Vector2.up * (horizontalRaySpacing * i);
-				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, passengerMask);
+				rayOrigin += raycastOrigins.rotatedUp * (horizontalRaySpacing * i);
+				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedRight * directionX, rayLength, passengerMask);
 
 				if (hit && hit.distance != 0) {
 					if (!movedPassengers.Contains(hit.transform)) {
@@ -159,8 +159,8 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			float rayLength = skinWidth * 2f;
 			
 			for (int i = 0; i < verticalRayCount; i ++) {
-				Vector2 rayOrigin = raycastOrigins.topLeft + Vector2.right * (verticalRaySpacing * i);
-				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, rayLength, passengerMask);
+				Vector2 rayOrigin = raycastOrigins.topLeft + raycastOrigins.rotatedRight * (verticalRaySpacing * i);
+				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedUp, rayLength, passengerMask);
 				// Debug.DrawRay(rayOrigin, Vector2.up, Color.blue);
 				
 				if (hit && hit.distance != 0) {

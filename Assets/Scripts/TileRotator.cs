@@ -6,8 +6,8 @@ public class TileRotator : MonoBehaviour
 {
 	[Range(-1, 1)]
 	public int Direction;
-	public float Downtime;
 
+	private const float downtime = 1.5f;
 	private float timeOfLastRotation;
 
 	private Tilespace tilespace;
@@ -32,7 +32,7 @@ public class TileRotator : MonoBehaviour
 
     void Update() {
 		if(lm == null || !lm.Won) {
-			if(Time.time - timeOfLastRotation > Downtime) {
+			if(Time.time - timeOfLastRotation > downtime) {
 				BeginRotating();
 			}
 
@@ -61,20 +61,21 @@ public class TileRotator : MonoBehaviour
 	}
 
 	public void BeginRotating() {
-		if (lm == null) {
-			lm = GameManager.Instance.LevelManager;
-		}
-		rotating = true;
-		timeOfLastRotation = Time.time;
-		targetRotation = rotation + 90f * Direction;
-		audio.Play();
-
-		animator.SetFloat("Direction", Direction);
-		animator.Play("tile_rotator", -1, Direction > 0 ? 0 : 1);
-
 		var tile = tilespace.Tile;
-		if (tile != null && tile.Centered) {
+		if(tile != null && tile.Centered) {
 			effectedTile = tile;
+
+			if (lm == null) {
+				lm = GameManager.Instance.LevelManager;
+			}
+			rotating = true;
+			timeOfLastRotation = Time.time;
+			targetRotation = rotation + 90f * Direction;
+			audio.Play();
+
+			animator.SetFloat("Direction", Direction);
+			animator.Play("tile_rotator", -1, Direction > 0 ? 0 : 1);
+
 			effectedTile.BeginRotation(Direction, this);
 		}
 	}

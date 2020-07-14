@@ -128,6 +128,8 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public virtual void FixedUpdate() {
 		LevelManager lm = GameManager.Instance.LevelManager;
+		if(lm.Won) return;
+
 		if(!movedThisFrame && ResidualVelocity.sqrMagnitude > 0.001f) {
 			ResidualMove();
 
@@ -288,7 +290,7 @@ public class Tile : MonoBehaviour, IRequireResources
 				Space.Tile = null;
 			}
 
-			next.SetChildTile(this);
+			next.SetChildTile(this, true);
 			changedTilespaces = true;
 			top.sortingOrder = -this.Space.Position.y * 3;
 			if (bottom != null)
@@ -328,10 +330,9 @@ public class Tile : MonoBehaviour, IRequireResources
 				p.CheckBlocking(ref globalMoveAmount, tilesToMove);
 			}
 			Vector2 newMove = globalMoveAmount / transform.lossyScale.x;
-			if(newMove.sqrMagnitude - moveAmount.sqrMagnitude > 0.1f) {
-				// TODO (Audio): Play *dink* metal noise
-
-			}
+			//if(newMove.sqrMagnitude - moveAmount.sqrMagnitude > 0.1f) {
+			//	// TODO (Audio): Play *dink* metal noise
+			//}
 			moveAmount = newMove;
 
 			if (collisions.Length == 0) {
@@ -572,6 +573,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public void BeginRotation(int direction, TileRotator rotator) {
 		this.rotator = rotator;
+		audio.volume = 0;
 		RotationDirection = direction;
 		SetTemporaryUnmovable(true);
 		if (BoxSide == null) {

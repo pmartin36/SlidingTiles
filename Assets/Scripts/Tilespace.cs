@@ -36,12 +36,17 @@ public class Tilespace : MonoBehaviour
 		return grid.GetTilespaceInDirection(this.Position, d);
 	}
 
-	public void SetChildTile(Tile t) {
+	public void SetChildTile(Tile t, bool triggerEffects) {
 		t.Space = this;
 		t.transform.parent = this.transform;
 		//t.transform.localPosition = local;
-
 		this.Tile = t;
+
+		if(triggerEffects) {
+			if(Rotator != null) {	
+				StartCoroutine(CenterThenRotate(t));
+			}
+		}
 	}
 
 	public void TryMoveTile(Direction direction) {
@@ -56,7 +61,7 @@ public class Tilespace : MonoBehaviour
 
 	public void Reset() {
 		if(initialTile != null) {
-			SetChildTile(initialTile);
+			SetChildTile(initialTile, false);
 			this.initialTile.Reset();
 		}
 		else {
@@ -72,5 +77,11 @@ public class Tilespace : MonoBehaviour
 		if(Rotator != null) {
 			Rotator.StopRotating();
 		}
+	}
+
+	private IEnumerator CenterThenRotate(Tile t) {
+		t.SetTemporaryUnmovable(true);
+		yield return new WaitUntil(() => t.Centered);
+		Rotator.BeginRotating();
 	}
 }
