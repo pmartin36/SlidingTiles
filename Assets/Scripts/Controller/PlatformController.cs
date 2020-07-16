@@ -14,7 +14,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 	
 	public override void Start () {
 		base.Start ();
-        Parent = transform.parent.GetComponent<Tile>();
+        Parent = transform.parent.parent.GetComponent<Tile>();
 
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
 		// sr.material.SetFloat("_Rotation", transform.eulerAngles.z * Mathf.Deg2Rad);
@@ -161,8 +161,8 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			for (int i = 0; i < verticalRayCount; i ++) {
 				Vector2 rayOrigin = raycastOrigins.topLeft + raycastOrigins.rotatedRight * (verticalRaySpacing * i);
 				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedUp, rayLength, passengerMask);
-				// Debug.DrawRay(rayOrigin, Vector2.up, Color.blue);
-				
+				Debug.DrawRay(rayOrigin, raycastOrigins.rotatedUp * rayLength, Color.black, 0.5f);
+
 				if (hit && hit.distance != 0) {
 					if (!movedPassengers.Contains(hit.transform)) {
 						movedPassengers.Add(hit.transform);
@@ -174,6 +174,13 @@ public class PlatformController : RaycastController, IMoveableCollider {
 				}
 			}
 		}
+	}
+
+	public override float Angle => 0f;
+	public override Bounds GetBounds() {
+		Bounds bounds = collider.bounds;
+		bounds.Expand (skinWidth * -2);
+		return bounds;
 	}
 
 	struct PassengerMovement {

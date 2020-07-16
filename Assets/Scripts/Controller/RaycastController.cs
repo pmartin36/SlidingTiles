@@ -24,6 +24,8 @@ public class RaycastController : MonoBehaviour {
 
 	public LayerMask platformMask;
 
+	public virtual float Angle => transform.eulerAngles.z;
+
 	public virtual void Awake() {
 		collider = GetComponent<BoxCollider2D> ();
 		platformMask = 1 << LayerMask.NameToLayer("Level");
@@ -33,23 +35,17 @@ public class RaycastController : MonoBehaviour {
 		
 	}
 
-	public void UpdateRaycastOrigins() {
-		Bounds bounds = collider.bounds;
-		bounds.Expand (skinWidth * -2);
-
-		bounds = new Bounds(
-			(Vector2)transform.position + collider.offset * transform.lossyScale.Abs(), 
-			collider.size * transform.lossyScale.Abs() + Vector2.one * skinWidth * -2f);
-
+	public virtual void UpdateRaycastOrigins() {
+		Bounds bounds = GetBounds();
 		CalculateRaySpacing(bounds);
 
-		raycastOrigins.rotatedRight = Vector2.right.Rotate(transform.eulerAngles.z);
-		raycastOrigins.rotatedUp = Vector2.up.Rotate(transform.eulerAngles.z);
+		raycastOrigins.rotatedRight = Vector2.right.Rotate(Angle);
+		raycastOrigins.rotatedUp =	Vector2.up.Rotate(Angle);
 
-		raycastOrigins.bottomLeft = new Vector2 (bounds.min.x, bounds.min.y).RotateAround(transform.eulerAngles.z, transform.position);
-		raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y).RotateAround(transform.eulerAngles.z, transform.position);
-		raycastOrigins.topLeft = new Vector2 (bounds.min.x, bounds.max.y).RotateAround(transform.eulerAngles.z, transform.position);
-		raycastOrigins.topRight = new Vector2 (bounds.max.x, bounds.max.y).RotateAround(transform.eulerAngles.z, transform.position);
+		raycastOrigins.bottomLeft	=	new Vector2 (bounds.min.x, bounds.min.y).RotateAround(Angle, transform.position);
+		raycastOrigins.bottomRight	=	new Vector2 (bounds.max.x, bounds.min.y).RotateAround(Angle, transform.position);
+		raycastOrigins.topLeft		=	new Vector2 (bounds.min.x, bounds.max.y).RotateAround(Angle, transform.position);
+		raycastOrigins.topRight		=	new Vector2 (bounds.max.x, bounds.max.y).RotateAround(Angle, transform.position);
 	}
 	
 	public void CalculateRaySpacing(Bounds bounds) {
@@ -61,6 +57,12 @@ public class RaycastController : MonoBehaviour {
 		
 		horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
 		verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
+	}
+
+	public virtual Bounds GetBounds() {
+		return new Bounds(
+			(Vector2)transform.position + collider.offset * transform.lossyScale.Abs(),
+			collider.size * transform.lossyScale.Abs() + Vector2.one * skinWidth * -2f);
 	}
 	
 	public struct RaycastOrigins {

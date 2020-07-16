@@ -89,8 +89,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	void FixedUpdate() {
 		if(!Paused && Alive) {
+			Vector2 v;
 			if(!Won) {
 				CalculateVelocity();
+				controller.GravityAngle = transform.eulerAngles.z;
 
 				// dont include gravity in jump calculations
 				velocity.y -= gravity * Time.fixedDeltaTime;
@@ -98,12 +100,16 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 				if(!jumping) {
 					velocity.y += gravity * Time.fixedDeltaTime;
 				}
+				v = velocity.Rotate(controller.GravityAngle);
+			}
+			else {
+				v = velocity;
 			}
 
 			// perform movement
 			// if won, movement comes from bring player to ground
 			// otherwise, comes from physics
-			Vector2 amountMoved = controller.Move (velocity * Time.fixedDeltaTime);
+			Vector2 amountMoved = controller.Move (v * Time.fixedDeltaTime);
 
 			if(!Won) {
 				if (controller.collisions.above || controller.collisions.below) {
@@ -380,6 +386,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 				transform.position = RespawnManager.PlayerSpawnPosition;
 				transform.localScale = Vector2.one * 1.2f;
 				transform.rotation = RespawnManager.PlayerSpawnRotation;
+				controller.GravityAngle = RespawnManager.PlayerSpawnRotation.eulerAngles.z;
 
 				SetAnimationBool("Won", Won);
 				SetAnimationFloat("Vx", 0f);
@@ -392,10 +399,11 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		aliveChanged = null;
 	}
 
-	public void ChangeGravityDirection(float g) {
-		if(Mathf.Sign(gravity) * Mathf.Sign(g) < 0.0001f) {
-			gravity = Mathf.Abs(gravity) * g;
-			gravityDirectionChanged?.Invoke(this, g);
+	public void ChangeGravityDirection(float direction) {
+		if(controller.GravityAngle != direction) {
+			velocity = velocity.Rotate(direction - controller.GravityAngle) * 0.5f;
+			controller.GravityAngle = direction;
+			gravityDirectionChanged?.Invoke(this, controller.GravityAngle);
 		}
 	}
 
@@ -507,8 +515,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 	private IEnumerator BringPlayerToGround(GoalFlag flag) {
 		float targetRotation = flag.transform.eulerAngles.z;
-		float targetDistance = (controller.collider.size.y/2f - controller.collider.offset.y) * transform.lossyScale.y;
+		float targetDistance = (controller.collider.size.y/2f - controller.collider.offset.y - RaycastController.skinWidth) * transform.lossyScale.y;
 		Vector3 perpDirection = Vector3.down.Rotate(targetRotation);
+		velocity = velocity.Rotate(controller.GravityAngle);
+		controller.GravityAngle = targetRotation;
 
 		// this should be the platform the flag sits on
 		RaycastHit2D baseHit = Physics2D.Raycast(flag.transform.position, perpDirection, 10, controller.platformMask);
@@ -571,7 +581,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 			Debug.DrawRay(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, Color.green, 1f);
 			Debug.DrawLine(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, baseHit.point, Color.magenta, 1f); 
-
 			if(rayHitBase) {
 				velocity = expectedParallelVelocity + perpDirectionVelocity;
 			}
@@ -579,15 +588,16 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 				// drifted too far
 				velocity = 0f * parallelDirection + perpDirectionVelocity;
 			}
+			Debug.Log(velocity);
 			timeElapsed += Time.fixedDeltaTime;
 			yield return fixedDelta;
 		}
 		transform.rotation = Quaternion.Euler(0,0,targetRotation);
-
-		while(distanceToMove > 0.1f) {
+		velocity = GetPerpDirectionVelocity(Vector2.zero);
+		while (distanceToMove > 0.1f) {
 			Vector2 parallelVelocity = Vector2.zero;
 			Vector2 moveDirectionVelocity = GetPerpDirectionVelocity(parallelVelocity);
-			velocity = parallelVelocity + moveDirectionVelocity;
+			velocity = (parallelVelocity + moveDirectionVelocity);
 			yield return fixedDelta;
 		}
 	}
@@ -656,6 +666,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		blur.intensity.value = 2;
 		transform.localScale = 1.44f * Vector3.one;
 		transform.rotation = RespawnManager.PlayerSpawnRotation;
+		controller.GravityAngle = RespawnManager.PlayerSpawnRotation.eulerAngles.z;
 
 		// move
 		t = 0;

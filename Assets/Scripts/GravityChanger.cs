@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GravityChanger : MonoBehaviour
 {
-	private bool Up => transform.localScale.y > 0;
+	private float Direction => transform.eulerAngles.z;
 	public LayerMask collisionMask;
 
 	private MeshFilter meshMask;
@@ -53,7 +53,7 @@ public class GravityChanger : MonoBehaviour
 
 		IGravityChangable c = collision.GetComponent<IGravityChangable>();
 		if(c != null) {
-			c.ChangeGravityDirection(Up ? 1f : -1f);
+			c.ChangeGravityDirection(Direction);
 		}
 		else if((1 << collision.gameObject.layer & collisionMask.value) > 0) {
 			if(!stoppers.ContainsKey(collision.transform)) {
@@ -64,7 +64,7 @@ public class GravityChanger : MonoBehaviour
 	}
 
 	public void RecalculateMesh() {
-		Vector2 castDirection = Up ? Vector2.up : Vector2.down;
+		Vector2 castDirection = Vector2.up.Rotate(Direction);
 		float prevDist = 0;
 
 		List<MeshPoint> points = new List<MeshPoint>();

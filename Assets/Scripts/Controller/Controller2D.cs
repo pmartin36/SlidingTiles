@@ -9,6 +9,9 @@ public class Controller2D : RaycastController {
 	public CollisionInfo collisions;
 	private Vector2 extraMove;
 
+	public float GravityAngle { get; set; }
+	public override float Angle => GravityAngle;
+
 	public override void Start() {
 		base.Start ();
 		collisions.faceDir = 1;
@@ -56,16 +59,16 @@ public class Controller2D : RaycastController {
 
 	public bool CheckForJumpableObjects(Vector2 moveAmount, out float jumpHeight, out float distanceFromObstacle, bool standingOnPlatform = false) {
 		UpdateRaycastOrigins();
-		Vector2 rotatedMove = moveAmount.Rotate(transform.eulerAngles.z);
+		moveAmount = moveAmount.Rotate(-transform.eulerAngles.z);
 
 		jumpHeight = -1f;
 		distanceFromObstacle = 1000f;
-		if (Mathf.Abs(rotatedMove.x) < skinWidth) {
+		if (Mathf.Abs(moveAmount.x) < skinWidth) {
 			return false;
 		}
 
 		float directionX = collisions.faceDir;
-		float rayLength = Mathf.Abs(rotatedMove.x) + skinWidth;
+		float rayLength = Mathf.Abs(moveAmount.x) + skinWidth;
 		bool hasHitBlockingObject = false;
 
 		for (int i = 0; i < horizontalRayCount; i++) {
@@ -95,7 +98,7 @@ public class Controller2D : RaycastController {
 
 			}
 			else if (hasHitBlockingObject && i <= canJumpUpIndex && jumpHeight < 0) {
-				float height = (rayOrigin.y - raycastOrigins.bottomLeft.y) - rotatedMove.y;
+				float height = (rayOrigin.y - raycastOrigins.bottomLeft.y) - moveAmount.y;
 				if (height > 0) {
 					jumpHeight = height;
 				}

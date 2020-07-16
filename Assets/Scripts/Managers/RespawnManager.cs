@@ -28,7 +28,6 @@ public class RespawnManager
 
 	public void RespawnPlayer() {
 		Player.SetAlive(true);
-		Player.transform.rotation = PlayerSpawnRotation;
 		ActionButtons.ForceSetBasedOnPlayerAlive(true);
 		foreach (Star s in Stars) {
 			s.Reset();
