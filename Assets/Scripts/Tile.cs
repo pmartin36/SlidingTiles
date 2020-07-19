@@ -562,12 +562,8 @@ public class Tile : MonoBehaviour, IRequireResources
 			BoxSide.transform.RotateAround(Box.transform.position, Vector3.forward, diff);
 		}
 
-		foreach (PlatformController p in childPlatforms) {
-			var blocker = p.GetCurrentBlocker();
-			if (blocker) {
-				blocker.collider.GetComponent<IPlatformMoveBlocker>().MoveFromRotation(diff, blocker.point, this.transform.position);
-				return;
-			}
+		foreach (var c in childPlatforms) {
+			c.MovePlatformBlockersFromRotation(diff, Box.transform.position);
 		}
 	}
 

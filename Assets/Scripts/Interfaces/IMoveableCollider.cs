@@ -9,5 +9,6 @@ public interface IMoveableCollider {
 public interface IPlatformMoveBlocker {
 	bool CheckBlocking (ref Vector2 original, HashSet<Tile> movingTiles);
 	void MoveFromRotation(float rotation, Vector2 hitPosition, Vector2 center);
+	void MoveFromRotation(Vector3 amount);
 };
 

@@ -105,6 +105,60 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			passengerMask);
 	}
 
+	public void MovePlatformBlockersFromRotation(float diff, Vector2 center) {
+		Dictionary<IPlatformMoveBlocker, Vector3> moves = new Dictionary<IPlatformMoveBlocker, Vector3>();
+		foreach (var pt in GeneratePoints().All) {
+			var end = pt;
+			var start = end.RotateAround(-diff, center);
+			RaycastHit2D[] hits = Physics2D.LinecastAll(start, end, passengerMask);
+			foreach(var h in hits) {
+				var blocker = h.collider.GetComponent<IPlatformMoveBlocker>();
+				var amt = end - h.point;
+				if(moves.ContainsKey(blocker)) {
+					var move = moves[blocker];
+					if(amt.sqrMagnitude > move.sqrMagnitude) {
+						move = amt;
+					}
+				}
+				else {
+					moves.Add(blocker, amt);
+				}
+			}
+		}
+
+		foreach(var m in moves) {
+			m.Key.MoveFromRotation(m.Value);
+		}
+	}
+
+	public EdgePoints GeneratePoints() {
+		var pts = new EdgePoints(transform.eulerAngles.z);
+		Bounds bounds = new Bounds(transform.position, size);
+		CalculateRaySpacing(bounds, 0.75f, 1f);
+
+		// left
+		// right
+		float y = transform.position.y - (size.y / 2f);
+		float halfx = size.x / 2f;
+		for(int i = 0; i < horizontalRayCount; i++) {
+			pts.Left.Add(new Vector2(transform.position.x - halfx, y).RotateAround(transform.eulerAngles.z, transform.position));
+			pts.Right.Add(new Vector2(transform.position.x + halfx, y).RotateAround(transform.eulerAngles.z, transform.position));
+			y += horizontalRaySpacing;
+		}
+
+		// top
+		// bottom
+		float x = transform.position.x - (size.x / 2f);
+		float halfy = size.y / 2f;
+		for(int i = 0; i < verticalRayCount; i++) {
+			pts.Bottom.Add(new Vector2(x, transform.position.y - halfy).RotateAround(transform.eulerAngles.z, transform.position));
+			pts.Top.Add(new Vector2(x, transform.position.y + halfy).RotateAround(transform.eulerAngles.z, transform.position));
+			x += verticalRaySpacing;
+		}
+
+		return pts;
+	}
+
 	void CalculatePassengerMovement(Vector3 velocity) {
 		HashSet<Transform> movedPassengers = new HashSet<Transform> ();
 		passengerMovement = new List<PassengerMovement> ();
@@ -197,5 +251,27 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			moveBeforePlatform = _moveBeforePlatform;
 			IgnoreSource = ignoreSource;
 		}
+	}
+}
+
+public struct EdgePoints {
+	public List<Vector2> Left, Right, Top, Bottom;
+
+	public List<Vector2> All {
+		get {
+			var list = new List<Vector2>(Left);
+			list.AddRange(Right);
+			list.AddRange(Top);
+			list.AddRange(Bottom);
+			return list;
+		}
+	}
+
+
+	public EdgePoints(float angle = 0) {
+		Left = new List<Vector2>();
+		Right = new List<Vector2>();
+		Top = new List<Vector2>();
+		Bottom = new List<Vector2>();
 	}
 }

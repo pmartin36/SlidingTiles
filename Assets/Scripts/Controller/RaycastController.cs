@@ -48,12 +48,12 @@ public class RaycastController : MonoBehaviour {
 		raycastOrigins.topRight		=	new Vector2 (bounds.max.x, bounds.max.y).RotateAround(Angle, transform.position);
 	}
 	
-	public void CalculateRaySpacing(Bounds bounds) {
+	public void CalculateRaySpacing(Bounds bounds, float horizontalRayCountModifier = 0.5f, float verticalRayCountModifier = 1f) {
 		float boundsWidth = bounds.size.x;
 		float boundsHeight = bounds.size.y;
 		
-		horizontalRayCount = Mathf.RoundToInt (boundsHeight / dstBetweenRays / 2); // we don't need like 20 rays
-		verticalRayCount = Mathf.RoundToInt (boundsWidth  / dstBetweenRays);
+		horizontalRayCount = Mathf.RoundToInt (boundsHeight * horizontalRayCountModifier / dstBetweenRays); 
+		verticalRayCount = Mathf.RoundToInt (boundsWidth  * verticalRayCountModifier / dstBetweenRays);
 		
 		horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
 		verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);

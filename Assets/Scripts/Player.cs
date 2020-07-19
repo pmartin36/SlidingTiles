@@ -466,6 +466,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		}
 	}
 
+	public void MoveFromRotation(Vector3 amount) {
+		controller.Move(amount);
+	}
+
 	public void Footfall() {
 		var vx = Mathf.Abs(this.velocity.x);
 		footfallParticles.Play();

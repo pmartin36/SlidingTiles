@@ -26,8 +26,8 @@ public static class DebugExtensions {
 		DrawBox(topBox, color);
 	}
 
-	public static void DrawBox(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Color color) {
-		DrawBox(new Box(origin, halfExtents, orientation), color);
+	public static void DrawBox(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Color color, float duration = 0.0f) {
+		DrawBox(new Box(origin, halfExtents, orientation), color, duration);
 	}
 	public static void DrawBox(Box box, Color color) {
 		Debug.DrawLine(box.frontTopLeft, box.frontTopRight, color);
@@ -44,6 +44,22 @@ public static class DebugExtensions {
 		Debug.DrawLine(box.frontTopRight, box.backTopRight, color);
 		Debug.DrawLine(box.frontBottomRight, box.backBottomRight, color);
 		Debug.DrawLine(box.frontBottomLeft, box.backBottomLeft, color);
+	}
+	public static void DrawBox(Box box, Color color, float duration) {
+		Debug.DrawLine(box.frontTopLeft, box.frontTopRight, color, duration);
+		Debug.DrawLine(box.frontTopRight, box.frontBottomRight, color, duration);
+		Debug.DrawLine(box.frontBottomRight, box.frontBottomLeft, color, duration);
+		Debug.DrawLine(box.frontBottomLeft, box.frontTopLeft, color, duration);
+
+		Debug.DrawLine(box.backTopLeft, box.backTopRight, color, duration);
+		Debug.DrawLine(box.backTopRight, box.backBottomRight, color, duration);
+		Debug.DrawLine(box.backBottomRight, box.backBottomLeft, color, duration);
+		Debug.DrawLine(box.backBottomLeft, box.backTopLeft, color, duration);
+
+		Debug.DrawLine(box.frontTopLeft, box.backTopLeft, color, duration);
+		Debug.DrawLine(box.frontTopRight, box.backTopRight, color, duration);
+		Debug.DrawLine(box.frontBottomRight, box.backBottomRight, color, duration);
+		Debug.DrawLine(box.frontBottomLeft, box.backBottomLeft, color, duration);
 	}
 
 	public struct Box {
