@@ -530,7 +530,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			float amountToMove = baseHit.distance - targetDistance;
 			distanceToMove = Mathf.Abs(amountToMove);
 
-			Vector3 expectedVelocity = Vector3.Project(velocity, perpDirection) + Mathf.Abs(gravity) * Time.fixedDeltaTime * perpDirection * Mathf.Sign(amountToMove);
+			Vector3 expectedVelocity = Vector3.Project(velocity, perpDirection) + Mathf.Abs(gravity) * 2 * Time.fixedDeltaTime * perpDirection * Mathf.Sign(amountToMove);
 			if ((expectedVelocity * Time.fixedDeltaTime).magnitude > distanceToMove) {
 				return amountToMove * perpDirection / Time.fixedDeltaTime;
 			}
