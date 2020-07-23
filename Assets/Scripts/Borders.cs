@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Borders : MonoBehaviour
 {
-	private float GravityDirection = -1f;
+	private float gravityDirection = -1f;
+	private BoxCollider2D activeReset;
+
+	private static LayerMask wallMask;
+	private static LayerMask defaultMask = 0;
 
 	public BoxCollider2D TopBorder;
 	public BoxCollider2D BottomBorder;
@@ -13,24 +17,45 @@ public class Borders : MonoBehaviour
 
     void Start() {
 		Player.gravityDirectionChanged += GravityDirectionChanged;
-    }
+		activeReset = BottomBorder;
+		wallMask = 1 << LayerMask.NameToLayer("Wall");
+	}
 
     public void GravityDirectionChanged(object sender, float newGravity) {
-		//if(newGravity * GravityDirection < 0.0001f) {
-		//	float dir = Mathf.Sign(newGravity);
-		//	TopBorder.offset += Vector2.up * dir * 0.4f;
-		//	BottomBorder.offset += Vector2.up * dir * 0.4f;
+		while(newGravity < 0) {
+			newGravity += 360;
+		}
+		if(Mathf.Abs(newGravity - gravityDirection) > 5) {
+			gravityDirection = newGravity;
+			int dir = Mathf.FloorToInt(gravityDirection / 90f);
+			switch(dir) {
+				case 0:
+					SetResetBorder(BottomBorder);
+					break;
+				case 1:
+					SetResetBorder(RightBorder);
+					break;
+				case 2:
+					SetResetBorder(TopBorder);
+					break;
+				case 3:
+				default:
+					SetResetBorder(LeftBorder);
+					break;
+			}
+		}
+	}
 
-		//	if(dir > 0.0001f) {
-		//		TopBorder.isTrigger = true;
-		//		BottomBorder.isTrigger = false;
-		//	}
-		//	else {
-		//		TopBorder.isTrigger = false;
-		//		BottomBorder.isTrigger = true;
-		//	}
-		//	GravityDirection = dir;
-		//}
+	private void SetResetBorder(BoxCollider2D border) {
+		border.offset = 0.4f * Vector2.up;
+		border.gameObject.layer = defaultMask;
+		border.gameObject.tag = "Reset";
+
+		activeReset.offset = Vector2.zero;
+		activeReset.gameObject.layer = wallMask;
+		activeReset.gameObject.tag = "Untagged";
+
+		activeReset = border;
 	}
 
 	private void OnDestroy() {

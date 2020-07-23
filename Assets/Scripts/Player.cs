@@ -366,7 +366,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			Alive = alive;
 			this.controller.collider.enabled = alive;
 			moveDirection = 1f;
-			ChangeGravityDirection(-1f);
+			ChangeGravityDirection(0f);
 			lastFrameVelocity = Vector2.zero;
 			velocity = Vector2.zero;
 			Won = false;
