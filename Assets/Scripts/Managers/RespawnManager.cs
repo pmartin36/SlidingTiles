@@ -27,10 +27,12 @@ public class RespawnManager
     }
 
 	public void RespawnPlayer() {
-		Player.SetAlive(true);
-		ActionButtons.ForceSetBasedOnPlayerAlive(true);
-		foreach (Star s in Stars) {
-			s.Reset();
+		if(Player.CanUnpause()) {
+			Player.SetAlive(true);
+			ActionButtons.ForceSetBasedOnPlayerAlive(true);
+			foreach (Star s in Stars) {
+				s.Reset();
+			}
 		}
 	}
 

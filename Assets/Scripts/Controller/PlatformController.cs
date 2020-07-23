@@ -47,7 +47,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			}
 
 			if (passenger.moveBeforePlatform == beforeMovePlatform) {
-				Vector3 vel = passenger.velocity;
+				Vector3 vel = passenger.velocity.Rotate(passenger.transform.eulerAngles.z);
 				if (Mathf.Abs(passenger.velocity.x) > 0.001f) {
 					var player = passenger.transform.gameObject.GetComponent<Player>();
 					Vector3 v = passenger.velocity / Time.deltaTime;
@@ -160,73 +160,107 @@ public class PlatformController : RaycastController, IMoveableCollider {
 	}
 
 	void CalculatePassengerMovement(Vector3 velocity) {
-		HashSet<Transform> movedPassengers = new HashSet<Transform> ();
+		Dictionary<Transform, IPlatformMoveBlocker> movedPassengers = new Dictionary<Transform, IPlatformMoveBlocker> ();
 		passengerMovement = new List<PassengerMovement> ();
 
-		float directionX = Mathf.Sign (velocity.x);
-		float directionY = Mathf.Sign (velocity.y);
-
-		// Vertically moving platform
-		if (velocity.y != 0) {
-			float rayLength = Mathf.Abs (velocity.y) + skinWidth;
+		System.Func<Vector2, RaycastHit2D, PassengerMovement> GetMovement = (dir, hit) => {
+			IPlatformMoveBlocker blocker = movedPassengers[hit.transform];
 			
-			for (int i = 0; i < verticalRayCount; i ++) {
-				Vector2 rayOrigin = (directionY == -1)?raycastOrigins.bottomLeft:raycastOrigins.topLeft;
-				rayOrigin += raycastOrigins.rotatedRight * (verticalRaySpacing * i);
-				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedUp * directionY, rayLength, passengerMask);
+			// add 90 to convert from Vector2.down being default direction to Vector2.right
+			Vector2 gravityAngle = Utils.AngleToVector(blocker.GravityAngle - 90);
 
-				if (hit) {
-					if (!movedPassengers.Contains(hit.transform)) {
-						movedPassengers.Add(hit.transform);
-						float pushX = (directionY == 1)?velocity.x:0;
-						float pushY = velocity.y - (hit.distance - skinWidth) * directionY;
+			var rotatedVelocity = velocity.Rotate(-blocker.GravityAngle);
+			float dot = Vector2.Dot(gravityAngle, velocity.normalized);
+			bool movingWithDirection = rotatedVelocity.y > 0;
+			float platformPosition = this.transform.position.Rotate(-blocker.GravityAngle).y;
+			float blockerPosition = hit.collider.transform.position.Rotate(-blocker.GravityAngle).y;
+			if (dot > 0.5f) {
+				// gravity and platform moving in same direction
+				if (platformPosition < blockerPosition) {
+					// passenger is on top of the platform and should be moved with it
+					float pushX = velocity.x;
+					float pushY = velocity.y;
+					return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), true, false, false);
+				}
+				else {
+					// passenger is below the platform and will be pushed
+					float pushX = 0f;
+					float pushY = rotatedVelocity.y - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.y);
+					return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), false, false, true);
+				}
+			}
+			else if (dot < -0.5f) {
+				// gravity and platform moving in opposite directions
+				float pushX = movingWithDirection ? rotatedVelocity.x : 0;
+				float pushY = rotatedVelocity.y - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.y);
+				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), movingWithDirection, false, true);
+			}
+			else if (platformPosition < blockerPosition) {
+				// platform is moving side-to-side relative to gravity
+				float pushX = rotatedVelocity.x - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.x);
+				float pushY = -skinWidth;
+				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), false, false, true);
+			}
+			return null;
+		};
 
-						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), directionY == 1, false, true));
+		System.Action<Vector2, Vector2, float> CastForPoint = (pt, dir, dist) => {
+			Debug.DrawRay(pt, dir*dist, new Color(dir.y*0.5f+0.5f, dir.x*0.5f+0.5f, 0), 0.1f);
+			RaycastHit2D hit = Physics2D.Raycast(pt, dir, dist, passengerMask);
+			if (hit) {
+				if (!movedPassengers.ContainsKey(hit.transform)) {
+					movedPassengers.Add(hit.transform, hit.transform.GetComponent<IPlatformMoveBlocker>());
+					PassengerMovement m = GetMovement(dir, hit);
+					if(m != null) {
+						passengerMovement.Add(m);
+					}
+				}
+				else {
+					PassengerMovement m = GetMovement(dir, hit);
+					int index = passengerMovement.FindIndex(pm => pm.transform == hit.transform);
+					if (m != null && m.velocity.sqrMagnitude > passengerMovement[index].velocity.sqrMagnitude) {
+						passengerMovement[index] = m;
 					}
 				}
 			}
+		};
+
+		var pts = GeneratePoints();
+
+		float topDistance = skinWidth * 2f;
+		float bottomDistance = skinWidth * 2f;
+		Vector2 rotatedPlatformVelocity = velocity.Rotate(-transform.eulerAngles.z);
+		if(rotatedPlatformVelocity.y > 0) {
+			topDistance = Mathf.Max(topDistance, Mathf.Abs(velocity.y) + skinWidth);
+		}
+		else {
+			bottomDistance = Mathf.Max(bottomDistance, Mathf.Abs(velocity.y) + skinWidth);
+		} 
+
+		Vector2 up = Vector2.up.Rotate(transform.eulerAngles.z);
+		Vector2 right = Vector2.right.Rotate(transform.eulerAngles.z);
+
+		foreach(var pt in pts.Top) {
+			CastForPoint(pt, up, topDistance);
+		}
+		foreach(var pt in pts.Bottom) {
+			CastForPoint(pt, -up, bottomDistance);
 		}
 
-		// Horizontally moving platform
-		if (velocity.x != 0) {
-			float rayLength = Mathf.Abs (velocity.x) + skinWidth;
-			
-			for (int i = 0; i < horizontalRayCount; i ++) {
-				Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
-				rayOrigin += raycastOrigins.rotatedUp * (horizontalRaySpacing * i);
-				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedRight * directionX, rayLength, passengerMask);
-
-				if (hit && hit.distance != 0) {
-					if (!movedPassengers.Contains(hit.transform)) {
-						movedPassengers.Add(hit.transform);
-						float pushX = velocity.x - (hit.distance - skinWidth) * directionX;
-						float pushY = -skinWidth;
-						
-						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), false, false, true));
-					}
-				}
-			}
+		float leftDistance = skinWidth * 2f;
+		float rightDistance = skinWidth * 2f;
+		if (rotatedPlatformVelocity.x > 0) {
+			rightDistance = Mathf.Max(rightDistance, Mathf.Abs(velocity.x) + skinWidth);
+		}
+		else {
+			leftDistance = Mathf.Max(leftDistance, Mathf.Abs(velocity.x) + skinWidth);
 		}
 
-		// Passenger on top of a horizontally or downward moving platform
-		if (directionY == -1 || velocity.y == 0 && velocity.x != 0) {
-			float rayLength = skinWidth * 2f;
-			
-			for (int i = 0; i < verticalRayCount; i ++) {
-				Vector2 rayOrigin = raycastOrigins.topLeft + raycastOrigins.rotatedRight * (verticalRaySpacing * i);
-				RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedUp, rayLength, passengerMask);
-				Debug.DrawRay(rayOrigin, raycastOrigins.rotatedUp * rayLength, Color.black, 0.5f);
-
-				if (hit && hit.distance != 0) {
-					if (!movedPassengers.Contains(hit.transform)) {
-						movedPassengers.Add(hit.transform);
-						float pushX = velocity.x;
-						float pushY = velocity.y;
-						
-						passengerMovement.Add(new PassengerMovement(hit.transform,new Vector3(pushX,pushY), true, false, false));
-					}
-				}
-			}
+		foreach (var pt in pts.Right) {
+			CastForPoint(pt, right, rightDistance);
+		}
+		foreach (var pt in pts.Left) {
+			CastForPoint(pt, -right, leftDistance);
 		}
 	}
 
@@ -237,7 +271,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		return bounds;
 	}
 
-	struct PassengerMovement {
+	class PassengerMovement {
 		public Transform transform;
 		public Vector3 velocity;
 		public bool standingOnPlatform;

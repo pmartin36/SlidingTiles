@@ -268,6 +268,9 @@ public class Tile : MonoBehaviour, IRequireResources
 		if (!Centered && Space.GetNeighborInDirection(d) == null && Vector2.Dot(transform.localPosition, transform.localPosition + moveAmount) < 0.00001f) {
 			moveAmount = -transform.localPosition;
 		}
+		else if (moveAmount.sqrMagnitude <= 0) {
+			return false;
+		}
 
 		Vector2 globalMoveAmount = moveAmount * transform.lossyScale.x;
 		

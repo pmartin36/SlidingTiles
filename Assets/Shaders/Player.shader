@@ -107,7 +107,7 @@
 				// debug
 				//col = lerp(col, float4(1,1,1,1), smoothstep(0.02, 0.0, abs(diff)));
 
-				return col;
+				return col * i.color;
             }
             ENDCG
         }

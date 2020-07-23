@@ -59,7 +59,6 @@ public class Controller2D : RaycastController {
 
 	public bool CheckForJumpableObjects(Vector2 moveAmount, out float jumpHeight, out float distanceFromObstacle, bool standingOnPlatform = false) {
 		UpdateRaycastOrigins();
-		moveAmount = moveAmount.Rotate(-transform.eulerAngles.z);
 
 		jumpHeight = -1f;
 		distanceFromObstacle = 1000f;
@@ -71,9 +70,9 @@ public class Controller2D : RaycastController {
 		float rayLength = Mathf.Abs(moveAmount.x) + skinWidth;
 		bool hasHitBlockingObject = false;
 
+		Vector2 firstRayLocation = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
 		for (int i = 0; i < horizontalRayCount; i++) {
-			Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
-			rayOrigin += raycastOrigins.rotatedUp * (horizontalRaySpacing * i);
+			Vector2 rayOrigin = firstRayLocation + raycastOrigins.rotatedUp * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, raycastOrigins.rotatedRight * directionX, rayLength, collisionMask);
 			Debug.DrawRay(rayOrigin, raycastOrigins.rotatedRight * directionX * rayLength, Color.blue);
 
@@ -98,7 +97,7 @@ public class Controller2D : RaycastController {
 
 			}
 			else if (hasHitBlockingObject && i <= canJumpUpIndex && jumpHeight < 0) {
-				float height = (rayOrigin.y - raycastOrigins.bottomLeft.y) - moveAmount.y;
+				float height = Vector2.Distance(firstRayLocation, rayOrigin) - moveAmount.y;
 				if (height > 0) {
 					jumpHeight = height;
 				}
@@ -253,8 +252,8 @@ public class Controller2D : RaycastController {
 
 	void DescendSlope(ref Vector2 moveAmount) {
 
-		RaycastHit2D maxSlopeHitLeft = Physics2D.Raycast (raycastOrigins.bottomLeft, Vector2.down, Mathf.Abs (moveAmount.y) + skinWidth, collisionMask);
-		RaycastHit2D maxSlopeHitRight = Physics2D.Raycast (raycastOrigins.bottomRight, Vector2.down, Mathf.Abs (moveAmount.y) + skinWidth, collisionMask);
+		RaycastHit2D maxSlopeHitLeft = Physics2D.Raycast (raycastOrigins.bottomLeft, -raycastOrigins.rotatedUp, Mathf.Abs (moveAmount.y) + skinWidth, collisionMask);
+		RaycastHit2D maxSlopeHitRight = Physics2D.Raycast (raycastOrigins.bottomRight, -raycastOrigins.rotatedUp, Mathf.Abs (moveAmount.y) + skinWidth, collisionMask);
 		if (maxSlopeHitLeft ^ maxSlopeHitRight) {
 			SlideDownMaxSlope (maxSlopeHitLeft, ref moveAmount);
 			SlideDownMaxSlope (maxSlopeHitRight, ref moveAmount);

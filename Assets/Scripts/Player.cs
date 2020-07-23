@@ -54,6 +54,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	private PlayerRespawnEffects respawnEffects;
 
 	private bool Won { get; set; }
+	public float GravityAngle => controller.GravityAngle;
 
 	void Awake() {
 		controller = GetComponent<Controller2D>();
@@ -435,36 +436,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void JumpLanding() {}
-	
-	public void MoveFromRotation(float rotation, Vector2 hitPosition, Vector2 center) {
-		float s = Mathf.Sin(rotation);
-		float c = Mathf.Cos(rotation);
-
-		Vector2 tCenter = this.transform.position;
-		tCenter -= center;
-
-		tCenter = new Vector2(tCenter.x * c - tCenter.y * s, tCenter.x * s + tCenter.y * c);
-		tCenter += center;
-
-		Vector2 movement = new Vector2(tCenter.x - this.transform.position.y, 0);
-
-		float skinWidth = 0.015f;
-		Vector2 positiveLossyScale = transform.lossyScale * new Vector2(Mathf.Sign(transform.lossyScale.x), Mathf.Sign(transform.lossyScale.y));
-		RaycastHit2D hit = Physics2D.BoxCast(
-			(Vector2)transform.position + controller.collider.offset * positiveLossyScale,
-			controller.collider.size * positiveLossyScale - Vector2.one * 2 * skinWidth,
-			transform.eulerAngles.z,
-			movement.normalized,
-			movement.magnitude + skinWidth,
-			controller.collisionMask
-		);
-		movement = hit.point - (Vector2)this.transform.position;
-
-		if(Mathf.Sign(movement.x) * Mathf.Sign(hitPosition.x - this.transform.position.x) < 0) {
-			//Debug.Log(movement);
-			controller.Move(movement);
-		}
-	}
 
 	public void MoveFromRotation(Vector3 amount) {
 		controller.Move(amount);
