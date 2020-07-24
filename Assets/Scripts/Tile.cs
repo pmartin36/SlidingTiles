@@ -9,7 +9,7 @@ using MoreMountains.NiceVibrations;
 public class Tile : MonoBehaviour, IRequireResources
 {
 	public bool Loaded { get; set; }
-	public const float BaseThreshold = 0.15f;
+	public const float BaseThreshold = 0.1f;
 	private const float BaseThresholdSquared = BaseThreshold * BaseThreshold;
 	private bool movedThisFrame;
 
@@ -23,7 +23,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	public Vector2 PositionWhenSelected { get; set; }
 	public Vector2 ResidualVelocity { get; set; }
 
-	public bool Centered { get => transform.localPosition.sqrMagnitude < 0.000002f; } // (skinWidth / scale)^2 
+	public bool Centered { get => transform.localPosition.sqrMagnitude < 0.000001f; } // (skinWidth / scale)^2 
 	public Vector2 NormalizedPosition => new Vector2(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.y)).normalized;
 
 	private LayerMask tileMask;
@@ -201,7 +201,7 @@ public class Tile : MonoBehaviour, IRequireResources
 			}
 			else {
 				Vector2 diff = (transform.position - lastFramePosition) / transform.localScale.x;
-				movingVelocityAverage = 0.25f * diff.magnitude + movingVelocityAverage * 0.75f;
+				movingVelocityAverage = 0.15f * diff.magnitude + movingVelocityAverage * 0.85f;
 			}
 
 			if(movingVelocityAverage < 0.001f) {
@@ -212,13 +212,13 @@ public class Tile : MonoBehaviour, IRequireResources
 			else {
 				if (!audio.enabled) {
 					audio.enabled = true;
-					audio.time = audio.clip.length * Random.value;
+					//audio.time = audio.clip.length * Random.value;
 				}
 
 				// 0.9 is basically max speed
 				// 0.01 is barely moving
-				float v = Mathf.InverseLerp(-0.2f, 0.4f, movingVelocityAverage);
-				audio.volume = Mathf.Lerp(0.0f, Selected ? 1f : 0.8f, v) * GameManager.Instance.SaveData.FxVolume;
+				float v = Mathf.InverseLerp(0f, 0.5f, movingVelocityAverage);
+				audio.volume = Mathf.Lerp(0.0f, Selected ? 0.75f : 0.55f, v) * GameManager.Instance.SaveData.FxVolume;
 				
 				//float p = Mathf.InverseLerp(0f, 0.6f, movingVelocityAverage);
 				//audio.pitch = Mathf.Lerp(0.8f, 1f, movingVelocityAverage);

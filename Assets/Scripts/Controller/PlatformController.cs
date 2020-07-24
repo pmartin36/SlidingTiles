@@ -205,7 +205,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		};
 
 		System.Action<Vector2, Vector2, float> CastForPoint = (pt, dir, dist) => {
-			Debug.DrawRay(pt, dir*dist, new Color(dir.y*0.5f+0.5f, dir.x*0.5f+0.5f, 0), 0.1f);
+			//Debug.DrawRay(pt, dir*dist, new Color(dir.y*0.5f+0.5f, dir.x*0.5f+0.5f, 0), 0.1f);
 			RaycastHit2D hit = Physics2D.Raycast(pt, dir, dist, passengerMask);
 			if (hit) {
 				if (!movedPassengers.ContainsKey(hit.transform)) {
