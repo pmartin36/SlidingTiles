@@ -25,7 +25,7 @@ public class Gust : MonoBehaviour
 	private float completionTime => 1f + tr.time * SpeedModifier;
 
 
-	void Start() {
+	void Awake() {
 		wind = GetComponentInParent<Wind>();
 		tr = GetComponent<TrailRenderer>();
 
@@ -33,7 +33,7 @@ public class Gust : MonoBehaviour
 	}
 
     void Update() {
-		if(active) {
+		if(active && wind != null) {
 			tr.enabled = true;
 
 			// get latest from Wind
@@ -65,32 +65,34 @@ public class Gust : MonoBehaviour
 	}
 
 	public void SetProperties(int i) {
-		DirectionVector = Utils.AngleToVector(wind.Direction);
-		WindDirection = Quaternion.Euler(0,0,wind.Direction);
-		SpeedModifier = wind.Strength * 1.25f;
-		AmplitudeModifier = (20f + 10f * Random.value);// * Mathf.Sign(Random.value - 0.5f);
-		tOffset = Random.value;
+		if(wind != null) {
+			DirectionVector = Utils.AngleToVector(wind.Direction);
+			WindDirection = Quaternion.Euler(0,0,wind.Direction);
+			SpeedModifier = wind.Strength * 1.25f;
+			AmplitudeModifier = (20f + 10f * Random.value);// * Mathf.Sign(Random.value - 0.5f);
+			tOffset = Random.value;
 
-		ResetPosition();
+			ResetPosition();
 
-		XCurve = wind.X;
-		//XCurve = new AnimationCurve(Wind.X.keys);
-		//Keyframe f1 = XCurve[1];
-		//f1.time = 0.2f + 0.4f * Random.value;
+			XCurve = wind.X;
+			//XCurve = new AnimationCurve(Wind.X.keys);
+			//Keyframe f1 = XCurve[1];
+			//f1.time = 0.2f + 0.4f * Random.value;
 
-		//Keyframe f2 = XCurve[2];
-		//f2.time = f1.time + (0.15f + 0.1f * Random.value);
+			//Keyframe f2 = XCurve[2];
+			//f2.time = f1.time + (0.15f + 0.1f * Random.value);
 
-		//XCurve.MoveKey(2, f2);
-		//XCurve.MoveKey(1, f1);
+			//XCurve.MoveKey(2, f2);
+			//XCurve.MoveKey(1, f1);
 
-		CurveTime = -i * completionTime;
-		timesCompleted = 0;
+			CurveTime = -i * completionTime;
+			timesCompleted = 0;
 
-		Debug.Log(CurveTime);
-		//Debug.Log(d);
-		//Debug.Log(SpeedModifier);
-		//Debug.Log(AmplitudeModifier);
-		//Debug.Log(StartPosition);
+			//Debug.Log(CurveTime);
+			//Debug.Log(d);
+			//Debug.Log(SpeedModifier);
+			//Debug.Log(AmplitudeModifier);
+			//Debug.Log(StartPosition);
+		}
 	}
 }

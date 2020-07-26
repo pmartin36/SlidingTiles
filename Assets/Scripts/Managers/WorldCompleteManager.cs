@@ -65,6 +65,16 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		// set times
 		AnyStarTime.text = Utils.SplitTime(anyStarTime, false);
 		ThreeStarTime.text = validThreeStarTime ? Utils.SplitTime(threeStarTime, false) : "--";
+
+		// set last played world to the next world if player haven't been there before
+		int nextWorld = World+1;
+		var nextLevel = SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1);
+		if (nextWorld <= GameManager.Instance.HighestOwnedWorld && nextLevel >= GameManager.Instance.HighestUnlockedLevel) {
+			GameManager.Instance.SaveData.LastPlayedWorld = nextWorld;
+		}
+		else {
+			GameManager.Instance.SaveData.LastPlayedWorld = World;
+		}
 	}
 
 	public void GoToMenu() {

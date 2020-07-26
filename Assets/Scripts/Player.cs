@@ -563,7 +563,6 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 				// drifted too far
 				velocity = 0f * parallelDirection + perpDirectionVelocity;
 			}
-			Debug.Log(velocity);
 			timeElapsed += Time.fixedDeltaTime;
 			yield return fixedDelta;
 		}

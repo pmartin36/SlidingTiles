@@ -128,7 +128,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	public virtual void FixedUpdate() {
 		LevelManager lm = GameManager.Instance.LevelManager;
-		if(lm.Won) return;
+		if(lm == null || lm.Won) return;
 
 		if(!movedThisFrame && ResidualVelocity.sqrMagnitude > 0.001f) {
 			ResidualMove();
@@ -147,7 +147,7 @@ public class Tile : MonoBehaviour, IRequireResources
 			//}
 		}
 
-		if (!movedThisFrame && lm != null && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
+		if (!movedThisFrame && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
 			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
 			Vector3 moveAmount = position - transform.localPosition;
 

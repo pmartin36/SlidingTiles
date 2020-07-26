@@ -98,6 +98,9 @@ Shader "SlidingTiles/World3_Flowers"
 				float2 sampleuv = ((id + 0.5 + cellMovement) / _Size) / i.texScale;
 				sampleuv = ((sampleuv * 2 - 1) * i.screenToTexScale + 1) / 2;
 				float depth = tex2D(_CameraDepthTexture, sampleuv).r;
+				#if defined(UNITY_REVERSED_Z)
+					depth = 1.0 - depth;
+				#endif
 
 				#if DEBUG
 					float4 debug = float4(0, 0, 0, 1);
@@ -155,11 +158,10 @@ Shader "SlidingTiles/World3_Flowers"
 				float3 color = petalColor * alpha + float3(0, 0, 0) * shadowAlpha + float3(0.05, 0.41, 0) * stemAlpha;
 
 				float allColor = max(max(alpha, stemAlpha), shadowAlpha);
-				float noFlower = step(0.5, frac(random * 321.3)) * step(depth, 0.5); // 50% of spaces missing flowers, anything with flower center covered should not show
+				float noFlower = step(0.5, frac(random * 321.3)) * step(0.5, depth); // 50% of spaces missing flowers, anything with flower center covered should not show
 				float4 col = float4(color, allColor * noFlower);
 
 				// if (guv.x > 0.48 || guv.y > 0.48) col = float4(1, 0, 0, 1);
-
 				return col;
 			}
 			ENDCG

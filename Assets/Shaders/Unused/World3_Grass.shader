@@ -39,7 +39,7 @@ Shader "SlidingTiles/World3_Grass"
 			#pragma shader_feature FLOWERS
 
 			#include "UnityCG.cginc"
-			#include "CommonFunctions.cginc"
+			#include "../CommonFunctions.cginc"
 
 			float4 _PrimaryColor;
 			float4 _SecondaryColor;

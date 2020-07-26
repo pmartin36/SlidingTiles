@@ -19,7 +19,7 @@
         {
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZTest Always
-			ZWrite Off
+			ZWrite On
 			Cull Off
 
             CGPROGRAM	

@@ -33,7 +33,7 @@ Shader "SlidingTiles/World3_Bottom_Border"
 
 			Pass
 			{
-				ZWrite Off
+				ZWrite On
 				ZTest Off
 				Blend SrcAlpha OneMinusSrcAlpha
 

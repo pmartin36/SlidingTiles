@@ -36,6 +36,8 @@ public class LoadScreen : MonoBehaviour
 			tileRTs.Add(panelTransform.GetChild(i).GetComponent<RectTransform>());
 		}
 
+		tileRTs[0].gameObject.GetComponentInChildren<TMPro.TMP_Text>().fontSharedMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.Disabled);
+
 		tileRTs = tileRTs.OrderBy(t => t.anchoredPosition.x).ToList();
 		int count = tileRTs.Count;
 		startPositions = new List<Vector2>(count);

@@ -48,8 +48,8 @@ public class PlatformController : RaycastController, IMoveableCollider {
 
 			if (passenger.moveBeforePlatform == beforeMovePlatform) {
 				Vector3 vel = passenger.velocity.Rotate(passenger.transform.eulerAngles.z);
-				if (Mathf.Abs(passenger.velocity.x) > 0.001f) {
-					var player = passenger.transform.gameObject.GetComponent<Player>();
+				var player = passenger.transform.gameObject.GetComponent<Player>();
+				if (Mathf.Abs(passenger.velocity.x) > 0.001f && player != null) {
 					Vector3 v = passenger.velocity / Time.deltaTime;
 					player.DetermineJump(passenger.velocity, out var modifiedVelocity);
 					if(modifiedVelocity.Item1) {
@@ -132,14 +132,14 @@ public class PlatformController : RaycastController, IMoveableCollider {
 	}
 
 	public EdgePoints GeneratePoints() {
-		var pts = new EdgePoints(transform.eulerAngles.z);
+		var pts = new EdgePoints(0);
 		Bounds bounds = new Bounds(transform.position, size);
 		CalculateRaySpacing(bounds, 0.75f, 1f);
 
 		// left
 		// right
 		float y = transform.position.y - (size.y / 2f);
-		float halfx = size.x / 2f;
+		float halfx = (size.x / 2f) - skinWidth;
 		for(int i = 0; i < horizontalRayCount; i++) {
 			pts.Left.Add(new Vector2(transform.position.x - halfx, y).RotateAround(transform.eulerAngles.z, transform.position));
 			pts.Right.Add(new Vector2(transform.position.x + halfx, y).RotateAround(transform.eulerAngles.z, transform.position));
@@ -149,7 +149,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		// top
 		// bottom
 		float x = transform.position.x - (size.x / 2f);
-		float halfy = size.y / 2f;
+		float halfy = (size.y / 2f) - skinWidth;
 		for(int i = 0; i < verticalRayCount; i++) {
 			pts.Bottom.Add(new Vector2(x, transform.position.y - halfy).RotateAround(transform.eulerAngles.z, transform.position));
 			pts.Top.Add(new Vector2(x, transform.position.y + halfy).RotateAround(transform.eulerAngles.z, transform.position));
@@ -172,11 +172,15 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			var rotatedVelocity = velocity.Rotate(-blocker.GravityAngle);
 			float dot = Vector2.Dot(gravityAngle, velocity.normalized);
 			bool movingWithDirection = rotatedVelocity.y > 0;
-			float platformPosition = this.transform.position.Rotate(-blocker.GravityAngle).y;
-			float blockerPosition = hit.collider.transform.position.Rotate(-blocker.GravityAngle).y;
+
+			// we need to check the direction cast in comparison to gravity to determine
+			// players position relative to the platform (i.e. player on top)
+			float positionDot = Vector2.Dot(gravityAngle, dir);
+			bool onTop = positionDot < -0.9f;
+
 			if (dot > 0.5f) {
 				// gravity and platform moving in same direction
-				if (platformPosition < blockerPosition) {
+				if (onTop) {
 					// passenger is on top of the platform and should be moved with it
 					float pushX = velocity.x;
 					float pushY = velocity.y;
@@ -193,13 +197,14 @@ public class PlatformController : RaycastController, IMoveableCollider {
 				// gravity and platform moving in opposite directions
 				float pushX = movingWithDirection ? rotatedVelocity.x : 0;
 				float pushY = rotatedVelocity.y - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.y);
-				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), movingWithDirection, false, true);
+				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), onTop, false, false);
 			}
-			else if (platformPosition < blockerPosition) {
+			else if (positionDot < 0.9f) {
 				// platform is moving side-to-side relative to gravity
+				// only disallow movement is player is below platform
 				float pushX = rotatedVelocity.x - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.x);
-				float pushY = -skinWidth;
-				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), false, false, true);
+				float pushY = 0f;
+				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), onTop, false, false);
 			}
 			return null;
 		};
@@ -231,10 +236,10 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		float bottomDistance = skinWidth * 2f;
 		Vector2 rotatedPlatformVelocity = velocity.Rotate(-transform.eulerAngles.z);
 		if(rotatedPlatformVelocity.y > 0) {
-			topDistance = Mathf.Max(topDistance, Mathf.Abs(velocity.y) + skinWidth);
+			topDistance = Mathf.Max(topDistance, Mathf.Abs(rotatedPlatformVelocity.y) + skinWidth);
 		}
 		else {
-			bottomDistance = Mathf.Max(bottomDistance, Mathf.Abs(velocity.y) + skinWidth);
+			bottomDistance = Mathf.Max(bottomDistance, Mathf.Abs(rotatedPlatformVelocity.y) + skinWidth);
 		} 
 
 		Vector2 up = Vector2.up.Rotate(transform.eulerAngles.z);
@@ -250,10 +255,10 @@ public class PlatformController : RaycastController, IMoveableCollider {
 		float leftDistance = skinWidth * 2f;
 		float rightDistance = skinWidth * 2f;
 		if (rotatedPlatformVelocity.x > 0) {
-			rightDistance = Mathf.Max(rightDistance, Mathf.Abs(velocity.x) + skinWidth);
+			rightDistance = Mathf.Max(rightDistance, Mathf.Abs(rotatedPlatformVelocity.x) + skinWidth);
 		}
 		else {
-			leftDistance = Mathf.Max(leftDistance, Mathf.Abs(velocity.x) + skinWidth);
+			leftDistance = Mathf.Max(leftDistance, Mathf.Abs(rotatedPlatformVelocity.x) + skinWidth);
 		}
 
 		foreach (var pt in pts.Right) {
