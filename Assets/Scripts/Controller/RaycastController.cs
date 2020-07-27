@@ -22,13 +22,13 @@ public class RaycastController : MonoBehaviour {
 	public BoxCollider2D collider;
 	public RaycastOrigins raycastOrigins;
 
-	public LayerMask platformMask;
+	public LayerMask PlatformMask { get; set; }
 
 	public virtual float Angle => transform.eulerAngles.z;
 
 	public virtual void Awake() {
 		collider = GetComponent<BoxCollider2D> ();
-		platformMask = 1 << LayerMask.NameToLayer("Level");
+		PlatformMask = 1 << LayerMask.NameToLayer("Level");
 	}
 
 	public virtual void Start() {

@@ -150,6 +150,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		if (!movedThisFrame && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
 			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
 			Vector3 moveAmount = position - transform.localPosition;
+			moveAmount *= Mathf.Abs(moveAmount.x) > Mathf.Abs(moveAmount.y) ? Vector2.right : Vector2.up;
 
 			float distToMove = Time.fixedDeltaTime * SpeedCap;
 			if (distToMove < moveAmount.magnitude) {

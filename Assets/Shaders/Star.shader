@@ -19,6 +19,7 @@
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
 			Cull Back
+			ZTest Off
 
             CGPROGRAM	
             #pragma vertex vert
@@ -73,6 +74,7 @@
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
 			Cull Front
+			ZTest Off
 
 			CGPROGRAM
 			#pragma vertex vert

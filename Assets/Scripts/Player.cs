@@ -496,7 +496,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		controller.GravityAngle = targetRotation;
 
 		// this should be the platform the flag sits on
-		RaycastHit2D baseHit = Physics2D.Raycast(flag.transform.position, perpDirection, 10, controller.platformMask);
+		RaycastHit2D baseHit = Physics2D.Raycast(flag.transform.position, perpDirection, 10, controller.PlatformMask);
 		Collider2D baseCollider = baseHit.collider;
 
 		float distanceToMove = 0f;
@@ -510,8 +510,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 		Func<Vector3, List<RaycastHit2D>> GetHits = (Vector3 center) => {
 			Vector3 halfSize = Vector3.right.Rotate(targetRotation) * ((transform.lossyScale.x * controller.collider.size.x / 2f) - RaycastController.skinWidth);
-			RaycastHit2D leftHit = Physics2D.Raycast(center + halfSize, perpDirection, 10, controller.platformMask);
-			RaycastHit2D rightHit = Physics2D.Raycast(center - halfSize, perpDirection, 10, controller.platformMask);
+			RaycastHit2D leftHit = Physics2D.Raycast(center + halfSize, perpDirection, 10, controller.PlatformMask);
+			RaycastHit2D rightHit = Physics2D.Raycast(center - halfSize, perpDirection, 10, controller.PlatformMask);
 			List<RaycastHit2D> hits = new List<RaycastHit2D>();
 			if(leftHit.collider == baseCollider) hits.Add(leftHit);
 			if(rightHit.collider == baseCollider) hits.Add(rightHit);
