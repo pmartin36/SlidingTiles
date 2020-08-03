@@ -169,14 +169,17 @@ public class PlatformController : RaycastController, IMoveableCollider {
 			// add 90 to convert from Vector2.down being default direction to Vector2.right
 			Vector2 gravityAngle = Utils.AngleToVector(blocker.GravityAngle - 90);
 
+			Vector2 normalizedVelocity = velocity.normalized;
 			var rotatedVelocity = velocity.Rotate(-blocker.GravityAngle);
-			float dot = Vector2.Dot(gravityAngle, velocity.normalized);
+			float dot = Vector2.Dot(gravityAngle, normalizedVelocity);
 			bool movingWithDirection = rotatedVelocity.y > 0;
 
 			// we need to check the direction cast in comparison to gravity to determine
 			// players position relative to the platform (i.e. player on top)
 			float positionDot = Vector2.Dot(gravityAngle, dir);
 			bool onTop = positionDot < -0.9f;
+
+			float velocityDot = Vector2.Dot(normalizedVelocity, dir);
 
 			if (dot > 0.5f) {
 				// gravity and platform moving in same direction
@@ -190,14 +193,14 @@ public class PlatformController : RaycastController, IMoveableCollider {
 					// passenger is below the platform and will be pushed
 					float pushX = 0f;
 					float pushY = rotatedVelocity.y - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.y);
-					return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), false, false, true);
+					return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), false, true, true);
 				}
 			}
 			else if (dot < -0.5f) {
 				// gravity and platform moving in opposite directions
 				float pushX = movingWithDirection ? rotatedVelocity.x : 0;
 				float pushY = rotatedVelocity.y - (hit.distance - skinWidth) * Mathf.Sign(rotatedVelocity.y);
-				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), onTop, false, false);
+				return new PassengerMovement(hit.transform, new Vector3(pushX, pushY), onTop, true, false);
 			}
 			else if (positionDot < 0.9f) {
 				// platform is moving side-to-side relative to gravity

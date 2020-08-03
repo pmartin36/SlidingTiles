@@ -4,5 +4,7 @@ using UnityEngine;
 
 public class Sticky : MonoBehaviour
 {
-    
+	public void Start() {
+		transform.localPosition = Vector3.zero;
+	}
 }

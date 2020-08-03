@@ -77,6 +77,7 @@ public class Tile : MonoBehaviour, IRequireResources
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
 		bottom = spriteRenderers.FirstOrDefault(g => g.CompareTag("TileBottom"));
 		top = spriteRenderers.FirstOrDefault(g => !g.CompareTag("TileBottom"));
+		transform.localPosition = Vector3.zero;
 
 		top.sortingOrder = -this.Space.Position.y * 3;
 		if(bottom != null)
