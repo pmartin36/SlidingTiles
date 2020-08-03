@@ -485,7 +485,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		StartCoroutine(flag.SlideVolume(0.5f, 0f, 0.5f));
 
 		Won = true;
-		yield return StartCoroutine(BringPlayerToGround(flag)); // wait for the player to hit the ground
+		yield return StartCoroutine(BringToGround(flag)); // wait for the player to hit the ground
 
 		yield return new WaitForSeconds(2f); // let player enjoy animation for a second
 		GameManager.Instance.LevelManager.PlayerWinAnimation();
@@ -495,7 +495,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		flag.Reset();
 	}
 
-	private IEnumerator BringPlayerToGround(GoalFlag flag) {
+	private IEnumerator BringToGround(GoalFlag flag) {
 		float targetRotation = flag.transform.eulerAngles.z;
 		float targetDistance = (controller.collider.size.y/2f - controller.collider.offset.y - RaycastController.skinWidth) * transform.lossyScale.y;
 		Vector3 perpDirection = Vector3.down.Rotate(targetRotation);
@@ -553,7 +553,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		yield return fixedDelta;
 		while(timeElapsed < t) {
 			float diffFromTargetRotation = targetRotation - transform.eulerAngles.z;
-			while(Mathf.Abs(diffFromTargetRotation) > 360) {
+			while(Mathf.Abs(diffFromTargetRotation) > 180) {
 				diffFromTargetRotation -= Mathf.Sign(diffFromTargetRotation) * 360;
 			}
 			transform.Rotate(0, 0, diffFromTargetRotation * 0.1f);

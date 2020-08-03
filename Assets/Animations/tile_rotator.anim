@@ -24,7 +24,7 @@ AnimationClip:
     - time: 0.06666667
       value: {fileID: 21300002, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - time: 0.13333334
-      value: {fileID: 21300004, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
+      value: {fileID: 21300006, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - time: 0.2
       value: {fileID: 21300006, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - time: 0.26666668
@@ -34,7 +34,7 @@ AnimationClip:
     - time: 0.4
       value: {fileID: 21300012, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     attribute: m_Sprite
-    path: 
+    path: Rotators
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 15
@@ -45,7 +45,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 1223526096
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -54,7 +54,7 @@ AnimationClip:
     pptrCurveMapping:
     - {fileID: 21300000, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - {fileID: 21300002, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
-    - {fileID: 21300004, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
+    - {fileID: 21300006, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - {fileID: 21300006, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - {fileID: 21300008, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}
     - {fileID: 21300010, guid: 106638f1ad36aaa49912f412ba4fe081, type: 3}

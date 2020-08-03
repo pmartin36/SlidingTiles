@@ -25,6 +25,15 @@ public class TileRotator : MonoBehaviour
     void Start() {
 		tilespace = transform.parent.GetComponent<Tilespace>();
 		rotation = transform.localEulerAngles.z;
+		transform.localPosition = new Vector2(0, -0.025f);
+
+		foreach(Transform child in transform) {
+			if(child.CompareTag("Base")) {
+				var t = child.localScale;
+				t.x *= Direction;
+				child.localScale = t;
+			}
+		}
 
 		animator = GetComponent<Animator>();
 		audio = GetComponent<AudioSource>();
