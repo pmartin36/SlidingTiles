@@ -264,18 +264,13 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 	}
 
 	public void Spring(Vector2 direction) {
-		//if (controller.collisions.slidingDownMaxSlope) {
-		//	if (moveDirection != -Mathf.Sign (controller.collisions.slopeNormal.x)) { // not jumping against max slope
-		//		velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
-		//		velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
-		//	}
-		//} 
-		float vx = Mathf.Abs(velocity.x);
-		velocity = maxJumpVelocity * 1.8f * direction;
+		Vector3 springVelocity =
+			maxJumpVelocity * 1.8f * direction   // movement from spring
+			- (Vector2)velocity * direction.normalized.Abs(); // clear velocity parallel to spring direction
+		velocity += springVelocity;
 		if(Mathf.Abs(direction.x) > 0.1f) {
 			moveDirection = Mathf.Sign(direction.x);
 		}
-		velocity += Vector3.right * moveDirection * vx;
 	}	
 
 	public void SetVelocityFromBump(Vector2 bumpVelocity) {

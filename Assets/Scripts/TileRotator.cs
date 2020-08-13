@@ -24,7 +24,8 @@ public class TileRotator : MonoBehaviour
 
     void Start() {
 		tilespace = transform.parent.GetComponent<Tilespace>();
-		rotation = transform.localEulerAngles.z;
+		rotation = 0f;
+		transform.localRotation = Quaternion.identity;
 		transform.localPosition = new Vector2(0, -0.025f);
 
 		foreach(Transform child in transform) {
@@ -41,21 +42,19 @@ public class TileRotator : MonoBehaviour
 
     void Update() {
 		if(lm == null || !lm.Won) {
-			if(Time.time - timeOfLastRotation > downtime) {
+			if(!rotating && Time.time - timeOfLastRotation > downtime) {
 				BeginRotating();
 			}
 
 			if(rotating) {
 				float add = Direction * 180 * Time.deltaTime;
 				rotation += add;
-				//rotation += Direction * 45 * Time.deltaTime;
-				if( Mathf.Abs(rotation) >= Mathf.Abs(targetRotation) ) {
+				if( Mathf.Abs(rotation) + 0.01f >= Mathf.Abs(targetRotation) ) { // 0.01f buffer
 					if(effectedTile != null) {
 						effectedTile.Rotation = (Mathf.Round((effectedTile.Rotation + add) / 90f) * 90f) % 360;
 						effectedTile.EndRotation();
 						ClearEffectedTile();
 					}
-					rotation = targetRotation % 360;
 					rotating = false;
 				}
 				else if(effectedTile != null) {
@@ -79,7 +78,8 @@ public class TileRotator : MonoBehaviour
 			}
 			rotating = true;
 			timeOfLastRotation = Time.time;
-			targetRotation = rotation + 90f * Direction;
+			rotation = 0f;
+			targetRotation = 90f * Direction;
 			audio.Play();
 
 			animator.SetFloat("Direction", Direction);
@@ -99,5 +99,9 @@ public class TileRotator : MonoBehaviour
 	public void StopRotating() {
 		effectedTile = null;
 		animator.SetFloat("Direction", 0);
+	}
+
+	public void SetTimeOfLastRotation(float time) {
+		timeOfLastRotation = time;
 	}
 }

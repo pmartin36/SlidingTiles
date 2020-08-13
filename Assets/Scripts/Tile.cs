@@ -42,6 +42,7 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private bool initialMovable;
 	private bool temporaryUnmovable;
+	public bool CanMove => Movable && !temporaryUnmovable;
 
 	private static int LoadedMaterialWorld = -1;
 	private static Material ImmobileMaterial;
@@ -148,7 +149,7 @@ public class Tile : MonoBehaviour, IRequireResources
 			//}
 		}
 
-		if (!movedThisFrame && lm.SnapAfterDeselected && lm.SelectedTile == null && !Centered) {
+		if (!movedThisFrame && !Centered && ((lm.SnapAfterDeselected && lm.SelectedTile == null) || !CanMove) ) {
 			Vector3 position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y));
 			Vector3 moveAmount = position - transform.localPosition;
 			moveAmount *= Mathf.Abs(moveAmount.x) > Mathf.Abs(moveAmount.y) ? Vector2.right : Vector2.up;
@@ -197,7 +198,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public virtual void LateUpdate() {
-		if(Movable && !temporaryUnmovable) {
+		if(CanMove) {
 			if(ResetThisFrame) {
 				movingVelocityAverage = 0f;
 			}
@@ -302,7 +303,7 @@ public class Tile : MonoBehaviour, IRequireResources
 				bottom.sortingOrder = top.sortingOrder - 2;
 		}
 
-		if (Space.Sticky && transform.localPosition.magnitude < BaseThresholdSquared) {
+		if (Space.Sticky && this.Movable) {
 			this.SetMovable(false);
 			MMVibrationManager.Haptic(HapticTypes.LightImpact);
 		}
@@ -344,11 +345,18 @@ public class Tile : MonoBehaviour, IRequireResources
 				return true;
 			}
 			else if (collisions.Length == 1) {
+				DebugExtensions.DrawBoxCast2D(
+					this.transform.position + moveAmount.normalized * ((1 + moveAmount.magnitude) * transform.lossyScale.x * 0.5f),
+					size,
+					0,
+					Vector2.zero,
+					0,
+					Color.red);
 				Debug.DrawLine(this.transform.position, collisions[0].point, Color.red);
 			
 				Tile collidedTile = collisions[0].collider.GetComponent<Tile>();
 				bool canMoveInDirection = collidedTile.Centered || Mathf.Abs(Vector2.Dot(moveAmount.normalized, collidedTile.transform.localPosition.normalized)) > 0.1f;
-				if (collidedTile.Movable && !collidedTile.temporaryUnmovable && !collidedTile.Selected && canMoveInDirection) {		
+				if (collidedTile.CanMove && !collidedTile.Selected && canMoveInDirection) {		
 					// Debug.DrawLine(this.transform.position, hit.transform.position, Color.blue, 0.25f);
 					tilesToMove.Add(collidedTile);
 					return collidedTile.CanMoveTo(ref moveAmount, tilesToMove, d);
@@ -363,7 +371,7 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public bool TryMoveToPosition(Vector2 position, Vector2 delta, bool fromResidual = false) {
-		if(Movable && !temporaryUnmovable) {
+		if(CanMove) {
 			bool centered = Centered;
 			float deltaTimeSpeedCap = SpeedCap * Time.fixedDeltaTime;
 
@@ -557,11 +565,11 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	private void UpdateRotations() {
 		Box.transform.localRotation = Quaternion.Euler(0, 0, Rotation);
-		float diff = Rotation0to90;
-		float bbr = BoxBottom.transform.eulerAngles.z;
-		while (bbr - diff > 360) bbr -= 360;
-		while (diff - bbr > 360) bbr += 360;
-		diff -= bbr;
+		float rSign = rotator.Direction;
+		float diff = Rotation0to90 - BoxBottom.transform.eulerAngles.z;
+		while(Mathf.Sign(diff) * rSign < 0) diff += rSign * 90f;
+		while(Mathf.Abs(diff) > 90) diff -= rSign * 90f;
+		
 		BoxBottom.transform.RotateAround(Box.transform.position, Vector3.forward, diff);
 		if (BoxSide != null) {
 			BoxSide.transform.RotateAround(Box.transform.position, Vector3.forward, diff);
@@ -599,16 +607,21 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	public void EndRotation() {
+		RotationComplete();
 		rotator?.ClearEffectedTile();
 		rotator = null;
 		SetTemporaryUnmovable(false);
-		RotationComplete();
 	}
 
 	private void RotationComplete() {
 		UpdateMaterialProperties();
+		if(rotator) {
+			UpdateRotations();
+		}
+		else {
+			Box.transform.localRotation = Quaternion.Euler(0, 0, Rotation);
+		}
 
-		Box.transform.localRotation = Quaternion.Euler(0, 0, Rotation);
 		Box.sortingOrder -= 10;
 		BoxBottom.transform.RotateAround(Box.transform.position, Vector3.forward, -BoxBottom.transform.eulerAngles.z);
 		BoxBottom.sortingOrder -= 10;

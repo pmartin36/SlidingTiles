@@ -27,7 +27,9 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		World = GameManager.Instance.SaveData.LastPlayedWorld;
 		Addressables.LoadAssetAsync<CopyObject>($"World{World}/Background").Completed +=
 			(obj) => {
-				Background.material = obj.Result.Material;
+				if(Background != null) {
+					Background.material = obj.Result.Material;
+				}
 				Loaded = true;
 			};
 

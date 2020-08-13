@@ -81,6 +81,7 @@ public class Tilespace : MonoBehaviour
 
 	private IEnumerator CenterThenRotate(Tile t) {
 		t.SetTemporaryUnmovable(true);
+		Rotator.SetTimeOfLastRotation(Time.time + 10000); // make sure it doesn't rotate on its own
 		yield return new WaitUntil(() => t.Centered);
 		Rotator.BeginRotating();
 	}
