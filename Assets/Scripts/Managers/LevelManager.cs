@@ -260,8 +260,10 @@ public class LevelManager : ContextManager {
 
 	public void HideLevel() {
 		LevelObjectContainer.SetActive(false);
-		RespawnManager.ActionButtons.gameObject.SetActive(false);
 		LevelInfo.gameObject.SetActive(false);
+
+		var buttonCanvas = Player.PortraitAnimator.transform.parent.parent;
+		buttonCanvas.gameObject.SetActive(false);
 	}
 
 	public void PlayerWin(GoalFlag gf) {
