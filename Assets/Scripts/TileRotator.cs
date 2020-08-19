@@ -96,8 +96,8 @@ public class TileRotator : MonoBehaviour
 		animator.Play("tile_rotator", -1, 0);
 	}
 
-	public void StopRotating() {
-		effectedTile = null;
+	public void HardStopRotating() {
+		effectedTile?.EndRotation(true);
 		animator.SetFloat("Direction", 0);
 	}
 

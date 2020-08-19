@@ -86,9 +86,6 @@ public abstract class WinType : MonoBehaviour {
 		if(ActionSelected) {
 			return false;
 		}
-		if(w == WinTypeAction.Next && !GameManager.Instance.CanPlayNextLevel()) {
-			return false;
-		}
 
 		ActionSelected = true;
 		IsAnimating = true;

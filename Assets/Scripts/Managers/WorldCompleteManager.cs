@@ -18,9 +18,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 
 	public bool Loaded { get; set; } = false;
 
-	public override void HandleInput(InputPackage p) {
-		
-	}
+	public override void HandleInput(InputPackage p) { }
 
 	public override void Awake() {
 		base.Awake();
@@ -91,8 +89,13 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	public void Continue() {
 		MMVibrationManager.Haptic(HapticTypes.Selection);
 		int nextWorld = World+1;
-		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(nextWorld);
-		GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1));
+		if(nextWorld <= GameManager.Instance.SaveData.HighestOwnedWorld) {
+			MusicManager.Instance.LoadMusicForWorldAndChangeTrack(nextWorld);
+			GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1));
+		}
+		else {
+			GameManager.Instance.LoadScene(SceneHelpers.SceneCount-1);
+		}
 	}
 
 	public void HideContinue() {

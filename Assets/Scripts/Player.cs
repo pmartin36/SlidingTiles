@@ -556,8 +556,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			Vector3 expectedParallelVelocity = Vector3.Project(velocity * 0.9f,  parallelDirection);
 			Vector3 perpDirectionVelocity = GetPerpDirectionVelocity(expectedParallelVelocity);
 
-			//Debug.DrawRay(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, Color.green, 1f);
-			//Debug.DrawLine(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, baseHit.point, Color.magenta, 1f); 
+			Debug.DrawRay(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, Color.green, 1f);
+			Debug.DrawLine(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, baseHit.point, Color.magenta, 1f); 
 			if(rayHitBase) {
 				velocity = expectedParallelVelocity + perpDirectionVelocity;
 			}

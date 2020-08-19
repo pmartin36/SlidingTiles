@@ -606,11 +606,13 @@ public class Tile : MonoBehaviour, IRequireResources
 		}
 	}
 
-	public void EndRotation() {
-		RotationComplete();
+	public void EndRotation(bool hardStop = false) {
+		if(!hardStop) {
+			RotationComplete();
+			SetTemporaryUnmovable(false);
+		}
 		rotator?.ClearEffectedTile();
 		rotator = null;
-		SetTemporaryUnmovable(false);
 	}
 
 	private void RotationComplete() {

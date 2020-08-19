@@ -75,7 +75,7 @@ public class Tilespace : MonoBehaviour
 
 	public void PlayerWon() {
 		if(Rotator != null) {
-			Rotator.StopRotating();
+			Rotator.HardStopRotating();
 		}
 	}
 
