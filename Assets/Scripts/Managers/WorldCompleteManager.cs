@@ -69,7 +69,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		// set last played world to the next world if player haven't been there before
 		int nextWorld = World+1;
 		var nextLevel = SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1);
-		if (nextWorld <= GameManager.Instance.HighestOwnedWorld && nextLevel >= GameManager.Instance.HighestUnlockedLevel) {
+		if (nextWorld <= GameManager.AvailableWorlds && nextLevel >= GameManager.Instance.HighestUnlockedLevel) {
 			GameManager.Instance.SaveData.LastPlayedWorld = nextWorld;
 		}
 		else {
@@ -89,7 +89,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	public void Continue() {
 		MMVibrationManager.Haptic(HapticTypes.Selection);
 		int nextWorld = World+1;
-		if(nextWorld <= GameManager.Instance.SaveData.HighestOwnedWorld) {
+		if(nextWorld <= GameManager.AvailableWorlds) {
 			MusicManager.Instance.LoadMusicForWorldAndChangeTrack(nextWorld);
 			GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1));
 		}

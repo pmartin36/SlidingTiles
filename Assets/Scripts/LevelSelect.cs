@@ -60,6 +60,7 @@ public class LevelSelect : MenuCopyComponent
 
 		int highest = GameManager.Instance.HighestUnlockedLevel;
 		SceneHelpers.GetWorldAndLevelFromBuildIndex(highest, out highestUnlockedWorld, out highestUnlockedLevel);
+		highestUnlockedWorld = Mathf.Min(highestUnlockedWorld, GameManager.AvailableWorlds);
 
 		levelData = GameManager.Instance.SaveData.LevelData;
 		NumberedLevelButtons = GetComponentsInChildren<NumberedLevelSelectButton>().OrderBy(g => g.name).ToArray(); // 1 - 12
@@ -138,7 +139,7 @@ public class LevelSelect : MenuCopyComponent
 				position:	WorldSelectPosition(b.Number), 
 				num:		b.Number, 
 				unlocked:	b.Number <= highestUnlockedWorld,
-				paywalled:	b.Number > GameManager.Instance.HighestOwnedWorld,
+				paywalled:	false,
 				stars: minStars
 			);
 		}
@@ -148,6 +149,7 @@ public class LevelSelect : MenuCopyComponent
 		MMVibrationManager.Haptic(HapticTypes.Selection);
 		if (LevelSelectOpen) {
 			int buildIndex = SceneHelpers.GetBuildIndexFromLevel(WorldSelected, button.TempNumber.HasValue ? button.TempNumber.Value : button.Number);
+			MusicManager.Instance.SlideVolume(0.2f, 1f);
 			GameManager.Instance.LoadScene(buildIndex, null);
 		}
 		else {
@@ -177,7 +179,7 @@ public class LevelSelect : MenuCopyComponent
 		if (WorldSelected > 1) {
 			StartCoroutine(CameraWipe(1));
 		}
-
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(1, 1f, 0.2f);
 		(this.MirroredComponent as LevelSelect).BackAction();
 		BackAction();	
 	}

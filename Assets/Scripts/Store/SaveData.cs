@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 public class SaveData {
 	public DateTime SaveTime;
 	public int HighestUnlockedLevel;
-	public int HighestOwnedWorld;
 	public int LastPlayedWorld;
 	public bool AdsRemoved;
 	public float MusicVolume;
@@ -18,9 +17,8 @@ public class SaveData {
 	public bool HasClickedToRate;
 	public LevelData[,] LevelData;
 
-	public SaveData(int highestUnlockedLevel, int highestOwnedWorld, int lastPlayedWorld, bool adsRemoved, float musicVolume, float fxVolume, bool showms, LevelData[,] ld, bool hasComparedWithFriends, bool hasClickedToRate) {
+	public SaveData(int highestUnlockedLevel, int lastPlayedWorld, bool adsRemoved, float musicVolume, float fxVolume, bool showms, LevelData[,] ld, bool hasComparedWithFriends, bool hasClickedToRate) {
 		HighestUnlockedLevel = highestUnlockedLevel;
-		HighestOwnedWorld = highestOwnedWorld;
 		LastPlayedWorld = lastPlayedWorld;
 		AdsRemoved = adsRemoved;
 		MusicVolume = musicVolume;
@@ -50,7 +48,7 @@ public class SaveData {
 		SaveTime = DateTime.UtcNow;
 	}
 
-	public SaveData() : this(SceneHelpers.TutorialLevelStart, 4, 0, false, 1f, 1f, false, null, false, false) {}
+	public SaveData() : this(SceneHelpers.TutorialLevelStart, 0, false, 0.5f, 1f, false, null, false, false) {}
 	// public SaveData() : this(40, 2, 3, false, 1f, 1f, true, null, false, false) { } // only for testing
 }
 

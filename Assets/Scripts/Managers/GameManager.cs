@@ -38,7 +38,7 @@ public class GameManager : Singleton<GameManager> {
 	public bool IsMobilePlatform { get; set; }
 	public SaveData SaveData { get; private set; }
 
-	public int HighestOwnedWorld => SaveData.HighestOwnedWorld;
+	public const int AvailableWorlds = 4;
 	public int HighestUnlockedLevel => SaveData.HighestUnlockedLevel;
 	public int LastPlayedWorld => SaveData.LastPlayedWorld;
 
@@ -77,16 +77,6 @@ public class GameManager : Singleton<GameManager> {
 	public void SetTimescale(float timescale, float lerpScale = 0.5f) {
 		_targetTimeScale = timescale;
 		timeLerpScale = lerpScale;
-	}
-
-	public bool CanPlayNextLevel() {
-		int nextLevelIndex = SceneHelpers.GetNextLevelBuildIndex();
-		int world = SceneHelpers.GetWorldFromBuildIndex(nextLevelIndex);
-		if(world > HighestOwnedWorld) {
-			Debug.Log("Player doesn't own level, go to store!");
-			return false;
-		}
-		return true;
 	}
 
 	private IEnumerator LoadSceneAsync(int buildIndex, Coroutine waitUntil = null, CancellationTokenSource cts = null, Action onSceneSwitch = null, bool shouldUnloadCurrentScene = true) {
@@ -180,6 +170,7 @@ public class GameManager : Singleton<GameManager> {
 		}
 		else {
 			SaveData.MusicVolume = value;
+			MusicManager.Instance.GlobalMusicVolumeAdjusted();
 		}
 	}
 
