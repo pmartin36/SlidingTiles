@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 public class SteamCommunicator : StoreCommunicator {
-	public override void AddAchievement(string name) {
-		throw new NotImplementedException();
+	public override bool AddAchievement(string name) {
+		return true;
 	}
 
-	public override void AddPurchase(string purchaseType) {
-		
+	public override bool AddPurchase(string purchaseType) {
+		return true;
 	}
 
 	public override void AddSaveData(string json) {
@@ -22,16 +22,12 @@ public class SteamCommunicator : StoreCommunicator {
 		return false;
 	}
 
-	public override void AddToLeaderboard(string score, int leaderboardType) {
+	public override void AddToLeaderboard(float score, string leaderboardID) {
 		throw new NotImplementedException();
 	}
 
-	public override void GetLeaderboard(int leaderboardType) {
-		throw new NotImplementedException();
-	}
-
-	public override void GetPurchases() {
-		throw new NotImplementedException();
+	public override bool GetLeaderboard(string leaderboardID, bool userHasScore, Action<IEnumerable<LeaderboardEntry>> onComplete) {
+		return true;
 	}
 
 	public override void GoToStore() {

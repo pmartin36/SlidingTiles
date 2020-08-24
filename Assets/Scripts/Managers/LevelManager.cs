@@ -288,12 +288,14 @@ public class LevelManager : ContextManager {
 				if(ld.AnyStarCompletionTime < 0 || ElapsedTime < ld.AnyStarCompletionTime) {
 					ld.AnyStarCompletionTime = ElapsedTime;
 					timeInfo.Record = true;
+					GameManager.Instance.StoreCommunicator.AddToLeaderboard(ElapsedTime, gameObject.scene.name + "_Any");
 				}
 			}
 			else {
 				if (ld.ThreeStarCompletionTime < 0 || ElapsedTime < ld.ThreeStarCompletionTime) {
 					ld.ThreeStarCompletionTime = ElapsedTime;
 					timeInfo.Record = true;
+					GameManager.Instance.StoreCommunicator.AddToLeaderboard(ElapsedTime, gameObject.scene.name + "_3Star");
 				}
 			}
 		}

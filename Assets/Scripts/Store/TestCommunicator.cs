@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 public class TestCommunicator : StoreCommunicator {
-	public override void AddAchievement(string name) {
-		throw new NotImplementedException();
+	public override bool AddAchievement(string name) {
+		Debug.Log($"Achievement {name} added");
+		return true;
 	}
 
-	public override void AddPurchase(string purchaseType) {
+	public override bool AddPurchase(string purchaseType) {
 		Debug.Log(purchaseType);
+		return true;
 	}
 
 	public override void AddSaveData(string json) {
@@ -23,19 +25,22 @@ public class TestCommunicator : StoreCommunicator {
 		return false;
 	}
 
-	public override void AddToLeaderboard(string score, int leaderboardType) {
-		throw new NotImplementedException();
+	public override void AddToLeaderboard(float score, string leaderboardID) {
+		Debug.Log($"Score of {score} added to {leaderboardID}");
 	}
 
-	public override void GetLeaderboard(int leaderboardType) {
-		throw new NotImplementedException();
-	}
-
-	public override void GetPurchases() {
-		throw new NotImplementedException();
+	public override bool GetLeaderboard(string leaderboardID, bool userHasScore, Action<IEnumerable<LeaderboardEntry>> onComplete) {
+		List<LeaderboardEntry> lbs = new List<LeaderboardEntry>() {
+			new LeaderboardEntry() { UserName = "Me", IsUser = true, Score = 12000, Rank = 3 },
+			new LeaderboardEntry() { UserName = "2", IsUser = false, Score = 11000, Rank = 2 },
+			new LeaderboardEntry() { UserName = "1", IsUser = false, Score = 7000, Rank = 1 },
+			new LeaderboardEntry() { UserName = "4", IsUser = false, Score = 15000, Rank = 4 },
+		};
+		onComplete(lbs);
+		return true;
 	}
 
 	public override void GoToStore() {
-		throw new NotImplementedException();
+		Debug.Log("Go to store");
 	}
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class StoreCommunicator {
 	public bool HasData { get; protected set; }
@@ -30,16 +31,14 @@ public abstract class StoreCommunicator {
 		}
 	}
 
-	public abstract void AddAchievement(string name);
 	public abstract void AddSaveData(string json);
-	public abstract bool TryLoadSaveData( System.Action<string> callback);
+	public abstract bool TryLoadSaveData(System.Action<string> callback);
 
-	public abstract void AddToLeaderboard(string score, int leaderboardType);
-	public abstract void AddPurchase(string purchaseType);
+	public abstract bool AddAchievement(string name);
+	public abstract bool GetLeaderboard(string leaderboardID, bool userHasScore, System.Action<IEnumerable<LeaderboardEntry>> onComplete); 
 
-	// these will actually return something at some point
-	public abstract void GetLeaderboard(int leaderboardType); 
-	public abstract void GetPurchases();
+	public abstract void AddToLeaderboard(float score, string leaderboardID);
+	public abstract bool AddPurchase(string productID);
 
 	public abstract void GoToStore();
 }

@@ -68,8 +68,14 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 
-	public void ToggleSoundOn() {
-		
+	public void RemoveAds() {
+		SaveData.AdsRemoved = true;
+		Save();
+
+		MenuManager mm = (ContextManager as MenuManager);
+		if(mm != null) {
+			mm.SettingsMenu.HideAdRemovalWidget();
+		}
 	}
 
 	public void ShowAd() => AdManager.TryShowAd();
@@ -188,6 +194,7 @@ public class GameManager : Singleton<GameManager> {
 	}
 
 	public void Load() {
+		bool localExists = false;
 		string path = Path.Combine(Application.persistentDataPath, "data.json");
 		if(File.Exists(path)) {
 			string json = File.ReadAllText(path);
@@ -197,6 +204,7 @@ public class GameManager : Singleton<GameManager> {
 			if(DateTime.Now.Subtract(SaveData.SaveTime).Days > 30) {
 				SaveData = new SaveData();
 			}
+			localExists = true;
 		}
 		else {
 			SaveData = new SaveData();
@@ -204,7 +212,7 @@ public class GameManager : Singleton<GameManager> {
 
 		StoreCommunicator.TryLoadSaveData((string result) => {
 			SaveData sd = JsonConvert.DeserializeObject<SaveData>(result);
-			if(sd != null && SaveData.SaveTime.Ticks - sd.SaveTime.Ticks < 60) {
+			if(sd != null && (!localExists || SaveData.SaveTime.Ticks - sd.SaveTime.Ticks < 60)) {
 				SaveData = sd;
 			}
 		});

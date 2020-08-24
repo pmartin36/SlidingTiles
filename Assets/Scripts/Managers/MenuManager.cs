@@ -96,13 +96,8 @@ public class MenuManager : ContextManager {
 
 	}
 
-	public void LogoClicked() {
-
-	}
-
 	public void RemoveAdsClicked() {
-		SettingsMenu.HideAdRemovalWidget();
-		
+		GameManager.Instance.StoreCommunicator.AddPurchase("removeads");
 	}
 
 	private IEnumerator MoveToLevelSelectAnimation() {
