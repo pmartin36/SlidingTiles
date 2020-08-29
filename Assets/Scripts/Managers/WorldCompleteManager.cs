@@ -13,8 +13,14 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	public WinScreenStar[] Stars;
 	public TMP_Text AnyStarTime;
 	public TMP_Text ThreeStarTime;
-	public GameObject BottomButtons;
 	public Image Background;
+
+	public GameObject ContinueButton;
+
+	public GameObject ComparePrompt;
+
+	public Button LeaderboardButton;
+	public Leaderboard Leaderboard;
 
 	public bool Loaded { get; set; } = false;
 
@@ -48,6 +54,35 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 			}
 		}
 
+		// Add to leaderboard (if applicable) then get leaderboard data from server
+		// once this process is completed, enable the leaderboard button
+		int scoresToProcess = validThreeStarTime ? 2 : 1;
+		var store = GameManager.Instance.StoreCommunicator;
+		string anyStarLeaderboardID = $"World{World}";
+		string threeStarLeaderboardID = $"World{World}AllStars";
+		store.AddToLeaderboard(anyStarLeaderboardID, anyStarTime, (success) => {
+			store.GetLeaderboard(anyStarLeaderboardID, true, (scores) => {
+				Leaderboard.SetScores(true, scores);
+				TrySetLeaderboardButtonInteractable(ref scoresToProcess);
+			});
+		});
+		if(validThreeStarTime) {
+			store.AddToLeaderboard(threeStarLeaderboardID, threeStarTime, (success) => {
+				store.GetLeaderboard(threeStarLeaderboardID, true, (scores) => {
+					Leaderboard.SetScores(false, scores);
+					TrySetLeaderboardButtonInteractable(ref scoresToProcess);
+				});
+			});
+		}
+		else {
+			store.GetLeaderboard(threeStarLeaderboardID, false, (scores) => {
+				Leaderboard.SetScores(false, scores);
+				TrySetLeaderboardButtonInteractable(ref scoresToProcess);
+			});
+		}
+
+		ComparePrompt.SetActive(World == 1);
+
 		// set text
 		WorldText.text = $"World {World}";
 
@@ -63,8 +98,8 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		}
 
 		// set times
-		AnyStarTime.text = Utils.SplitTime(anyStarTime, false);
-		ThreeStarTime.text = validThreeStarTime ? Utils.SplitTime(threeStarTime, false) : "--";
+		AnyStarTime.text = Utils.SplitTime(anyStarTime, MillisecondDisplay.None);
+		ThreeStarTime.text = validThreeStarTime ? Utils.SplitTime(threeStarTime, MillisecondDisplay.None) : "--";
 
 		// set last played world to the next world if player haven't been there before
 		int nextWorld = World+1;
@@ -99,7 +134,21 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	}
 
 	public void HideContinue() {
-		BottomButtons.SetActive(false);
-		WorldText.GetComponent<RectTransform>().anchoredPosition += Vector2.down * 60;
+		ContinueButton.SetActive(false);
+	}
+
+	public void ShowLeaderboard() {
+		Leaderboard.Open();
+	}
+
+	public void TrySetLeaderboardButtonInteractable(ref int blockers) {
+		if(--blockers <= 0) {
+			LeaderboardButton.interactable = true;
+			foreach(var image in LeaderboardButton.GetComponentsInChildren<Image>()) {
+				Color c = image.color;
+				c.a = 1f;
+				image.color = c;
+			}
+		}
 	}
 }

@@ -25,8 +25,9 @@ public class TestCommunicator : StoreCommunicator {
 		return false;
 	}
 
-	public override void AddToLeaderboard(float score, string leaderboardID) {
+	public override void AddToLeaderboard(string leaderboardID, float score, Action<bool> onComplete) {
 		Debug.Log($"Score of {score} added to {leaderboardID}");
+		onComplete.Invoke(true);
 	}
 
 	public override bool GetLeaderboard(string leaderboardID, bool userHasScore, Action<IEnumerable<LeaderboardEntry>> onComplete) {
@@ -42,5 +43,17 @@ public class TestCommunicator : StoreCommunicator {
 
 	public override void GoToStore() {
 		Debug.Log("Go to store");
+	}
+
+	public override void SignIn(Action<bool> onComplete = null) {
+		onComplete.Invoke(true);
+	}
+
+	public override void SignOut(Action<bool> onComplete = null) {
+		onComplete.Invoke(true);
+	}
+
+	public override void DisplayAchievementUI() {
+		Debug.Log("Display Achievements");
 	}
 }

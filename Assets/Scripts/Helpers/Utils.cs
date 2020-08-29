@@ -57,14 +57,22 @@ public abstract class Utils {
 		loopAction(t / timeToComplete);
 	}
 
-	public static string SplitTime(float inputTime, bool includeMS) {
+	public static string SplitTime(float inputTime, MillisecondDisplay msDisplay) {
 		int minutes = Mathf.FloorToInt(inputTime / 60f);
 		int intSeconds = Mathf.FloorToInt(inputTime);
 		int seconds = intSeconds % 60;
 		float ms = inputTime - intSeconds;
 		string time = $"{minutes:0}:{seconds:00}";
-		if(includeMS) {
-			time += $"<sub>{ms:.000}</sub>";
+		switch (msDisplay) {
+			case MillisecondDisplay.Sub:
+				time += $"<sub>{ms:.000}</sub>";
+				break;
+			case MillisecondDisplay.Normal:
+				time += $"{ms:.000}";
+				break;
+			case MillisecondDisplay.None:
+			default:
+				break;
 		}
 		return time;
 	}
@@ -100,4 +108,10 @@ public struct TimeInfo {
 		Record = record;
 		Time = time;
 	}
+}
+
+public enum MillisecondDisplay {
+	None,
+	Sub,
+	Normal
 }

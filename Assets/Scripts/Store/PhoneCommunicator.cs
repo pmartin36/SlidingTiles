@@ -9,13 +9,28 @@ using VoxelBusters.NativePlugins;
 public abstract class PhoneCommunicator : StoreCommunicator {
 	public PhoneCommunicator() {
 		Billing.DidFinishProductPurchaseEvent += OnDidFinishTransaction;
-
-		bool isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
-		if(!isAuthenticated) {
-			NPBinding.GameServices.LocalUser.Authenticate((success, errorMsg) => { });
-		}
-
+		this.SignIn(null);
 		NPBinding.CloudServices.Initialise();
+	}
+
+	public override void SignIn(Action<bool> onComplete = null) {
+		bool isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
+		if(isAuthenticated) {
+			onComplete?.Invoke(true);
+		}
+		else {
+			NPBinding.GameServices.LocalUser.Authenticate((success, errorMsg) => onComplete?.Invoke(success));
+		}
+	}
+
+	public override void SignOut(Action<bool> onComplete = null) {
+		bool isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
+		if (!isAuthenticated) {
+			onComplete?.Invoke(true);
+		}
+		else {
+			NPBinding.GameServices.LocalUser.SignOut((success, errorMsg) => onComplete?.Invoke(success));
+		}
 	}
 
 	public override bool AddPurchase(string productID) {
@@ -66,17 +81,16 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 		return false;
 	}
 
-	public override void AddToLeaderboard(float score, string leaderboardID) {
+	public override void AddToLeaderboard(string leaderboardID, float score, Action<bool> onComplete) {
 		if (NPBinding.GameServices.IsAvailable() && NPBinding.GameServices.LocalUser.IsAuthenticated) {
 			long longScore = Mathf.FloorToInt(score * 1000);
-			NPBinding.GameServices.ReportScoreWithGlobalID(leaderboardID, longScore, null);
+			NPBinding.GameServices.ReportScoreWithGlobalID(leaderboardID, longScore, (success, error) => onComplete(success));
 		}
 	}
 
 	private void GetLeaderboardData(string leaderboardID, bool userHasScore, Action<IEnumerable<LeaderboardEntry>> onComplete) {
-		// whatever the score is, we need to divide by 1000 to separate out the milliseconds
 		VoxelBusters.NativePlugins.Leaderboard lb = NPBinding.GameServices.CreateLeaderboardWithGlobalID(leaderboardID);
-		lb.MaxResults = 10;
+		lb.MaxResults = 7;
 		lb.UserScope = eLeaderboardUserScope.FRIENDS_ONLY;
 		if(userHasScore) {
 			lb.LoadPlayerCenteredScores((Score[] _scores, Score _localUserScore, string _error) => {
@@ -110,6 +124,12 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 			}
 		}
 		return false;
+	}
+
+	public override void DisplayAchievementUI() {
+		if (NPBinding.GameServices.IsAvailable()) {
+			NPBinding.GameServices.ShowAchievementsUI(error => {});
+		}
 	}
 }
 

@@ -17,16 +17,26 @@ public class MenuManager : ContextManager {
 	private GameObject HomeScreen;
 	[SerializeField]
 	private LevelSelect LevelSelectScreen;
+	[SerializeField]
+	private GameObject GooglePlayGamesModal;
+	[SerializeField]
+	private Image GooglePlayGamesIcon;
 
 	public AnimationCurve Curve;
+	public Sprite GameCenterIcon;
 
 	private bool finishedTutorial = false;
 
 	public override void Start() {
 		base.Start();
-		finishedTutorial = GameManager.Instance.HighestUnlockedLevel >= SceneHelpers.TutorialLevelStart + 2;
+		var gm = GameManager.Instance;
+		finishedTutorial = gm.HighestUnlockedLevel >= SceneHelpers.TutorialLevelStart + 2;
 		if(!finishedTutorial) {
 			this.GetComponentsInChildren<Button>().First(b => b.gameObject.name.Contains("Tutorial")).gameObject.SetActive(false);
+		}
+
+		if(gm.StoreCommunicator is AppleCommunicator) {
+			GooglePlayGamesIcon.sprite = GameCenterIcon;
 		}
 	}
 
@@ -93,7 +103,27 @@ public class MenuManager : ContextManager {
 
 	public void GooglePlayGamesClicked() {
 		MMVibrationManager.Haptic(HapticTypes.Selection);
+		GameManager.Instance.StoreCommunicator.SignIn((signedIn) => {
+			if (signedIn)
+				GooglePlayGamesModal.gameObject.SetActive(true);
+		});
+	}
 
+	public void CloseGooglePlayGamesModal() {
+		GooglePlayGamesModal.gameObject.SetActive(false);
+	}
+
+	public void SignOut() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
+		GameManager.Instance.StoreCommunicator.SignOut((signedOut) => {
+			if (signedOut)
+				CloseGooglePlayGamesModal();
+		});
+	}
+
+	public void ViewAchiements() {
+		MMVibrationManager.Haptic(HapticTypes.Selection);
+		GameManager.Instance.StoreCommunicator.DisplayAchievementUI();
 	}
 
 	public void RemoveAdsClicked() {

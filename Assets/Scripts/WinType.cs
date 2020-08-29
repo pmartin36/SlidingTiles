@@ -67,7 +67,7 @@ public abstract class WinType : MonoBehaviour {
 		RecordTime.gameObject.SetActive(timeInfo.Record);
 
 		float elapsedTime = timeInfo.Time;
-		ElapsedTime.text = Utils.SplitTime(elapsedTime, true);
+		ElapsedTime.text = Utils.SplitTime(elapsedTime, MillisecondDisplay.Sub);
 		ElapsedTime.ForceMeshUpdate();
 
 		RectTransform elapsedTimeRT = ElapsedTime.GetComponent<RectTransform>();

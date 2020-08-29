@@ -9,11 +9,10 @@ public abstract class StoreCommunicator {
 			case RuntimePlatform.OSXEditor:
 			case RuntimePlatform.WindowsEditor:
 			case RuntimePlatform.LinuxEditor:
-				return new TestCommunicator();
 			case RuntimePlatform.OSXPlayer:
 			case RuntimePlatform.WindowsPlayer:	
 			case RuntimePlatform.LinuxPlayer:		
-				return new SteamCommunicator();
+				return new TestCommunicator();
 			case RuntimePlatform.IPhonePlayer:
 				return new AppleCommunicator();
 			case RuntimePlatform.Android:
@@ -34,11 +33,14 @@ public abstract class StoreCommunicator {
 	public abstract void AddSaveData(string json);
 	public abstract bool TryLoadSaveData(System.Action<string> callback);
 
+	public abstract void DisplayAchievementUI();
 	public abstract bool AddAchievement(string name);
 	public abstract bool GetLeaderboard(string leaderboardID, bool userHasScore, System.Action<IEnumerable<LeaderboardEntry>> onComplete); 
 
-	public abstract void AddToLeaderboard(float score, string leaderboardID);
+	public abstract void AddToLeaderboard(string leaderboardID, float score, System.Action<bool> onComplete);
 	public abstract bool AddPurchase(string productID);
 
 	public abstract void GoToStore();
+	public abstract void SignIn(System.Action<bool> onComplete = null);
+	public abstract void SignOut(System.Action<bool> onComplete = null);
 }
