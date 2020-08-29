@@ -13,6 +13,7 @@ public class TrailerTile : Tile
 	}
 
 	public override void LateUpdate() {
+		base.LateUpdate();
         MatchingNumber.anchoredPosition += (Vector2)transform.position - lastPosition;
 		lastPosition = transform.position;
     }

@@ -825,8 +825,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Available Now!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7625b7cba35837b4ba3551fffaa1a4fd, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: ca13d25fcccd72c41a65083c3469270f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5f1bd0ff48f5cec46863a3a10e2baa28, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: d35e14a981d24cd47b4cde1ec80d0098, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -851,13 +851,13 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 124
-  m_fontSizeBase: 124
+  m_fontSize: 182
+  m_fontSizeBase: 182
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 33
   m_textAlignment: 514
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -5366,6 +5366,8 @@ MonoBehaviour:
   SettingsMenu: {fileID: 1406008689}
   HomeScreen: {fileID: 773233886}
   LevelSelectScreen: {fileID: 1973078439}
+  GooglePlayGamesModal: {fileID: 0}
+  GooglePlayGamesIcon: {fileID: 0}
   Curve:
     serializedVersion: 2
     m_Curve:
@@ -5408,6 +5410,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  GameCenterIcon: {fileID: 0}
 --- !u!114 &1010700191 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1857308432007823415, guid: fbc09a6ebd463b747b39ed001bebbf12,
@@ -9642,8 +9645,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 536b259976d1f664ab764e83442de1e3, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 427bb196e93264b4395e7e38d8977c41, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -10153,9 +10156,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: www.madebymoonlightgames.com
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7625b7cba35837b4ba3551fffaa1a4fd, type: 2}
-  m_sharedMaterial: {fileID: 21363879889845000, guid: 7625b7cba35837b4ba3551fffaa1a4fd,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

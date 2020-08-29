@@ -633,7 +633,7 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			float scale = Mathf.Lerp(1.2f, 1.44f, v);
 			transform.localScale = scale * scaleNormal;
 
-			respawnEffects.MoveClipVolume = Mathf.Max(v * 0.75f, respawnEffects.MoveClipVolume);
+			respawnEffects.MoveClipVolume = Mathf.Max(v * 0.75f, respawnEffects.MoveClipVolume) * GameManager.Instance.SaveData.FxVolume;
 
 			t += Time.deltaTime;
 			yield return null;

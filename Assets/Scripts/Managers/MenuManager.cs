@@ -98,6 +98,7 @@ public class MenuManager : ContextManager {
 
 	public void ReplayTutorial() {
 		MMVibrationManager.Haptic(HapticTypes.Selection);
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(1, 1f, 0.2f);
 		GameManager.Instance.LoadScene(SceneHelpers.TutorialLevelStart, null);
 	}
 
