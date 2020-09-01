@@ -24,10 +24,6 @@ public class Leaderboard : MonoBehaviour
 		Close();
     }
 
-	public void Update() {
-		int x = 0;
-	}
-
 	public void Open() {
 		transform.GetChild(0).gameObject.SetActive(true);
 	}

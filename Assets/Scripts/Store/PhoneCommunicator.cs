@@ -8,9 +8,13 @@ using VoxelBusters.NativePlugins;
 
 public abstract class PhoneCommunicator : StoreCommunicator {
 	public PhoneCommunicator() {
-		Billing.DidFinishProductPurchaseEvent += OnDidFinishTransaction;
 		this.SignIn(null);
+
+		Billing.DidFinishProductPurchaseEvent += OnDidFinishTransaction;
+
 		NPBinding.CloudServices.Initialise();
+
+		NPBinding.Billing.RequestForBillingProducts(NPSettings.Billing.Products);
 	}
 
 	public override void SignIn(Action<bool> onComplete = null) {

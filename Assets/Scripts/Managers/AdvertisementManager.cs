@@ -8,7 +8,7 @@ public class AdvertisementManager
 {
 	private static readonly float TimeBetweenAds = 5 * 60;
     public float TimeOfLastAd { get; set; } = 0;
-	public bool AdsDisabled { get; set; }
+	public bool AdsRemoved => GameManager.Instance.SaveData.AdsRemoved;
 
 	private string gameId;
 	private bool testMode;
@@ -37,7 +37,7 @@ public class AdvertisementManager
 
 	public void TryShowAd() {
 		float timeSinceLastAd = Time.time - TimeOfLastAd;
-		if(!AdsDisabled && timeSinceLastAd > TimeBetweenAds) {
+		if(!AdsRemoved && timeSinceLastAd > TimeBetweenAds) {
 			Advertisement.Show();	
 			TimeOfLastAd = Time.time;
 		}

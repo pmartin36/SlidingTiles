@@ -41,7 +41,7 @@ public class MenuCopyManager : MonoBehaviour {
 	}
 
 	public void OnLevelChange(int world) {
-		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(world, 1f, 0.4f);
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(world, 1f, 0.8f);
 		foreach(var c in keyedCopyComponents) {
 			c.OnWorldChange(world);
 		}

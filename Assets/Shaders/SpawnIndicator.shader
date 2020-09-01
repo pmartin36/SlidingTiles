@@ -11,11 +11,12 @@
 			"Queue"="Transparent"
 		}
 
-		Blend SrcAlpha OneMinusSrcAlpha
-		ZWrite Off
-
         Pass
         {
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite Off
+			Cull Off
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag

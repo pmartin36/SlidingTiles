@@ -58,30 +58,38 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		// once this process is completed, enable the leaderboard button
 		int scoresToProcess = validThreeStarTime ? 2 : 1;
 		var store = GameManager.Instance.StoreCommunicator;
-		string anyStarLeaderboardID = $"World{World}";
-		string threeStarLeaderboardID = $"World{World}AllStars";
-		store.AddToLeaderboard(anyStarLeaderboardID, anyStarTime, (success) => {
-			store.GetLeaderboard(anyStarLeaderboardID, true, (scores) => {
+		string anyStarID = $"World{World}";
+		string threeStarID = $"World{World}AllStars";
+		store.AddToLeaderboard(anyStarID, anyStarTime, (success) => {
+			store.GetLeaderboard(anyStarID, true, (scores) => {
 				Leaderboard.SetScores(true, scores);
 				TrySetLeaderboardButtonInteractable(ref scoresToProcess);
 			});
 		});
 		if(validThreeStarTime) {
-			store.AddToLeaderboard(threeStarLeaderboardID, threeStarTime, (success) => {
-				store.GetLeaderboard(threeStarLeaderboardID, true, (scores) => {
+			store.AddToLeaderboard(threeStarID, threeStarTime, (success) => {
+				store.GetLeaderboard(threeStarID, true, (scores) => {
 					Leaderboard.SetScores(false, scores);
 					TrySetLeaderboardButtonInteractable(ref scoresToProcess);
 				});
 			});
 		}
 		else {
-			store.GetLeaderboard(threeStarLeaderboardID, false, (scores) => {
+			store.GetLeaderboard(threeStarID, false, (scores) => {
 				Leaderboard.SetScores(false, scores);
 				TrySetLeaderboardButtonInteractable(ref scoresToProcess);
 			});
 		}
 
-		ComparePrompt.SetActive(World == 1);
+		// Add Achievements
+		store.AddAchievement(anyStarID);
+		if(validThreeStarTime) {
+			store.AddAchievement(threeStarID);
+		}
+
+		if(ContinueButton.gameObject.activeInHierarchy) {
+			ComparePrompt.SetActive(World == 1);
+		}
 
 		// set text
 		WorldText.text = $"World {World}";
@@ -135,6 +143,12 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 
 	public void HideContinue() {
 		ContinueButton.SetActive(false);
+		ComparePrompt.SetActive(false);
+		foreach(var rt  in ContinueButton.transform.parent.GetComponentsInChildren<RectTransform>()) {
+			var pos = rt.anchoredPosition;
+			pos.x *= 0.5f;
+			rt.anchoredPosition = pos;
+		}
 	}
 
 	public void ShowLeaderboard() {

@@ -27,7 +27,7 @@ public class LevelSelect : MenuCopyComponent
 	private LevelData[,] levelData;
 
 	void Awake() {
-		WorldSelectedTilePosition = new Vector2(0f, 3f * tileWidth);
+		WorldSelectedTilePosition = new Vector2(0f, 3f * tileWidth - 1);
 		WorldPositions = new[] {
 			new Vector2(	-2f * tileWidth,	2f * tileWidth - 1),
 			new Vector2(	0f * tileWidth,		2f * tileWidth - 1),
@@ -78,6 +78,9 @@ public class LevelSelect : MenuCopyComponent
 			if (SelectedWorldComplete) {
 				b.Interactable = true;
 				b.SetOnClick(SwitchToWorldCompleteScene);
+			}
+			else {
+				b.Interactable = false;
 			}
 			Back.transform.localScale = Vector3.one;
 		}
@@ -149,7 +152,7 @@ public class LevelSelect : MenuCopyComponent
 		MMVibrationManager.Haptic(HapticTypes.Selection);
 		if (LevelSelectOpen) {
 			int buildIndex = SceneHelpers.GetBuildIndexFromLevel(WorldSelected, button.TempNumber.HasValue ? button.TempNumber.Value : button.Number);
-			MusicManager.Instance.SlideVolume(0.2f, 1f);
+			MusicManager.Instance.SlideVolume(0.4f, 1f);
 			GameManager.Instance.LoadScene(buildIndex, null);
 		}
 		else {
@@ -179,7 +182,7 @@ public class LevelSelect : MenuCopyComponent
 		if (WorldSelected > 1) {
 			StartCoroutine(CameraWipe(1));
 		}
-		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(1, 1f, 0.2f);
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(1, 1f, 0.4f);
 		(this.MirroredComponent as LevelSelect).BackAction();
 		BackAction();	
 	}

@@ -34,7 +34,7 @@ public class CameraController : MonoBehaviour
 
 		if(!IsTablet) {
 			// we want half width to be 24
-			Camera.orthographicSize = 24f / Camera.aspect;
+			Camera.orthographicSize = Mathf.Max(48f, 24f / Camera.aspect);
 		}
 	}
 
