@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using MoreMountains.NiceVibrations;
+using System.Linq;
 
 public class WorldCompleteManager : ContextManager, IRequireResources
 {

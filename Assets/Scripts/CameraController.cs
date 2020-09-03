@@ -115,7 +115,7 @@ public class CameraController : MonoBehaviour
 		PostProcessInfo?.PostProcessObjectsContainer?.SetActive(enable);
 	}
 
-	public void RegisterPostProcessVolume(PostProcessInfo v) {
+	public void RegisterPostProcessVolume(PostProcessInfo v, bool startActive) {
 		DestroyPostProcessVolume();
 
 		Transform objectToApply = v.PostProcessObjectsContainer?.transform ?? v.Volume.transform;
@@ -126,6 +126,7 @@ public class CameraController : MonoBehaviour
 			v.ChildCamera.orthographicSize = Camera.orthographicSize;
 		}
 		PostProcessInfo = v;
+		objectToApply.gameObject.SetActive(startActive);
 	}
 
 	public void DestroyPostProcessVolume() {

@@ -29,10 +29,6 @@ public class Tile : MonoBehaviour, IRequireResources
 	private LayerMask tileMask;
 	protected LayerMask playerMask;
 
-	protected List<SpriteRenderer> spriteRenderers;
-	protected SpriteRenderer bottom;
-	protected SpriteRenderer top;
-
 	protected AudioSource audio;
 
 	protected PlatformController[] childPlatforms;
@@ -75,17 +71,12 @@ public class Tile : MonoBehaviour, IRequireResources
 
 	protected virtual void Start() {
 		tileMask = 1 << LayerMask.NameToLayer("Tile");
-		spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
-		bottom = spriteRenderers.FirstOrDefault(g => g.CompareTag("TileBottom"));
-		top = spriteRenderers.FirstOrDefault(g => !g.CompareTag("TileBottom"));
 		transform.localPosition = Vector3.zero;
 
-		top.sortingOrder = -this.Space.Position.y * 3;
-		if(bottom != null)
-			bottom.sortingOrder = top.sortingOrder - 2;
+		ResetSortOrder();
 
 		audio = GetComponent<AudioSource>();
-		AllMaterials = new List<Material>() { top.sharedMaterial };
+		AllMaterials = new List<Material>() { Box.sharedMaterial };
 
 		if(GameManager.Instance.LastPlayedWorld != LoadedMaterialWorld && Movable) {
 			LoadedMaterialWorld = GameManager.Instance.LastPlayedWorld;
@@ -126,6 +117,14 @@ public class Tile : MonoBehaviour, IRequireResources
 	public void Init(Tilespace t) {
 		this.Space = t;
 		this.initialMovable = this.Movable;
+	}
+
+	private void ResetSortOrder() {
+		Box.sortingOrder = -this.Space.Position.y * 3;
+		if (BoxBottom != null)
+			BoxBottom.sortingOrder = Box.sortingOrder - 2;
+		if(BoxSide != null) 
+			BoxSide.sortingOrder = BoxBottom.sortingOrder + 1;
 	}
 
 	public virtual void FixedUpdate() {
@@ -252,12 +251,12 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			if(GameManager.Instance.LevelManager.ShowSelectionMaterial && !AllMaterials.Contains(SelectedMaterial)) {
 				AllMaterials.Add(SelectedMaterial);
-				top.sharedMaterials = AllMaterials.ToArray();
+				Box.sharedMaterials = AllMaterials.ToArray();
 			}
 		}
 		else if(GameManager.Instance.LevelManager.ShowSelectionMaterial) {
 			AllMaterials.RemoveAll(m => m == SelectedMaterial);
-			top.sharedMaterials = AllMaterials.ToArray();
+			Box.sharedMaterials = AllMaterials.ToArray();
 		}
 	}
 
@@ -298,9 +297,9 @@ public class Tile : MonoBehaviour, IRequireResources
 
 			next.SetChildTile(this, true);
 			changedTilespaces = true;
-			top.sortingOrder = -this.Space.Position.y * 3;
-			if (bottom != null)
-				bottom.sortingOrder = top.sortingOrder - 2;
+			Box.sortingOrder = -this.Space.Position.y * 3;
+			if (BoxBottom != null)
+				BoxBottom.sortingOrder = Box.sortingOrder - 2;
 		}
 
 		if (Space.Sticky && this.Movable) {
@@ -624,12 +623,11 @@ public class Tile : MonoBehaviour, IRequireResources
 			Box.transform.localRotation = Quaternion.Euler(0, 0, Rotation);
 		}
 
-		Box.sortingOrder -= 10;
+		ResetSortOrder();
+
 		BoxBottom.transform.RotateAround(Box.transform.position, Vector3.forward, -BoxBottom.transform.eulerAngles.z);
-		BoxBottom.sortingOrder -= 10;
 		if(BoxSide != null) {
 			BoxSide.transform.RotateAround(Box.transform.position, Vector3.forward, -90 - BoxSide.transform.eulerAngles.z);
-			BoxSide.sortingOrder -= 10;
 		}
 	}
 
@@ -651,19 +649,19 @@ public class Tile : MonoBehaviour, IRequireResources
 	}
 
 	protected virtual void SetMobileShaderValue(float v, Material mTop = null, Material mBottom = null) {
-		mTop = mTop ?? new Material(top.sharedMaterial);
-		mBottom = mBottom ?? new Material(bottom.sharedMaterial);
+		mTop = mTop ?? new Material(Box.sharedMaterial);
+		mBottom = mBottom ?? new Material(BoxBottom.sharedMaterial);
 		mTop.SetFloat("_Mobile", v);
 		mBottom.SetFloat("_Mobile", v);
-		top.sharedMaterial = mTop;
-		bottom.sharedMaterial = mBottom;
+		Box.sharedMaterial = mTop;
+		BoxBottom.sharedMaterial = mBottom;
 	}
 
 	protected virtual IEnumerator SetImmobileAnimation() {
 		float t = 0;
 		float animationTime = 0.25f;
-		Material mTop = new Material(top.sharedMaterial);
-		Material mBottom = new Material(bottom.sharedMaterial);
+		Material mTop = new Material(Box.sharedMaterial);
+		Material mBottom = new Material(BoxBottom.sharedMaterial);
 		while(t < animationTime) {
 			SetMobileShaderValue(1 - t / animationTime, mTop, mBottom);
 			t += Time.deltaTime;

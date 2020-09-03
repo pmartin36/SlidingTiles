@@ -79,7 +79,7 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 
 	public override bool AddAchievement(string name) {
 		if (NPBinding.GameServices.IsAvailable() && NPBinding.GameServices.LocalUser.IsAuthenticated) {
-			NPBinding.GameServices.ReportProgressWithGlobalID(name, 1d, (success, errorMsg) => { });
+			NPBinding.GameServices.ReportProgressWithGlobalID(name, 100d, (success, errorMsg) => {});
 			return true;
 		}
 		return false;
@@ -88,7 +88,10 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 	public override void AddToLeaderboard(string leaderboardID, float score, Action<bool> onComplete) {
 		if (NPBinding.GameServices.IsAvailable() && NPBinding.GameServices.LocalUser.IsAuthenticated) {
 			long longScore = Mathf.FloorToInt(score * 1000);
-			NPBinding.GameServices.ReportScoreWithGlobalID(leaderboardID, longScore, (success, error) => onComplete(success));
+			NPBinding.GameServices.ReportScoreWithGlobalID(leaderboardID, longScore, (success, error) => {
+				onComplete(success);
+				
+			});
 		}
 	}
 

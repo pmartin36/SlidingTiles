@@ -18,7 +18,9 @@ public class CameraCreator : MonoBehaviour
 		GameManager gm = GameManager.Instance; // create the game and music managers as well
 		MusicManager mm = MusicManager.Instance;
 
-		if(this.gameObject.scene.buildIndex == SceneHelpers.LoadSceneBuildIndex) return;
+		int buildIndex = this.gameObject.scene.buildIndex;
+		if (buildIndex == SceneHelpers.LoadSceneBuildIndex) return;
+		bool isMenu = buildIndex == SceneHelpers.MenuBuildIndex;
 
 		ppv = GameObject.FindObjectsOfType<PostProcessVolume>().FirstOrDefault(p => 
 			LayerMask.LayerToName(p.gameObject.layer) == "PostProcessing" 
@@ -27,7 +29,7 @@ public class CameraCreator : MonoBehaviour
 			PostProcessInfo info = new PostProcessInfo(ppv);
 			if(CameraManager.Instance.CameraController.PostProcessInfo == null
 				|| info.Type != CameraManager.Instance.CameraController.PostProcessInfo.Type) {
-				CameraManager.Instance.CameraController.RegisterPostProcessVolume(info);
+				CameraManager.Instance.CameraController.RegisterPostProcessVolume(info, isMenu);
 			}
 			else {
 				var objectToRemove = info.PostProcessObjectsContainer?.gameObject ?? info.Volume.gameObject;
