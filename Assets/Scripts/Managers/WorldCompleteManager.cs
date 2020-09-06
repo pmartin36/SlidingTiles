@@ -109,20 +109,19 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		// set times
 		AnyStarTime.text = Utils.SplitTime(anyStarTime, MillisecondDisplay.None);
 		ThreeStarTime.text = validThreeStarTime ? Utils.SplitTime(threeStarTime, MillisecondDisplay.None) : "--";
-
-		// set last played world to the next world if player haven't been there before
-		int nextWorld = World+1;
-		var nextLevel = SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1);
-		if (nextWorld <= GameManager.AvailableWorlds && nextLevel >= GameManager.Instance.HighestUnlockedLevel) {
-			GameManager.Instance.SaveData.LastPlayedWorld = nextWorld;
-		}
-		else {
-			GameManager.Instance.SaveData.LastPlayedWorld = World;
-		}
 	}
 
 	public void GoToMenu() {
 		MMVibrationManager.Haptic(HapticTypes.Selection);
+
+		int nextWorld = World + 1;
+		var nextLevel = SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1);
+		if (ContinueButton.activeInHierarchy // only active when we've reached here from a level
+			&& nextWorld <= GameManager.AvailableWorlds 
+			&& nextLevel >= GameManager.Instance.HighestUnlockedLevel) {
+			GameManager.Instance.SaveData.LastPlayedWorld = nextWorld;
+		}
+
 		GameManager.Instance.LoadScene(
 			SceneHelpers.MenuBuildIndex,
 			null,
@@ -134,6 +133,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		MMVibrationManager.Haptic(HapticTypes.Selection);
 		int nextWorld = World+1;
 		if(nextWorld <= GameManager.AvailableWorlds) {
+			GameManager.Instance.SaveData.LastPlayedWorld = nextWorld;
 			MusicManager.Instance.LoadMusicForWorldAndChangeTrack(nextWorld);
 			GameManager.Instance.LoadScene(SceneHelpers.GetBuildIndexFromLevel(nextWorld, 1));
 		}

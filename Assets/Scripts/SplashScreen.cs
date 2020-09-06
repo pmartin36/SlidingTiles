@@ -65,7 +65,7 @@ public class SplashScreen : MonoBehaviour
 		float t = 0;
 		const float jTime = 0.5f;
 		int lpw = Mathf.Max(1, GameManager.Instance.SaveData?.LastPlayedWorld ?? 1);
-		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(lpw, jTime, 0.8f);
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(lpw, jTime / 2f, 0.8f);
 
 		while (t < jTime) {
 			Black.color = Color.Lerp(Color.black, Color.clear, t / jTime);
