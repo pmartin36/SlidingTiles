@@ -38,18 +38,18 @@ public class MusicManager : Singleton<MusicManager> {
 		SetVolume(Volume);
 	}
 
-	public void LoadMusicForWorldAndChangeTrack(int world, float transitionTime = 1f, float finalVolume = -1) {
+	public void LoadMusicForWorldAndChangeTrack(int world, float transitionTime = 1f, float finalVolume = -1, bool initial = false) {
 		if(finalVolume < 0) finalVolume = Volume;
 		LastRequestedWorldMusic = world;
 		Addressables.LoadAssetAsync<AudioClip>($"World{world}/Music").Completed +=
 			(obj) => {
 				if(LastRequestedWorldMusic == world) {
-					ChangeTrack(obj.Result, transitionTime, finalVolume);
+					ChangeTrack(obj.Result, transitionTime, finalVolume, initial);
 				}
 			};
 	}
 
-	public void ChangeTrack(AudioClip track, float transitionTime = -1f, float finalVolume = 1f) {
+	public void ChangeTrack(AudioClip track, float transitionTime = -1f, float finalVolume = 1f, bool initial = false) {
 		if(audio == null) Init();
 		if(audio.clip != null && audio.clip.name == track.name) {
 			if(Volume != finalVolume) {
@@ -58,9 +58,16 @@ public class MusicManager : Singleton<MusicManager> {
 			return;
 		};
 
-		if(audio.clip == null || transitionTime < 0f) {
+		if(transitionTime < 0f) {
 			SetTrack(track);
 			SetVolume(finalVolume);
+			audio.Play();
+		}
+		else if(audio.clip == null && !initial) {
+			// don't allow initial world change to set track, it's set from splash screen
+			SetTrack(track);
+			Volume = 0f;
+			SlideVolume(finalVolume, transitionTime);
 			audio.Play();
 		}
 		else {

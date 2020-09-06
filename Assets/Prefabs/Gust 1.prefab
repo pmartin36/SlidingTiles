@@ -47,6 +47,7 @@ TrailRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -58,6 +59,7 @@ TrailRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -119,8 +121,8 @@ TrailRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 0.8387771, g: 0.94777226, b: 0.9716981, a: 0}
-      key1: {r: 0.8387771, g: 0.94777226, b: 0.9716981, a: 0.09803922}
-      key2: {r: 0, g: 0, b: 0, a: 0.19607843}
+      key1: {r: 0.8387771, g: 0.94777226, b: 0.9716981, a: 0.13725491}
+      key2: {r: 0, g: 0, b: 0, a: 0.23529412}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -135,7 +137,7 @@ TrailRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 5975
+      atime1: 5964
       atime2: 28334
       atime3: 65535
       atime4: 65535

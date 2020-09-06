@@ -7,6 +7,7 @@ public class LoadScreen : MonoBehaviour
 {
 	private Animator animator;
 	private bool Showing;
+	private bool ShowLoadTiles;
 
 	private List<RectTransform> tileRTs;
 	private GameObject panel;
@@ -55,12 +56,13 @@ public class LoadScreen : MonoBehaviour
 		panel = panelTransform.gameObject;
 	}
 
-	public void Show(bool show) {	
+	public void Show(bool show, bool showLoadTiles = true) {	
 		Showing = show;
 		if(show) {
 			panel.SetActive(true);
 			animator.SetBool("Hide", false);
 			animator.Play("Show", 0, 0);
+			ShowLoadTiles = showLoadTiles;
 		}
 		else {
 			animator.SetBool("Hide", true);
@@ -68,16 +70,18 @@ public class LoadScreen : MonoBehaviour
 	}
 
 	public void Update() {
-		var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
-		if (clipInfo.Length > 0 && clipInfo[0].clip.name == "Highlight") {
-			for(int i = 0; i < tileRTs.Count; i++) {
-				RectTransform rt = tileRTs[i];
-				float modifiedPosition = PositionVal - i * 0.1f;
-				if(modifiedPosition <= 1) {
-					rt.anchoredPosition = Vector2.Lerp(startPositions[i], midPositions[i], Mathf.SmoothStep(0, 1, modifiedPosition));
-				}
-				else {
-					rt.anchoredPosition = Vector2.Lerp(midPositions[i], endPositions[i], Mathf.SmoothStep(0, 1, modifiedPosition - 2f));
+		if(ShowLoadTiles) {
+			var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
+			if (clipInfo.Length > 0 && clipInfo[0].clip.name == "Highlight") {
+				for(int i = 0; i < tileRTs.Count; i++) {
+					RectTransform rt = tileRTs[i];
+					float modifiedPosition = PositionVal - i * 0.1f;
+					if(modifiedPosition <= 1) {
+						rt.anchoredPosition = Vector2.Lerp(startPositions[i], midPositions[i], Mathf.SmoothStep(0, 1, modifiedPosition));
+					}
+					else {
+						rt.anchoredPosition = Vector2.Lerp(midPositions[i], endPositions[i], Mathf.SmoothStep(0, 1, modifiedPosition - 2f));
+					}
 				}
 			}
 		}

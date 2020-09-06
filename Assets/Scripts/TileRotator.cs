@@ -80,6 +80,7 @@ public class TileRotator : MonoBehaviour
 			timeOfLastRotation = Time.time;
 			rotation = 0f;
 			targetRotation = 90f * Direction;
+			audio.volume = 0.5f * GameManager.Instance.SaveData.FxVolume;
 			audio.Play();
 
 			animator.SetFloat("Direction", Direction);

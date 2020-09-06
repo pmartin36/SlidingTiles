@@ -17,7 +17,9 @@ public class MenuCopyManager : MonoBehaviour {
 		var copy = Instantiate(original, original.transform.position, original.transform.rotation, this.transform);
 		copy.name = "Copy";
 		CopyComponent(original.transform, copy.transform);
-		OnLevelChange(GameManager.Instance.LastPlayedWorld);
+
+		int lastPlayedWorld = Mathf.Max(1, GameManager.Instance.LastPlayedWorld);
+		OnLevelChange(lastPlayedWorld, true);
 	}
 
 	public void CopyComponent(Transform original, Transform copy) {
@@ -40,8 +42,8 @@ public class MenuCopyManager : MonoBehaviour {
 		}
 	}
 
-	public void OnLevelChange(int world) {
-		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(world, 1f, 0.8f);
+	public void OnLevelChange(int world, bool initial = false) {
+		MusicManager.Instance.LoadMusicForWorldAndChangeTrack(world, 1f, 0.8f, initial);
 		foreach(var c in keyedCopyComponents) {
 			c.OnWorldChange(world);
 		}

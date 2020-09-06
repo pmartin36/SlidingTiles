@@ -150,12 +150,12 @@ public class GameManager : Singleton<GameManager> {
 		}
 	}
 
-	public void ShowLoadScreen(bool show) {
+	public void ShowLoadScreen(bool show, bool showLoadTiles = true) {
 		if(loadScreen == null) {
 			loadScreen = FindObjectOfType<LoadScreen>();
 		}
 
-		loadScreen.Show(show);
+		loadScreen.Show(show, showLoadTiles);
 	}
 
 	public IEnumerator LoadWrapper(Coroutine waitUntil = null) {
