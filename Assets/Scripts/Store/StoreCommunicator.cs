@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class StoreCommunicator {
 	public bool HasData { get; protected set; }
+	public bool IsInitialized { get; protected set; }
 
 	public static StoreCommunicator StoreCommunicatorFactory() {
 		switch (Application.platform) {

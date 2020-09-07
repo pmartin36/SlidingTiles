@@ -40,6 +40,18 @@ public class MenuManager : ContextManager {
 		}
 	}
 
+	public void ReceivedNewSaveData() {
+		finishedTutorial = GameManager.Instance.HighestUnlockedLevel >= SceneHelpers.TutorialLevelStart + 2;
+		var button = this.GetComponentsInChildren<Button>(true).First(b => b.gameObject.name.Contains("Tutorial"));
+		if(button != null) {
+			button.gameObject.SetActive(finishedTutorial);
+		}
+		
+		if(SettingsOpen && GameManager.Instance.SaveData.AdsRemoved) {
+			SettingsMenu.HideAdRemovalWidget();
+		}
+	}
+
 	public override void HandleInput(InputPackage p) {
 		if (p.Touchdown && !p.PointerOverGameObject && p.TouchdownChange) {
 			if(!SettingsOpen && !LevelSelectOpen) {

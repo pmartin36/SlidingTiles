@@ -12,11 +12,11 @@ public class LeaderboardEntry {
 
 	public LeaderboardEntry() { }
 
-	public LeaderboardEntry(VoxelBusters.NativePlugins.Score score) {
+	public LeaderboardEntry(VoxelBusters.NativePlugins.Score score, bool isUser) {
 		Rank = score.Rank;
 		Score = score.Value / 1000f;
 		UserName = score.User.Alias.Length > 0 ? score.User.Alias : score.User.Name;
-		IsUser = false;
+		IsUser = isUser;
 	}
 }
 

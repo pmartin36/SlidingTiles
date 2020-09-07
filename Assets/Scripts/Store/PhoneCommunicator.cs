@@ -11,10 +11,15 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 		this.SignIn(null);
 
 		Billing.DidFinishProductPurchaseEvent += OnDidFinishTransaction;
+		CloudServices.KeyValueStoreDidInitialiseEvent += OnCloudInit;
 
 		NPBinding.CloudServices.Initialise();
 
 		NPBinding.Billing.RequestForBillingProducts(NPSettings.Billing.Products);
+	}
+
+	private void OnCloudInit(bool success) {
+		IsInitialized = true;
 	}
 
 	public override void SignIn(Action<bool> onComplete = null) {
@@ -90,7 +95,7 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 			long longScore = Mathf.FloorToInt(score * 1000);
 			NPBinding.GameServices.ReportScoreWithGlobalID(leaderboardID, longScore, (success, error) => {
 				onComplete(success);
-				
+				Debug.Log($"Set leaderboard: {leaderboardID}, with score: {longScore}, successful: {success}, with errormsg: {error}");
 			});
 		}
 	}
@@ -99,18 +104,21 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 		VoxelBusters.NativePlugins.Leaderboard lb = NPBinding.GameServices.CreateLeaderboardWithGlobalID(leaderboardID);
 		lb.MaxResults = 7;
 		lb.UserScope = eLeaderboardUserScope.FRIENDS_ONLY;
-		if(userHasScore) {
+		if (userHasScore) {
 			lb.LoadPlayerCenteredScores((Score[] _scores, Score _localUserScore, string _error) => {
-				onComplete(_scores.Select(s => 
-					new LeaderboardEntry(s) {
-						IsUser = _localUserScore.User.Identifier == s.User.Identifier
-					}
-				));
+				Debug.Log($"Got leaderboard: {leaderboardID}, with errormsg: {_error}");
+				Debug.Log($"leaderboard me: {_localUserScore.Value}");
+				Debug.Log($"leaderboard others: {_scores.Length}");
+				var scores = _scores.Select(s => new LeaderboardEntry(s, false));
+				if(_localUserScore.Rank > 0) {
+					scores = scores.Append(new LeaderboardEntry(_localUserScore, true)).OrderByDescending(s => s.Rank);
+				}
+				onComplete(scores);
 			});
 		}
 		else {
 			lb.LoadTopScores((Score[] _scores, Score _localUserScore, string _error) => {
-				onComplete(_scores.Select(s => new LeaderboardEntry(s)));
+				onComplete(_scores.Select(s => new LeaderboardEntry(s, false)));
 			});
 		}
 	}
@@ -120,7 +128,7 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 			bool isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
 			if (!isAuthenticated) {
 				NPBinding.GameServices.LocalUser.Authenticate((success, errorMsg) => {
-					if(success) {
+					if (success) {
 						GetLeaderboardData(leaderboardID, userHasScore, onComplete);
 					}
 				});

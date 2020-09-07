@@ -34,7 +34,9 @@ public class Leaderboard : MonoBehaviour
 
 	public void SetScores(bool isAnyStarScore, IEnumerable<LeaderboardEntry> scores) {
 		Transform parent = isAnyStarScore ? AnyStarLeaderboard : ThreeStarLeaderboard;
-		StartCoroutine(SetScoresRoutine(parent, scores.ToArray()));
+		var scoresArray = scores.ToArray();
+		Debug.Log($"Setting {scoresArray.Length} scores for {(isAnyStarScore ? "Any Star" : "Three Star")} scoreboard");
+		StartCoroutine(SetScoresRoutine(parent, scoresArray));
 	}
 
 	private IEnumerator InitRoutine() {

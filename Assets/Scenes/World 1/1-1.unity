@@ -2757,6 +2757,71 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 275
       objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1721069857900704693, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866694646324501403, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 3305111551
+      objectReference: {fileID: 0}
     - target: {fileID: 5675921555654412931, guid: 36c234df805c6f74e9f917be183a199d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2877,7 +2942,39 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win Screen Canvas
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8333800308671601803, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8333800308671601803, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8333800308671601803, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8333800308671601803, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8333800308671601803, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 3305111551
+      objectReference: {fileID: 0}
+    - target: {fileID: 8859294750717330769, guid: 36c234df805c6f74e9f917be183a199d,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 16514043
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 4204730762283922863, guid: 36c234df805c6f74e9f917be183a199d, type: 3}
+    - {fileID: 1477568217547581538, guid: 36c234df805c6f74e9f917be183a199d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 36c234df805c6f74e9f917be183a199d, type: 3}
 --- !u!224 &1114768233 stripped
 RectTransform:
@@ -5338,6 +5435,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4156482808574906244, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -4.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4156482808574906244, guid: dd06a0798a9539c45a6228cab7593341,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -14.1
       objectReference: {fileID: 0}
     - target: {fileID: 4415416654645771131, guid: dd06a0798a9539c45a6228cab7593341,
         type: 3}

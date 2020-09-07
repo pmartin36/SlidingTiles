@@ -17,7 +17,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 	public Image Background;
 
 	public GameObject ContinueButton;
-
+	public GameObject ContinueShadow;
 	public GameObject ComparePrompt;
 
 	public Button LeaderboardButton;
@@ -63,6 +63,14 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		string threeStarID = $"World{World}AllStars";
 		store.AddToLeaderboard(anyStarID, anyStarTime, (success) => {
 			store.GetLeaderboard(anyStarID, true, (scores) => {
+				if(scores.Count() < 1) {
+					scores = new LeaderboardEntry[] { new LeaderboardEntry() {
+						Rank = 1,
+						Score = anyStarTime * 1000f,
+						UserName = "You",
+						IsUser = true
+					}};
+				}
 				Leaderboard.SetScores(true, scores);
 				TrySetLeaderboardButtonInteractable(ref scoresToProcess);
 			});
@@ -70,6 +78,14 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		if(validThreeStarTime) {
 			store.AddToLeaderboard(threeStarID, threeStarTime, (success) => {
 				store.GetLeaderboard(threeStarID, true, (scores) => {
+					if (scores.Count() < 1) {
+						scores = new LeaderboardEntry[] { new LeaderboardEntry() {
+							Rank = 1,
+							Score = threeStarTime * 1000f,
+							UserName = "You",
+							IsUser = true
+						}};
+					}
 					Leaderboard.SetScores(false, scores);
 					TrySetLeaderboardButtonInteractable(ref scoresToProcess);
 				});
@@ -144,6 +160,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 
 	public void HideContinue() {
 		ContinueButton.SetActive(false);
+		ContinueShadow.SetActive(false);
 		ComparePrompt.SetActive(false);
 		foreach(var rt  in ContinueButton.transform.parent.GetComponentsInChildren<RectTransform>()) {
 			var pos = rt.anchoredPosition;

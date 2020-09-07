@@ -210,10 +210,18 @@ public class GameManager : Singleton<GameManager> {
 			SaveData = new SaveData();
 		}
 
+		StartCoroutine(TryLoadSaveData(localExists));
+	}
+
+	private IEnumerator TryLoadSaveData(bool localSaveExists) {
+		yield return new WaitUntil(() => StoreCommunicator.IsInitialized);
 		StoreCommunicator.TryLoadSaveData((string result) => {
 			SaveData sd = JsonConvert.DeserializeObject<SaveData>(result);
-			if(sd != null && (!localExists || SaveData.SaveTime.Ticks - sd.SaveTime.Ticks < 60)) {
+			if (sd != null && (!localSaveExists || SaveData.SaveTime.Ticks - sd.SaveTime.Ticks < 60)) {
 				SaveData = sd;
+				if (ContextManager != null && ContextManager is MenuManager) {
+					(ContextManager as MenuManager).ReceivedNewSaveData();
+				}
 			}
 		});
 	}

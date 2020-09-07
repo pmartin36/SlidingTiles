@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 public class TestCommunicator : StoreCommunicator {
+	public TestCommunicator() {
+		IsInitialized = true;
+	}
+
 	public override bool AddAchievement(string name) {
 		Debug.Log($"Achievement {name} added");
 		return true;
