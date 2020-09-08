@@ -39,6 +39,7 @@ public class GameManager : Singleton<GameManager> {
 	public SaveData SaveData { get; private set; }
 
 	public const int AvailableWorlds = 4;
+	public const int ShownWorlds = 6;
 	public int HighestUnlockedLevel => SaveData.HighestUnlockedLevel;
 	public int LastPlayedWorld => SaveData.LastPlayedWorld;
 

@@ -80,6 +80,9 @@ public class NumberedLevelSelectButton : LevelSelectButton
 		base.SetStayHidden(stayHidden);
 		if(stayHidden) {
 			Lock.gameObject.SetActive(false);
+			foreach(RawImage star in Stars) {
+				star.gameObject.SetActive(false);
+			}
 		}
 	}
 

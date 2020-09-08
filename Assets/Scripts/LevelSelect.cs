@@ -137,14 +137,17 @@ public class LevelSelect : MenuCopyComponent
 			for(int i = 0; i < len; i++)
 				minStars = Mathf.Min(minStars, levelData[b.Number-1, i].MaxStarsCollected);
 
-			b.SetStayHidden(false); // worlds are never hidden
-			b.SetButtonInfo(
-				position:	WorldSelectPosition(b.Number), 
-				num:		b.Number, 
-				unlocked:	b.Number <= highestUnlockedWorld,
-				paywalled:	false,
-				stars: minStars
-			);
+			bool hidden = b.Number > GameManager.ShownWorlds;
+			b.SetStayHidden(hidden);
+			if(!hidden) {
+				b.SetButtonInfo(
+					position:	WorldSelectPosition(b.Number), 
+					num:		b.Number, 
+					unlocked:	b.Number <= highestUnlockedWorld,
+					paywalled:	false,
+					stars: minStars
+				);
+			}
 		}
 	}
 
