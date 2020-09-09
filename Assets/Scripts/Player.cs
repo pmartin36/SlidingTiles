@@ -501,6 +501,8 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		RaycastHit2D baseHit = Physics2D.Raycast(flag.transform.position, perpDirection, 10, controller.PlatformMask);
 		Collider2D baseCollider = baseHit.collider;
 
+		bool groundFindFailed = false;
+
 		float distanceToMove = 0f;
 		bool rayHitBase = false;
 		int maxHits = 0;
@@ -526,6 +528,10 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 			rayHitBase = hits.Count >= maxHits;
 			if(hits.Count == 0) {
 				hits = GetHits(transform.position);
+			}
+			if(hits.Count == 0) {
+				groundFindFailed = true;
+				return Vector3.one;
 			}
 			baseHit = hits[0];
 
@@ -555,6 +561,9 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 
 			Vector3 expectedParallelVelocity = Vector3.Project(velocity * 0.9f,  parallelDirection);
 			Vector3 perpDirectionVelocity = GetPerpDirectionVelocity(expectedParallelVelocity);
+			if(groundFindFailed) {
+				yield break;
+			}
 
 			Debug.DrawRay(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, perpDirection, Color.green, 1f);
 			Debug.DrawLine(transform.position + expectedParallelVelocity * Time.fixedDeltaTime, baseHit.point, Color.magenta, 1f); 
@@ -570,9 +579,15 @@ public class Player : MonoBehaviour, IPlatformMoveBlocker, IGravityChangable, IS
 		}
 		transform.rotation = Quaternion.Euler(0,0,targetRotation);
 		velocity = GetPerpDirectionVelocity(Vector2.zero);
+		if (groundFindFailed) {
+			yield break;
+		}
 		while (distanceToMove > 0.1f) {
 			Vector2 parallelVelocity = Vector2.zero;
 			Vector2 moveDirectionVelocity = GetPerpDirectionVelocity(parallelVelocity);
+			if (groundFindFailed) {
+				yield break;
+			}
 			velocity = (parallelVelocity + moveDirectionVelocity);
 			yield return fixedDelta;
 		}
