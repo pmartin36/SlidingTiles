@@ -202,9 +202,10 @@ public class GameManager : Singleton<GameManager> {
 			SaveData = JsonConvert.DeserializeObject<SaveData>(json);
 
 			// TODO: Delete before release
-			if(DateTime.Now.Subtract(SaveData.SaveTime).Days > 30) {
-				SaveData = new SaveData();
-			}
+			//if(DateTime.Now.Subtract(SaveData.SaveTime).Days > 30) {
+			//	SaveData = new SaveData();
+			//}
+
 			localExists = true;
 		}
 		else {

@@ -63,7 +63,7 @@ public class LevelSelect : MenuCopyComponent
 		highestUnlockedWorld = Mathf.Min(highestUnlockedWorld, GameManager.AvailableWorlds);
 
 		levelData = GameManager.Instance.SaveData.LevelData;
-		NumberedLevelButtons = GetComponentsInChildren<NumberedLevelSelectButton>().OrderBy(g => g.name).ToArray(); // 1 - 12
+		NumberedLevelButtons = GetComponentsInChildren<NumberedLevelSelectButton>().ToArray(); // 1 - 12
 		for(int i = 0; i < NumberedLevelButtons.Length; i++) {
 			NumberedLevelSelectButton b = NumberedLevelButtons[i];
 			b.Init(i + 1);

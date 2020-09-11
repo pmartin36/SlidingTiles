@@ -64,6 +64,15 @@ public class MenuManager : ContextManager {
 				}
 			}
 		}
+		else if(Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Escape)) {
+			// back button on android pressed
+			if(SettingsOpen) {
+				ToggleSettings();
+			}
+			else if(LevelSelectOpen && LevelSelectScreen.LevelSelectOpen) {
+				LevelSelectScreen.BackSelected();
+			}
+		}
 	}
 
 	public void OpenLevelSelect(bool skipAnimation = false) { 

@@ -48,6 +48,11 @@ public class LevelSelectButton : MenuImageSpriteCopy
 		text.color = textColor;
 		button.image.color = tileColor;
 		button.enabled = !stayHidden;
+		if(stayHidden) {
+			// for some reason, hidden images and buttons were block visible ones
+			// so instead let's toss the hidden ones off to the side
+			rectTransform.anchoredPosition = Vector2.one * 1000f;
+		}
 	}
 
 	public virtual void TryEnableInteractable() {
