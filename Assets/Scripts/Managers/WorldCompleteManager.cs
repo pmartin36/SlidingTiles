@@ -63,7 +63,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		string threeStarID = $"World{World}AllStars";
 		store.AddToLeaderboard(anyStarID, anyStarTime, (success) => {
 			store.GetLeaderboard(anyStarID, true, (scores) => {
-				if(scores.Count() < 1) {
+				if(!scores.Any(s => s.IsUser)) {
 					scores = new LeaderboardEntry[] { new LeaderboardEntry() {
 						Rank = 1,
 						Score = anyStarTime * 1000f,
@@ -78,7 +78,7 @@ public class WorldCompleteManager : ContextManager, IRequireResources
 		if(validThreeStarTime) {
 			store.AddToLeaderboard(threeStarID, threeStarTime, (success) => {
 				store.GetLeaderboard(threeStarID, true, (scores) => {
-					if (scores.Count() < 1) {
+					if (!scores.Any(s => s.IsUser)) {
 						scores = new LeaderboardEntry[] { new LeaderboardEntry() {
 							Rank = 1,
 							Score = threeStarTime * 1000f,

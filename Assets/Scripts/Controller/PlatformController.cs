@@ -226,7 +226,7 @@ public class PlatformController : RaycastController, IMoveableCollider {
 				else {
 					PassengerMovement m = GetMovement(dir, hit);
 					int index = passengerMovement.FindIndex(pm => pm.transform == hit.transform);
-					if (m != null && m.velocity.sqrMagnitude > passengerMovement[index].velocity.sqrMagnitude) {
+					if (m != null && index >= 0 && m.velocity.sqrMagnitude > passengerMovement[index].velocity.sqrMagnitude) {
 						passengerMovement[index] = m;
 					}
 				}

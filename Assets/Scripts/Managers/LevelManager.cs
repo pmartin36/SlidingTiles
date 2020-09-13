@@ -157,7 +157,7 @@ public class LevelManager : ContextManager {
 					}
 				}
 
-				Vector3 position = p.MousePositionWorldSpace + Player.Direction * -7.5f;
+				Vector3 position = p.MousePositionWorldSpace + Player.Direction * -8.5f;
 				if (Vector2.Distance(Player.transform.position, p.MousePositionWorldSpace) < 5) {				
 					Preview.Show(true, position);
 					Preview.WatchedPosition = Player.transform.position;				
@@ -280,21 +280,33 @@ public class LevelManager : ContextManager {
 			timeInfo = new TimeInfo();
 			timeInfo.Time = ElapsedTime;
 
-			LevelData ld = GameManager.Instance.SaveData.LevelData[world-1, level-1];
+			LevelData[,] allLevelData = GameManager.Instance.SaveData.LevelData;
+			LevelData ld = allLevelData[world-1, level-1];
 			if(collectedStars > ld.MaxStarsCollected) {
 				ld.MaxStarsCollected = collectedStars;
 			}
-			if(collectedStars < 3) {
-				if(ld.AnyStarCompletionTime < 0 || ElapsedTime < ld.AnyStarCompletionTime) {
-					ld.AnyStarCompletionTime = ElapsedTime;
-					timeInfo.Record = true;
-				}
-			}
-			else {
+			if(collectedStars >= 3) {
 				if (ld.ThreeStarCompletionTime < 0 || ElapsedTime < ld.ThreeStarCompletionTime) {
 					ld.ThreeStarCompletionTime = ElapsedTime;
 					timeInfo.Record = true;
+
+					// check for 3 star achievement, otherwise player would need
+					//  to visit world complete screen to get credit for 3 starring all levels
+					bool allThreeStar = true;
+					for (int i = 0; i < 10; i++) {
+						LevelData other = allLevelData[world - 1, i];
+						if (other.MaxStarsCollected < 3) {
+							allThreeStar = false;
+						}
+					}
+					if (allThreeStar) {
+						GameManager.Instance.StoreCommunicator.AddAchievement($"World{world}AllStars");
+					}
 				}
+			}
+			if (ld.AnyStarCompletionTime < 0 || ElapsedTime < ld.AnyStarCompletionTime) {
+				ld.AnyStarCompletionTime = ElapsedTime;
+				timeInfo.Record = true;
 			}
 		}
 

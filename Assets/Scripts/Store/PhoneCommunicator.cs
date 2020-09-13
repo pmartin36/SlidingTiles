@@ -107,8 +107,9 @@ public abstract class PhoneCommunicator : StoreCommunicator {
 		if (userHasScore) {
 			lb.LoadPlayerCenteredScores((Score[] _scores, Score _localUserScore, string _error) => {
 				Debug.Log($"Got leaderboard: {leaderboardID}, with errormsg: {_error}");
-				Debug.Log($"leaderboard me: {_localUserScore.Value}");
+				Debug.Log($"leaderboard me: {_localUserScore}");
 				Debug.Log($"leaderboard others: {_scores.Length}");
+				foreach(Score s in _scores) Debug.Log(s);
 				var scores = _scores.Select(s => new LeaderboardEntry(s, false));
 				if(_localUserScore.Rank > 0) {
 					scores = scores.Append(new LeaderboardEntry(_localUserScore, true)).OrderByDescending(s => s.Rank);

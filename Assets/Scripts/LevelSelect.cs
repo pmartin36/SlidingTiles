@@ -60,7 +60,6 @@ public class LevelSelect : MenuCopyComponent
 
 		int highest = GameManager.Instance.HighestUnlockedLevel;
 		SceneHelpers.GetWorldAndLevelFromBuildIndex(highest, out highestUnlockedWorld, out highestUnlockedLevel);
-		highestUnlockedWorld = Mathf.Min(highestUnlockedWorld, GameManager.AvailableWorlds);
 
 		levelData = GameManager.Instance.SaveData.LevelData;
 		NumberedLevelButtons = GetComponentsInChildren<NumberedLevelSelectButton>().ToArray(); // 1 - 12
@@ -139,11 +138,14 @@ public class LevelSelect : MenuCopyComponent
 
 			bool hidden = b.Number > GameManager.ShownWorlds;
 			b.SetStayHidden(hidden);
-			if(!hidden) {
+
+			int highestUnlockedAndAvailable = Mathf.Min(highestUnlockedWorld, GameManager.AvailableWorlds);
+
+			if (!hidden) {
 				b.SetButtonInfo(
 					position:	WorldSelectPosition(b.Number), 
 					num:		b.Number, 
-					unlocked:	b.Number <= highestUnlockedWorld,
+					unlocked:	b.Number <= highestUnlockedAndAvailable,
 					paywalled:	false,
 					stars: minStars
 				);

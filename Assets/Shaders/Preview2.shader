@@ -68,9 +68,9 @@
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
 				float4 scale = float4( 
-					2 * length(UNITY_MATRIX_M._m00_m01_m02),
-					2 * length(UNITY_MATRIX_M._m10_m11_m12),
-					2 * length(UNITY_MATRIX_M._m20_m21_m22),
+					1.5 * length(UNITY_MATRIX_M._m00_m01_m02),
+					1.5 * length(UNITY_MATRIX_M._m10_m11_m12),
+					1.5 * length(UNITY_MATRIX_M._m20_m21_m22),
 					1 / v.vertex.w
 				);
 
