@@ -10,6 +10,6 @@
   Puzzle platformer. A mashup of 15-puzzles and an auto-running platformer. Move tiles around the playspace to change the environment and the player's move path. 
   
 ## Trailer
-  https://www.youtube.com/watch?v=-3-FerGlLPI
+  [![](http://img.youtube.com/vi/-3-FerGlLPI/0.jpg)](http://www.youtube.com/watch?v=-3-FerGlLPI "")
   
 
